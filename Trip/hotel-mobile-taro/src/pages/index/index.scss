@@ -1,353 +1,292 @@
 .page-search {
   height: 100vh;
-  background: #f5f5f5;
+  background: #f8fafc;
 }
 
 .ctrip-search {
-  max-width: 480px;
-  margin: 0 auto;
   min-height: 100vh;
-  background: #f5f5f5;
   padding-bottom: 24px;
 }
 
-.ctrip-search-header {
-  background: linear-gradient(135deg, #ff6b00 0%, #ff8533 100%);
-  padding: 16px 16px 20px;
-  color: #fff;
+/* Large Page Title */
+.ctrip-header-title {
+  padding: 12px 20px 0;
+  font-size: 28px;
+  font-weight: 800;
+  color: #000;
+  background: #fff; 
+  /* Assume white or transparent background depending on scroll, but for now fixed */
 }
 
-.ctrip-search-brand {
-  display: flex;
-  align-items: baseline;
-  gap: 8px;
-}
-
-.ctrip-search-logo {
-  font-size: 22px;
-  font-weight: 700;
-  letter-spacing: 1px;
-}
-
-.ctrip-search-slogan {
-  color: rgba(255, 255, 255, 0.9);
-  font-size: 13px;
-}
-
-.ctrip-search-page-title {
-  padding: 12px 16px 0;
-  font-size: 18px;
-  font-weight: 700;
-  color: #333;
-}
-
-.ctrip-search-banner {
-  margin: 12px 16px;
-  border-radius: 12px;
-  overflow: hidden;
+/* Banner + Card Container wrapper */
+.ctrip-img-card {
   position: relative;
-  min-height: 100px;
+  margin: 10px 12px;
 }
 
-.ctrip-search-banner-bg {
-  position: absolute;
-  top: 0;
-  left: 0;
-  right: 0;
-  bottom: 0;
-  background: linear-gradient(135deg, #667eea 0%, #764ba2 50%, #f093fb 100%);
-}
-
-.ctrip-search-banner-content {
-  position: relative;
+/* Banner Area */
+.ctrip-img-banner {
+  height: 140px; 
+  background: linear-gradient(120deg, #ffeacc 0%, #ffc88f 100%);
+  border-radius: 16px;
   padding: 20px 16px;
+  position: relative;
+  z-index: 1;
+}
+
+.banner-title-row {
   display: flex;
   flex-direction: column;
-  justify-content: flex-end;
-  min-height: 100px;
 }
 
-.ctrip-search-banner-text {
-  font-size: 20px;
-  font-weight: 700;
-  color: #fff;
-  text-shadow: 0 1px 2px rgba(0, 0, 0, 0.2);
+.banner-big-text {
+  font-size: 28px;
+  font-weight: 900;
+  color: #ff5500;
+  font-style: italic;
+  text-shadow: 2px 2px 0px #fff;
 }
 
-.ctrip-search-banner-tags {
+.banner-tags {
+  margin-top: 6px;
   display: flex;
-  gap: 8px;
-  margin-top: 10px;
+  gap: 6px;
 }
 
-.ctrip-search-banner-tag {
-  padding: 4px 10px;
-  background: rgba(255, 255, 255, 0.25);
+.banner-tag {
+  font-size: 11px;
+  padding: 2px 6px;
+  border-radius: 4px;
+}
+.banner-tag.gold {
+  background: #d4a01c;
   color: #fff;
-  font-size: 12px;
-  border-radius: 14px;
+}
+.banner-tag.trans {
+  background: rgba(0,0,0,0.4);
+  color: #fff;
 }
 
+/* Search Card overlapping the banner */
+.search-card-container {
+  margin-top: -60px; /* Overlap effect */
+  position: relative;
+  z-index: 2;
+  background: #fff;
+  border-radius: 16px;
+  box-shadow: 0 4px 16px rgba(0,0,0,0.08);
+  padding: 0 16px 20px;
+}
+
+/* Tabs */
 .ctrip-search-tabs {
   display: flex;
-  padding: 0 16px;
-  background: #fff;
-  border-bottom: 1px solid #f0f0f0;
+  padding-top: 12px;
+  margin-bottom: 12px;
 }
 
 .ctrip-search-tab {
   flex: 1;
-  padding: 14px 8px;
-  font-size: 15px;
-  color: #666;
   text-align: center;
+  padding-bottom: 12px;
+  color: #333;
+  font-size: 15px;
   position: relative;
-
-  &.active {
-    color: #1890ff;
-    font-weight: 600;
-
-    &::after {
-      content: '';
-      position: absolute;
-      bottom: 0;
-      left: 50%;
-      transform: translateX(-50%);
-      width: 24px;
-      height: 3px;
-      background: #1890ff;
-      border-radius: 3px 3px 0 0;
-    }
-  }
 }
 
-.ctrip-search-main {
-  margin: 0 16px;
-  padding: 16px;
-  background: #fff;
-  border-radius: 0 0 12px 12px;
-  box-shadow: 0 2px 12px rgba(0, 0, 0, 0.06);
+.ctrip-search-tab.active {
+  color: #0086f6;
+  font-weight: 600;
+}
+.ctrip-search-tab.active .tab-label {
+  font-size: 17px;
 }
 
-.ctrip-search-row-first {
+/* Special wave underline for active tab if possible, simplified to box for now */
+.tab-indicator {
+  position: absolute;
+  bottom: 0;
+  left: 50%;
+  transform: translateX(-50%);
+  width: 24px;
+  height: 3px;
+  background: linear-gradient(90deg, #0086f6, #50bfff);
+  border-radius: 3px;
+}
+
+/* Search Fields Area */
+.search-fields {
+  display: flex;
+  flex-direction: column;
+}
+
+.search-row {
   display: flex;
   align-items: center;
-  gap: 8px;
-  margin-bottom: 12px;
+  padding: 14px 0;
+}
+.border-bottom {
+  border-bottom: 1px solid #eee;
 }
 
-.ctrip-search-city {
+/* City & Keyword */
+.city-selector {
+  max-width: 100px;
+  margin-right: 12px;
   display: flex;
   align-items: center;
-  gap: 4px;
-  padding: 8px 10px;
-  background: #f5f5f5;
-  border-radius: 8px;
-  font-size: 14px;
-  color: #333;
-  flex-shrink: 0;
 }
-
-.ctrip-search-arrow {
-  font-size: 10px;
-  color: #999;
-}
-
-.ctrip-search-input-inline {
-  flex: 1;
-  border-radius: 8px;
-  background: #f5f5f5;
-  padding: 8px 12px;
-  font-size: 14px;
-}
-
-.ctrip-search-gps {
-  width: 40px;
-  height: 40px;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  background: #e6f4ff;
-  color: #1890ff;
-  border-radius: 50%;
+.city-text {
   font-size: 18px;
-  flex-shrink: 0;
+  font-weight: 600;
+  color: #333;
+  margin-right: 4px;
 }
-
-.ctrip-search-row-dates {
-  display: flex;
-  align-items: center;
-  flex-wrap: wrap;
-  gap: 4px 8px;
-  padding: 10px 12px;
-  background: #f5f5f5;
-  border-radius: 8px;
-  margin-bottom: 10px;
-  font-size: 14px;
-}
-
-.ctrip-search-date-label {
+.city-arrow {
+  font-size: 10px;
   color: #666;
 }
 
-.ctrip-search-date-value {
-  font-weight: 500;
+.divider-vertical {
+  width: 1px;
+  height: 20px;
+  background: #eee;
+  margin-right: 12px;
+}
+
+.keyword-input {
+  flex: 1;
+  font-size: 16px;
+  color: #333;
+}
+.placeholder-gray {
+  color: #ccc;
+  font-size: 16px;
+}
+
+.gps-icon {
+  width: 24px;
+  height: 24px;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+.gps-symbol {
+  color: #0086f6;
+  font-size: 20px;
+}
+
+/* Dates */
+.date-row {
+  justify-content: space-between;
+}
+.date-col {
+  flex: 2;
+}
+.date-header {
+  display: flex;
+  align-items: baseline;
+}
+.date-big {
+  font-size: 20px;
+  font-weight: 600;
+  color: #333;
+  margin-right: 6px;
+}
+.date-small {
+  font-size: 12px;
   color: #333;
 }
 
-.ctrip-search-date-tag {
+.date-duration {
+  flex: 1;
+  text-align: center;
+  color: #ccc;
+}
+.total-nights {
+  color: #333;
+  font-size: 14px;
+}
+
+/* Tip */
+.search-tip-row {
+  background: #333;
+  border-radius: 6px;
+  padding: 6px 10px;
+  display: flex;
+  align-items: center;
+  margin-bottom: 8px;
+}
+.tip-badge {
+  color: #ffd700;
+  margin-right: 6px;
   font-size: 12px;
-  color: #999;
+  display: block;
+}
+.tip-text {
+  color: #eee;
+  font-size: 11px;
+  flex: 1;
 }
 
-.ctrip-search-date-dash {
-  color: #999;
-  margin: 0 4px;
-}
-
-.ctrip-search-date-nights {
-  margin-left: auto;
-  color: #666;
-}
-
-.ctrip-search-calendar-wrap {
-  margin-bottom: 12px;
-}
-
-.ctrip-search-price-select-wrap {
+/* Price/Star */
+.price-star-selector {
   width: 100%;
 }
-
-.ctrip-search-picker {
-  padding: 8px 12px;
-  background: #f5f5f5;
-  border-radius: 8px;
-  font-size: 14px;
-  color: #333;
+.price-placeholder {
+  font-size: 16px;
+  color: #ccc;
+  font-weight: 500;
 }
 
-.ctrip-search-tip {
-  display: flex;
-  align-items: center;
-  gap: 8px;
-  padding: 10px 12px;
-  background: #fffbe6;
-  border: 1px solid #ffe58f;
-  border-radius: 8px;
-  margin-bottom: 12px;
-  font-size: 12px;
-  color: #ad8b00;
-}
-
-.ctrip-search-tip-icon {
-  font-size: 14px;
-}
-
-.ctrip-search-row-price {
-  margin-bottom: 12px;
-}
-
-.ctrip-search-quick-tags {
+/* Quick Tags */
+.quick-tags-row {
   display: flex;
   flex-wrap: wrap;
   gap: 8px;
-  margin-bottom: 16px;
+  margin-top: 10px;
+  margin-bottom: 20px;
 }
 
-.ctrip-search-quick-tag {
-  padding: 6px 12px;
-  background: #f5f5f5;
-  border-radius: 16px;
-  font-size: 13px;
-  color: #666;
+.quick-tag-item {
+  background: #f5f7fa;
+  padding: 8px 12px;
+  border-radius: 4px;
+  font-size: 12px;
+  color: #333;
 }
 
-.ctrip-search-btn {
-  height: 48px;
-  font-size: 17px;
+/* Search Button */
+.search-submit-btn {
+  background: linear-gradient(90deg, #0086f6 0%, #29a1f7 100%);
+  color: white;
+  font-size: 18px;
   font-weight: 600;
-  border-radius: 8px;
-  background: #1890ff;
-  color: #fff;
   border: none;
-  line-height: 48px;
+  border-radius: 8px;
+  height: 50px;
+  line-height: 50px;
+  box-shadow: 0 4px 10px rgba(0, 134, 246, 0.3);
 }
 
 .ctrip-section {
-  margin-top: 20px;
-  padding: 0 16px;
+    padding: 20px 16px;
 }
-
 .ctrip-section-title {
-  font-size: 15px;
-  color: #333;
-  margin-bottom: 12px;
+    font-size: 16px;
+    font-weight: 600;
+    margin-bottom: 12px;
+    display: block;
 }
-
 .ctrip-city-chips {
-  display: flex;
-  flex-wrap: wrap;
-  gap: 10px;
+    display: flex;
+    flex-wrap: wrap;
+    gap: 10px;
 }
-
 .ctrip-chip {
-  padding: 8px 14px;
-  background: #fff;
-  border-radius: 20px;
-  font-size: 13px;
-  color: #333;
-  box-shadow: 0 1px 4px rgba(0, 0, 0, 0.06);
-}
-
-.ctrip-banner-scroll {
-  display: flex;
-  gap: 12px;
-  padding-bottom: 8px;
-  white-space: nowrap;
-}
-
-.ctrip-banner-card {
-  flex: 0 0 160px;
-  border-radius: 10px;
-  overflow: hidden;
-  background: #fff;
-  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08);
-}
-
-.ctrip-banner-cover {
-  height: 100px;
-  background: #e8e8e8;
-  width: 100%;
-}
-
-.ctrip-banner-img {
-  width: 100%;
-  height: 100%;
-}
-
-.ctrip-banner-placeholder {
-  width: 100%;
-  height: 100%;
-  background: linear-gradient(135deg, #fff0e6, #ffd9bf);
-}
-
-.ctrip-banner-info {
-  padding: 8px 10px;
-}
-
-.ctrip-banner-name {
-  font-size: 13px;
-  font-weight: 600;
-  overflow: hidden;
-  text-overflow: ellipsis;
-  white-space: nowrap;
-}
-
-.ctrip-banner-addr {
-  font-size: 11px;
-  color: #999;
-  margin-top: 2px;
-  overflow: hidden;
-  text-overflow: ellipsis;
-  white-space: nowrap;
+    background: #fff;
+    padding: 6px 12px;
+    border-radius: 16px;
+    font-size: 13px;
+    color: #333;
 }
