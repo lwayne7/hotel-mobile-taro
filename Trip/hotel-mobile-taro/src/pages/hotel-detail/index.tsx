@@ -22,6 +22,12 @@ export default function HotelDetail() {
     params.checkOut ? dayjs(params.checkOut) : dayjs().add(1, 'day')
   );
   const [roomFilter, setRoomFilter] = useState<string | null>(null);
+  const [scrollToId, setScrollToId] = useState('');
+
+  const scrollToRooms = () => {
+    setScrollToId('detail-rooms');
+    setTimeout(() => setScrollToId(''), 400);
+  };
 
   const nights = checkIn && checkOut ? Math.max(1, checkOut.diff(checkIn, 'day')) : 1;
   const today = dayjs().startOf('day');
@@ -45,10 +51,16 @@ export default function HotelDetail() {
     );
   }
 
+  const goBack = () => {
+    Taro.navigateBack().catch(() => {
+      Taro.redirectTo({ url: '/pages/hotel-list/index' });
+    });
+  };
+
   if (!hotel) {
     return (
       <View className="ctrip-detail">
-        <Button className="ctrip-detail-back-btn" onClick={() => Taro.navigateBack()}>
+        <Button className="ctrip-detail-back-btn" onClick={goBack}>
           返回列表
         </Button>
         <View className="ctrip-detail-error">
@@ -76,18 +88,18 @@ export default function HotelDetail() {
   return (
     <View className="ctrip-detail">
       <View className="ctrip-detail-header ctrip-detail-header-overlay">
-        <View className="ctrip-back-btn" onClick={() => Taro.navigateBack()}>
+        <View className="ctrip-back-btn" onClick={goBack}>
           <Text className="back-arrow">‹</Text>
         </View>
         <View className="ctrip-detail-header-actions">
           <Text className="ctrip-detail-action" onClick={() => setCollected(!collected)}>
             {collected ? '❤' : '♡'}
           </Text>
-          <Text className="ctrip-detail-action">分享</Text>
+          <Text className="ctrip-detail-action" onClick={() => Taro.showToast({ title: '分享功能敬请期待', icon: 'none' })}>分享</Text>
         </View>
       </View>
 
-      <ScrollView scrollY className="ctrip-detail-scroll">
+      <ScrollView scrollY className="ctrip-detail-scroll" scrollIntoView={scrollToId}>
         <View className="ctrip-detail-gallery">
           <Swiper className="ctrip-detail-swiper" autoplay circular indicatorDots>
             {images.map((img: any, index: number) => (
@@ -104,7 +116,7 @@ export default function HotelDetail() {
             <Text className="ctrip-detail-gallery-tag">封面</Text>
             <Text className="ctrip-detail-gallery-tag">精选</Text>
             <Text className="ctrip-detail-gallery-tag">位置</Text>
-            <Text className="ctrip-detail-gallery-tag ctrip-detail-gallery-tag-link">相册 ›</Text>
+            <Text className="ctrip-detail-gallery-tag ctrip-detail-gallery-tag-link" onClick={() => Taro.showToast({ title: '相册敬请期待', icon: 'none' })}>相册 ›</Text>
           </View>
         </View>
 
@@ -114,7 +126,9 @@ export default function HotelDetail() {
             <Text className="ctrip-detail-rate">{'★'.repeat(hotel.starRating)}</Text>
           </View>
           <View className="ctrip-detail-badges">
-            <Text className="ctrip-detail-badge-link">上海美景酒店榜 No.16 ›</Text>
+            <Text className="ctrip-detail-badge-link" onClick={() => Taro.showToast({ title: '榜单详情敬请期待', icon: 'none' })}>
+              {hotel.address?.match(/^(.+?[市省])/)?.[1] || '精选'}美景酒店榜 No.{(hotel.id % 20) + 1} ›
+            </Text>
           </View>
 
           <View className="ctrip-detail-features-row">
@@ -132,7 +146,7 @@ export default function HotelDetail() {
                 <Text className="feature-text">{f}</Text>
               </View>
             ))}
-            <Text className="ctrip-detail-feature-link">设施政策 ›</Text>
+            <Text className="ctrip-detail-feature-link" onClick={() => Taro.showToast({ title: '设施政策敬请期待', icon: 'none' })}>设施政策 ›</Text>
           </View>
 
           <View className="ctrip-detail-score-location">
@@ -141,17 +155,17 @@ export default function HotelDetail() {
                 <Text className="ctrip-detail-score-num">{score}</Text>
                 <Text className="ctrip-detail-score-label">超棒</Text>
               </View>
-              <Text className="ctrip-detail-score-reviews">{reviewCount}条点评 ›</Text>
+              <Text className="ctrip-detail-score-reviews" onClick={() => Taro.showToast({ title: '点评列表敬请期待', icon: 'none' })}>{reviewCount}条点评 ›</Text>
             </View>
             <View className="ctrip-detail-divider-v" />
             <View className="ctrip-detail-location-block">
               <Text className="ctrip-detail-addr">{transportText}</Text>
-              <Text className="ctrip-detail-map-link">地图</Text>
+              <Text className="ctrip-detail-map-link" onClick={() => Taro.showToast({ title: hotel.address || '地图敬请期待', icon: 'none' })}>地图</Text>
             </View>
           </View>
         </View>
 
-        <View className="ctrip-detail-dates-card">
+        <View className="ctrip-detail-dates-card" onClick={() => Taro.showToast({ title: '请返回查询页修改日期', icon: 'none' })}>
           <View className="dates-row">
             <Text className="date-val">{checkIn?.format('MM月DD日')}</Text>
             <Text className="date-label">{checkInLabel}</Text>
@@ -178,7 +192,7 @@ export default function HotelDetail() {
           ))}
         </View>
 
-        <View className="ctrip-detail-rooms">
+        <View id="detail-rooms" className="ctrip-detail-rooms">
           {roomTypes.length === 0 ? (
             <Text className="ctrip-detail-no-room">暂无房型</Text>
           ) : (
@@ -186,7 +200,13 @@ export default function HotelDetail() {
               {roomTypes.map((room: any, index: number) => (
                 <View key={room.id ?? index} className="ctrip-detail-room">
                   <View className="ctrip-detail-room-thumb">
-                    <Image src={room.imageUrl || hotel.images?.[0]?.imageUrl} mode="aspectFill" className="ctrip-detail-room-thumb-img" />
+                    {room.imageUrl ? (
+                      <Image src={room.imageUrl} mode="aspectFill" className="ctrip-detail-room-thumb-img" />
+                    ) : hotel.images?.[0]?.imageUrl ? (
+                      <Image src={hotel.images[0].imageUrl} mode="aspectFill" className="ctrip-detail-room-thumb-img" />
+                    ) : (
+                      <View className="room-thumb-placeholder"><Text>🛏️</Text></View>
+                    )}
                   </View>
                   <View className="ctrip-detail-room-info">
                     <Text className="ctrip-detail-room-name">{room.name}</Text>
@@ -199,7 +219,7 @@ export default function HotelDetail() {
                         <Text className="amount">{room.price}</Text>
                         <Text className="suffix">起</Text>
                       </View>
-                      <Button className="view-room-btn">查看房型</Button>
+                      <Button className="view-room-btn" onClick={scrollToRooms}>查看房型</Button>
                     </View>
                   </View>
                 </View>
@@ -213,7 +233,7 @@ export default function HotelDetail() {
 
       {/* Bottom Fixed Bar */}
       <View className="ctrip-detail-bottom">
-        <View className="ctrip-detail-bottom-left">
+        <View className="ctrip-detail-bottom-left" onClick={() => Taro.showToast({ title: '问酒店敬请期待', icon: 'none' })}>
           <Text className="ctrip-detail-ask-icon">💬</Text>
           <Text>问酒店</Text>
         </View>
@@ -221,7 +241,7 @@ export default function HotelDetail() {
           <Text className="ctrip-detail-bottom-label">¥{minPrice}</Text>
           <Text className="ctrip-detail-bottom-suffix">起</Text>
         </View>
-        <Button className="ctrip-detail-bottom-btn">查看房型</Button>
+        <Button className="ctrip-detail-bottom-btn" onClick={scrollToRooms}>查看房型</Button>
       </View>
     </View>
   );
