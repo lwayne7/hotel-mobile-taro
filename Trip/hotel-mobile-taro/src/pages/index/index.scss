@@ -24,31 +24,44 @@
   margin: 10px 12px;
 }
 
-/* Banner Area */
+/* Banner Area - 与 Vite 一致：蓝底 */
 .ctrip-img-banner {
-  height: 140px;
-  background: linear-gradient(120deg, #ffeacc 0%, #ffc88f 100%);
-  border-radius: 16px;
-  padding: 20px 16px;
+  height: 100px;
+  min-height: 80px;
+  background: linear-gradient(135deg, #4facfe 0%, #00f2fe 100%);
+  border-radius: 12px;
+  padding: 16px 20px;
   position: relative;
   z-index: 1;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  color: #fff;
 }
 
 .banner-title-row {
   display: flex;
-  flex-direction: column;
+  align-items: baseline;
+  gap: 8px;
+  flex-wrap: wrap;
 }
 
 .banner-big-text {
-  font-size: 28px;
-  font-weight: 900;
-  color: #ff5500;
-  font-style: italic;
-  text-shadow: 2px 2px 0px #fff;
+  font-size: 20px;
+  font-weight: 700;
+  color: #fff;
+}
+
+.banner-sub {
+  font-size: 12px;
+  background: #fff;
+  color: #0086f6;
+  padding: 1px 4px;
+  border-radius: 4px;
 }
 
 .banner-tags {
-  margin-top: 6px;
+  margin-top: 0;
   display: flex;
   gap: 6px;
 }
@@ -60,25 +73,26 @@
 }
 
 .banner-tag.gold {
-  background: #d4a01c;
+  background: rgba(255, 255, 255, 0.3);
   color: #fff;
 }
 
 .banner-tag.trans {
-  background: rgba(0, 0, 0, 0.4);
+  border: 1px solid rgba(255, 255, 255, 0.6);
   color: #fff;
+  border-radius: 10px;
 }
 
-/* Search Card overlapping the banner */
+/* Search Card overlapping the banner - 与 Vite 一致 */
 .search-card-container {
-  margin-top: -60px;
-  /* Overlap effect */
+  margin-top: -40px;
   position: relative;
   z-index: 2;
   background: #fff;
-  border-radius: 16px;
+  border-radius: 12px;
   box-shadow: 0 4px 16px rgba(0, 0, 0, 0.08);
   padding: 0 16px 20px;
+  overflow: hidden;
 }
 
 /* Tabs */
@@ -173,48 +187,76 @@
 }
 
 .gps-icon {
-  width: 24px;
-  height: 24px;
   display: flex;
-  justify-content: center;
+  flex-direction: column;
   align-items: center;
+  justify-content: center;
+  color: #0086f6;
+  font-size: 10px;
+  gap: 2px;
+}
+
+.gps-text {
+  font-size: 10px;
+  white-space: nowrap;
 }
 
 .gps-symbol {
-  color: #0086f6;
-  font-size: 20px;
+  font-size: 16px;
 }
 
-/* Dates */
+/* Dates - 与 Vite 一致：入住/离店横向排列，避免竖排断字 */
 .date-row {
   justify-content: space-between;
 }
 
 .date-col {
-  flex: 2;
+  display: flex;
+  flex-direction: column;
+  flex: 1;
+  min-width: 0;
+}
+
+.date-label {
+  font-size: 11px;
+  color: #999;
+  margin-bottom: 2px;
+  white-space: nowrap;
 }
 
 .date-header {
   display: flex;
-  align-items: baseline;
+  flex-direction: column;
+  align-items: flex-start;
 }
 
 .date-big {
-  font-size: 20px;
+  font-size: 18px;
   font-weight: 600;
   color: #333;
-  margin-right: 6px;
+  margin-right: 4px;
+  white-space: nowrap;
 }
 
 .date-small {
-  font-size: 12px;
-  color: #333;
+  font-size: 11px;
+  color: #666;
+  white-space: nowrap;
 }
 
 .date-duration {
-  flex: 1;
+  flex: 0 0 auto;
   text-align: center;
-  color: #ccc;
+  padding: 0 8px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.duration-text {
+  font-size: 13px;
+  color: #333;
+  font-weight: 500;
 }
 
 .total-nights {
@@ -245,14 +287,17 @@
   flex: 1;
 }
 
-/* Price/Star */
+/* Price/Star - 与 Vite 一致 */
 .price-star-selector {
-  width: 100%;
+  display: flex;
+  align-items: baseline;
+  gap: 8px;
+  flex: 1;
 }
 
 .price-placeholder {
   font-size: 16px;
-  color: #ccc;
+  color: #333;
   font-weight: 500;
 }
 
@@ -267,10 +312,16 @@
 
 .quick-tag-item {
   background: #f5f7fa;
-  padding: 8px 12px;
+  padding: 6px 12px;
   border-radius: 4px;
-  font-size: 12px;
-  color: #333;
+  font-size: 11px;
+  color: #666;
+}
+
+.quick-tag-item.active {
+  background: #e6f4ff;
+  color: #0086f6;
+  font-weight: 500;
 }
 
 /* Search Button */

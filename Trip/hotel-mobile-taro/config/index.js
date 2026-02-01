@@ -61,6 +61,12 @@ const config = {
         },
         devServer: {
             port: 10086,
+            proxy: {
+                '/api': {
+                    target: 'http://localhost:3000',
+                    changeOrigin: true,
+                },
+            },
         },
     },
     rn: {

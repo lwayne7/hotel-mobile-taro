@@ -11,7 +11,7 @@
 ## 目录结构
 
 ```
-hotel-mobile-taro/
+（本仓库根目录）
 ├── config/           # 构建配置（dev/prod）
 ├── src/
 │   ├── app.tsx       # 应用入口
@@ -31,13 +31,14 @@ hotel-mobile-taro/
 ### 1. 安装依赖
 
 ```bash
-cd hotel-mobile-taro
+# 克隆后进入项目根目录
 npm install
+# RN 端若遇依赖冲突可加：npm install --legacy-peer-deps
 ```
 
 ### 2. 启动后端
 
-确保酒店管理后端已启动（与 hotel-mobile 共用）：
+确保酒店管理后端已启动（与同组织或本地的 hotel-management 后端共用）：
 
 ```bash
 cd hotel-management/backend
@@ -117,7 +118,6 @@ npm run build:rn -- --platform android
 - **日历组件**：`src/components/Calendar`，用于入住/离店日期选择，多端共用。
 - **请求**：`src/services/request.ts` 基于 `Taro.request`，`src/services/api.ts` 与原有 `publicHotelApi` 接口对齐。
 
-## 与 hotel-mobile（Vite H5）的关系
+## 关于本仓库
 
-- **hotel-mobile**：Vite + React 单 H5 端，可继续保留或下线。
-- **hotel-mobile-taro**：Taro 多端版，优先维护；同一套业务逻辑与后端 API，产出 H5 + 小程序 + APP（RN）。
+本仓库为 **易宿酒店** 用户端 Taro 多端版，独立于 [lwayne7/hotel-mobile](https://github.com/lwayne7/hotel-mobile)（Vite 单 H5 版）。同一套业务逻辑与后端 API，产出 H5 + 微信小程序 + React Native APP。
