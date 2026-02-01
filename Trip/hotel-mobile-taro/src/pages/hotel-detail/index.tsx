@@ -210,6 +210,19 @@ export default function HotelDetail() {
 
         <View className="ctrip-detail-bottom-spacer" />
       </ScrollView>
+
+      {/* Bottom Fixed Bar */}
+      <View className="ctrip-detail-bottom">
+        <View className="ctrip-detail-bottom-left">
+          <Text className="ctrip-detail-ask-icon">💬</Text>
+          <Text>问酒店</Text>
+        </View>
+        <View className="ctrip-detail-bottom-price">
+          <Text className="ctrip-detail-bottom-label">¥{minPrice}</Text>
+          <Text className="ctrip-detail-bottom-suffix">起</Text>
+        </View>
+        <Button className="ctrip-detail-bottom-btn">查看房型</Button>
+      </View>
     </View>
   );
 }

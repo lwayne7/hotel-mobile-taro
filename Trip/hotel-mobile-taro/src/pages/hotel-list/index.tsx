@@ -29,6 +29,16 @@ function getRatingLabel(score: number) {
   return '好评';
 }
 
+// Parse price range string to minPrice/maxPrice
+function parsePriceRange(range: string): { minPrice?: number; maxPrice?: number } {
+  if (!range || range === '不限') return {};
+  if (range === '¥150以下') return { maxPrice: 150 };
+  if (range === '¥600以上') return { minPrice: 600 };
+  const match = range.match(/¥(\d+)-(\d+)/);
+  if (match) return { minPrice: Number(match[1]), maxPrice: Number(match[2]) };
+  return {};
+}
+
 export default function HotelList() {
   const router = useRouter();
   const params = router.params || {};
@@ -40,6 +50,7 @@ export default function HotelList() {
   const [keyword, setKeyword] = useState(params.keyword || '');
   const [city, setCity] = useState(params.city || '上海');
   const [starRating, setStarRating] = useState(Number(params.starRating) || 0);
+  const [priceRange] = useState(params.priceRange || '');
   const [sortBy, setSortBy] = useState('popular');
   const checkInParam = params.checkIn;
   const checkOutParam = params.checkOut;
@@ -47,6 +58,9 @@ export default function HotelList() {
   const checkOut = checkOutParam ? dayjs(checkOutParam) : dayjs().add(1, 'day');
   const nights = Math.max(1, checkOut.diff(checkIn, 'day'));
   const hasMore = list.length < total;
+
+  // Parse price range once
+  const { minPrice, maxPrice } = parsePriceRange(priceRange);
 
   const loadPage = useCallback(
     async (pageNum: number, append: boolean) => {
@@ -57,6 +71,8 @@ export default function HotelList() {
         if (keyword.trim()) reqParams.keyword = keyword.trim();
         if (city.trim()) reqParams.city = city.trim();
         if (starRating > 0) reqParams.starRating = starRating;
+        if (minPrice !== undefined) reqParams.minPrice = minPrice;
+        if (maxPrice !== undefined) reqParams.maxPrice = maxPrice;
         const res = await publicHotelApi.getList(reqParams);
         if (append) {
           setList((prev) => [...prev, ...(res.data || [])]);
@@ -72,7 +88,7 @@ export default function HotelList() {
         setLoadingMore(false);
       }
     },
-    [keyword, city, starRating]
+    [keyword, city, starRating, minPrice, maxPrice]
   );
 
   useEffect(() => {
