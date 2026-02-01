@@ -57,7 +57,7 @@ export default function HotelList() {
     checkIn: rawParams.checkIn,
     checkOut: rawParams.checkOut,
     starRating: rawParams.starRating,
-    priceRange: rawParams.priceRange,
+    priceRange: decodeParam(rawParams.priceRange) || rawParams.priceRange || '',
   };
   const [list, setList] = useState<Hotel[]>([]);
   const [loading, setLoading] = useState(false);
@@ -155,12 +155,12 @@ export default function HotelList() {
 
   const queryString = () => {
     const q = new URLSearchParams();
-    if (params.keyword) q.set('keyword', params.keyword);
-    if (params.city) q.set('city', params.city);
-    if (params.checkIn) q.set('checkIn', params.checkIn);
-    if (params.checkOut) q.set('checkOut', params.checkOut);
-    if (params.starRating) q.set('starRating', params.starRating);
-    if (params.priceRange) q.set('priceRange', params.priceRange);
+    if (keyword.trim()) q.set('keyword', keyword.trim());
+    if (city.trim()) q.set('city', city.trim());
+    if (checkInParam) q.set('checkIn', checkInParam);
+    if (checkOutParam) q.set('checkOut', checkOutParam);
+    if (starRating > 0) q.set('starRating', String(starRating));
+    if (priceRange) q.set('priceRange', priceRange);
     return q.toString();
   };
 
@@ -173,7 +173,7 @@ export default function HotelList() {
         </View>
         <View className="ctrip-list-search-box">
           <View className="search-city-pill">
-            <Text>{city || '上海'}</Text>
+            <Text className="search-city-text">{city || '上海'}</Text>
           </View>
           <View className="search-divider" />
           <View className="search-dates">
@@ -264,7 +264,7 @@ export default function HotelList() {
                     )}
                     {/* Video play icon simulation */}
                     <View className="card-video-icon">
-                      <Text>▶</Text>
+                      <Text className="card-video-triangle">▶</Text>
                     </View>
                   </View>
                   <View className="ctrip-list-card-body">
@@ -273,7 +273,7 @@ export default function HotelList() {
                       {hotel.starRating >= 5 ? (
                         <Text className="card-star-diamond">💎💎💎💎💎</Text>
                       ) : (
-                        <View className="card-stars">{'★'.repeat(hotel.starRating)}</View>
+                        <Text className="card-stars">{'★'.repeat(hotel.starRating)}</Text>
                       )}
                     </View>
 
