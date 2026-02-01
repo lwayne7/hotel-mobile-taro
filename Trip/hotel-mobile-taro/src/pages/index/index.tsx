@@ -29,7 +29,7 @@ const POPULAR_CITIES = [
   '南京', '武汉', '厦门', '青岛', '重庆', '苏州', '长沙', '昆明',
 ];
 
-const QUICK_TAGS = ['免费停车场', '上海浦东国际机场', '上海虹桥国际机场', '外滩', '含早餐'];
+const QUICK_TAGS = ['亲子', '豪华', '免费停车场', '含早餐', '健身房'];
 
 export default function Index() {
   const [activeTab, setActiveTab] = useState('domestic');
@@ -46,15 +46,25 @@ export default function Index() {
   const [showCityModal, setShowCityModal] = useState(false);
   const [showFilterModal, setShowFilterModal] = useState(false);
   const [gpsLoading, setGpsLoading] = useState(false);
+  const [selectedTags, setSelectedTags] = useState<string[]>([]);
 
-  const nights = checkIn && checkOut ? Math.max(0, checkOut.diff(checkIn, 'day')) : 1;
+  const nights = checkIn && checkOut ? Math.max(1, checkOut.diff(checkIn, 'day')) : 1;
   const minDate = dayjs().startOf('day');
+  const today = dayjs().startOf('day');
+  const checkInDateLabel = checkIn ? (checkIn.isSame(today, 'day') ? '今天' : checkIn.isSame(today.add(1, 'day'), 'day') ? '明天' : '') : '';
+  const checkOutDateLabel = checkOut ? (checkOut.isSame(today, 'day') ? '今天' : checkOut.isSame(today.add(1, 'day'), 'day') ? '明天' : '') : '';
 
   useEffect(() => {
     publicHotelApi
       .getList({ page: 1, pageSize: 5 })
       .then((res) => setBannerHotels(res.data || []))
-      .catch(() => Taro.showToast({ title: '加载失败', icon: 'none' }));
+      .catch(() =>
+        Taro.showToast({
+          title: '加载失败，请确认已启动后端（hotel-management/backend）',
+          icon: 'none',
+          duration: 3000,
+        })
+      );
   }, []);
 
   const handleSearch = () => {
@@ -129,18 +139,29 @@ export default function Index() {
     return parts.length > 0 ? parts.join('/') : '低价/高档';
   };
 
+  const toggleTag = (tag: string) => {
+    setSelectedTags((prev) =>
+      prev.includes(tag) ? prev.filter((t) => t !== tag) : [...prev, tag]
+    );
+  };
+
   return (
     <ScrollView scrollY className="page-search">
       <View className="ctrip-search">
         <View className="ctrip-header-title">酒店查询页</View>
 
-        <View className="ctrip-img-card">
+        <View
+          className="ctrip-img-card"
+          onClick={() => bannerHotels[0] && Taro.navigateTo({ url: `/pages/hotel-detail/index?id=${bannerHotels[0].id}` })}
+          style={{ cursor: bannerHotels[0] ? 'pointer' : 'default' }}
+        >
           <View className="ctrip-img-banner">
             <View className="banner-title-row">
               <Text className="banner-big-text">酒店7折起</Text>
+              <Text className="banner-sub">大促</Text>
               <View className="banner-tags">
-                <Text className="banner-tag gold">资质说明</Text>
-                <Text className="banner-tag trans">宠物友好酒店</Text>
+                <Text className="banner-tag trans">官方补贴</Text>
+                <Text className="banner-tag trans">资质说明</Text>
               </View>
             </View>
           </View>
@@ -163,7 +184,7 @@ export default function Index() {
               {/* City & Keyword */}
               <View className="search-row border-bottom">
                 <View className="city-selector" onClick={() => setShowCityModal(true)}>
-                  <Text className="city-text">{city}</Text>
+                  <Text className="city-text">{city || '选择城市'}</Text>
                   <Text className="city-arrow">▼</Text>
                 </View>
                 <View className="divider-vertical" />
@@ -178,6 +199,7 @@ export default function Index() {
                   className={`gps-icon ${gpsLoading ? 'loading' : ''}`}
                   onClick={handleGpsLocation}
                 >
+                  <Text className="gps-text">{gpsLoading ? '定位中...' : '我的位置'}</Text>
                   <Text className="gps-symbol">{gpsLoading ? '...' : '⌖'}</Text>
                 </View>
               </View>
@@ -186,25 +208,24 @@ export default function Index() {
               <View className="search-row date-row border-bottom">
                 <View className="date-col" onClick={() => openCalendar(true)}>
                   <View className="date-header">
-                    <Text className="date-big">{checkIn?.format('MM月DD日')}</Text>
-                    <Text className="date-small">今天</Text>
+                    <Text className="date-label">入住</Text>
+                    <Text className="date-big">{checkIn ? checkIn.format('MM月DD日') : '入住'}</Text>
+                    <Text className="date-small">{checkInDateLabel}</Text>
                   </View>
                 </View>
                 <View className="date-duration">
-                  <Text className="duration-text"> - </Text>
+                  <Text className="duration-text">{nights}晚</Text>
                 </View>
                 <View className="date-col" onClick={() => openCalendar(false)}>
                   <View className="date-header">
-                    <Text className="date-big">{checkOut?.format('MM月DD日')}</Text>
-                    <Text className="date-small">明天</Text>
+                    <Text className="date-label">离店</Text>
+                    <Text className="date-big">{checkOut ? checkOut.format('MM月DD日') : '离店'}</Text>
+                    <Text className="date-small">{checkOutDateLabel}</Text>
                   </View>
-                </View>
-                <View className="total-nights">
-                  <Text>共{nights}晚</Text>
                 </View>
               </View>
 
-              {/* Tip */}
+              {/* Tip - 与 Vite 一致 */}
               <View className="search-tip-row">
                 <Text className="tip-badge">🌙</Text>
                 <Text className="tip-text">当前已过0点，如需今天凌晨6点前入住，请选择"今天凌晨"</Text>
@@ -218,10 +239,14 @@ export default function Index() {
                 </View>
               </View>
 
-              {/* Quick Tags */}
+              {/* Quick Tags - 与 Vite 一致：前 3 个可选中 */}
               <View className="quick-tags-row">
-                {QUICK_TAGS.map((t, index) => (
-                  <View key={index} className="quick-tag-item">
+                {QUICK_TAGS.slice(0, 3).map((t) => (
+                  <View
+                    key={t}
+                    className={`quick-tag-item ${selectedTags.includes(t) ? 'active' : ''}`}
+                    onClick={() => toggleTag(t)}
+                  >
                     <Text>{t}</Text>
                   </View>
                 ))}
