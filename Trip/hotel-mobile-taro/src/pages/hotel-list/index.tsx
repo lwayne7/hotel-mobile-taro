@@ -127,42 +127,56 @@ export default function HotelList() {
 
   return (
     <View className="ctrip-list">
+      {/* Header with integrated search box */}
       <View className="ctrip-list-header">
-        <Text className="ctrip-back-btn" onClick={() => Taro.navigateBack()}>‹ 返回</Text>
-        <View className="ctrip-list-header-center">
-          <Text className="ctrip-list-city">{city || '上海'}</Text>
-          <Text className="ctrip-list-dates">
-            住 {checkIn.format('MM-DD')} 离 {checkOut.format('MM-DD')} {nights}晚
-          </Text>
+        <View className="ctrip-back-btn" onClick={() => Taro.navigateBack()}>
+          <Text className="back-arrow">‹</Text>
         </View>
-        <Text className="ctrip-list-map" onClick={() => Taro.showToast({ title: '地图', icon: 'none' })}>📍 地图</Text>
-      </View>
-
-      <View className="ctrip-list-search-row">
-        <Input
-          placeholder="位置/品牌/酒店"
-          value={keyword}
-          onInput={(e) => setKeyword(e.detail.value)}
-          className="ctrip-list-search-input"
-          onConfirm={handleSearch}
-        />
+        <View className="ctrip-list-search-box">
+          <View className="search-city-pill">
+            <Text>{city || '上海'}</Text>
+          </View>
+          <View className="search-divider" />
+          <View className="search-dates">
+            <Text className="date-label">住</Text>
+            <Text className="date-val">{checkIn.format('MM-DD')}</Text>
+            <Text className="date-nights">{nights}晚</Text>
+          </View>
+          <View className="search-input-wrap">
+            <Text className="search-icon">🔍</Text>
+            <Input
+              placeholder="位置/品牌/酒店"
+              value={keyword}
+              onInput={(e) => setKeyword(e.detail.value)}
+              className="search-input-inner"
+              onConfirm={handleSearch}
+            />
+          </View>
+        </View>
+        <View className="ctrip-list-map" onClick={() => Taro.showToast({ title: '地图', icon: 'none' })}>
+          <Text className="map-icon">📍</Text>
+          <Text className="map-text">地图</Text>
+        </View>
       </View>
 
       <View className="ctrip-list-filters">
-        {SORT_OPTIONS.map((opt) => (
-          <Text
-            key={opt.key}
-            className={`ctrip-list-filter-item ${sortBy === opt.key ? 'active' : ''}`}
-            onClick={() => setSortBy(opt.key)}
-          >
-            {opt.label}
-          </Text>
-        ))}
-      </View>
-      <View className="ctrip-list-quick-tags">
-        {QUICK_TAGS.map((tag) => (
-          <Text key={tag} className="ctrip-list-quick-tag">{tag}</Text>
-        ))}
+        <View className="filter-row-main">
+          {SORT_OPTIONS.map((opt) => (
+            <View
+              key={opt.key}
+              className={`ctrip-filter-item ${sortBy === opt.key ? 'active' : ''}`}
+              onClick={() => setSortBy(opt.key)}
+            >
+              <Text>{opt.label}</Text>
+              <Text className="filter-arrow">▼</Text>
+            </View>
+          ))}
+        </View>
+        <ScrollView scrollX className="filter-row-quick">
+          {QUICK_TAGS.map((tag) => (
+            <Text key={tag} className="ctrip-quick-filter-tag">{tag}</Text>
+          ))}
+        </ScrollView>
       </View>
 
       <ScrollView
@@ -201,38 +215,47 @@ export default function HotelList() {
                     ) : (
                       <View className="ctrip-list-card-placeholder" />
                     )}
+                    {/* Video play icon simulation */}
+                    <View className="card-video-icon">
+                      <Text>▶</Text>
+                    </View>
                   </View>
                   <View className="ctrip-list-card-body">
-                    <Text className="ctrip-list-card-name">{hotel.nameCn}</Text>
-                    <View className="ctrip-list-card-meta">
-                      <Text className="ctrip-list-card-stars">{'★'.repeat(hotel.starRating)}</Text>
+                    <View className="card-top-row">
+                      <Text className="ctrip-list-card-name">{hotel.nameCn}</Text>
+                      <View className="card-stars">{'★'.repeat(hotel.starRating)}</View>
                     </View>
-                    <View className="ctrip-list-card-score">
-                      <Text className="ctrip-list-card-score-num">{score}</Text>
-                      <Text className="ctrip-list-card-score-label">{getRatingLabel(score)}</Text>
-                      <Text className="ctrip-list-card-score-reviews">{reviews}点评·{favorites}收藏</Text>
+
+                    <View className="ctrip-list-card-score-row">
+                      <View className="score-badge">
+                        <Text className="score-num">{score}</Text>
+                        <Text className="score-txt">{getRatingLabel(score)}</Text>
+                      </View>
+                      <Text className="review-count">{reviews}点评 · {favorites}收藏</Text>
                     </View>
-                    <Text className="ctrip-list-card-nearby">近{nearbyText}</Text>
+
+                    <Text className="ctrip-list-card-nearby">{nearbyText}</Text>
+
                     {hotel.description && (
-                      <Text className="ctrip-list-card-highlight">
-                        {hotel.description.slice(0, 36)}{hotel.description.length > 36 ? '…' : ''}
+                      <Text className="ctrip-list-card-boss-tag">
+                        BOSS: {hotel.description.slice(0, 12)}...
                       </Text>
                     )}
-                    {tags.length > 0 && (
-                      <View className="ctrip-list-card-tags">
-                        {tags.map((t) => (
-                          <Text key={t} className="ctrip-list-tag">{t}</Text>
-                        ))}
-                      </View>
-                    )}
+
+                    <View className="ctrip-list-card-tags">
+                      {tags.map((t) => (
+                        <Text key={t} className="ctrip-list-tag">{t}</Text>
+                      ))}
+                    </View>
+
                     <View className="ctrip-list-card-price-row">
                       <View className="ctrip-list-card-price-wrap">
-                        <Text className="ctrip-price-num">¥{minPrice}</Text>
-                        <Text className="ctrip-price-suffix">起</Text>
-                        {originalPrice > minPrice && (
-                          <Text className="ctrip-list-card-original">¥{originalPrice}</Text>
-                        )}
-                        <Text className="ctrip-list-card-offers">钻石贵宾价 · 满减券</Text>
+                        <View className="price-main">
+                          <Text className="currency">¥</Text>
+                          <Text className="amount">{minPrice}</Text>
+                          <Text className="suffix">起</Text>
+                        </View>
+                        <Text className="diamond-price">钻石贵宾价 &gt;</Text>
                       </View>
                     </View>
                   </View>

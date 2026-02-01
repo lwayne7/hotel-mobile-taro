@@ -1,278 +1,358 @@
 .ctrip-list {
-  min-height: 100vh;
-  background: #f5f5f5;
   display: flex;
   flex-direction: column;
-  padding-bottom: 24px;
+  height: 100vh;
+  background: #f5f5f5;
 }
 
+/* Header */
 .ctrip-list-header {
+  background: #fff;
+  padding: 8px 12px;
+  display: flex;
+  align-items: center;
+  gap: 8px;
   position: sticky;
   top: 0;
   z-index: 10;
-  display: flex;
-  align-items: center;
-  padding: 12px 16px;
-  background: #fff;
-  border-bottom: 1px solid #f0f0f0;
-  color: #333;
 }
 
 .ctrip-back-btn {
-  color: #333;
-  margin-right: 8px;
-  font-size: 16px;
   padding: 4px;
 }
 
-.ctrip-list-header-center {
-  flex: 1;
-  min-width: 0;
-  display: flex;
-  flex-direction: column;
-  gap: 2px;
-}
-
-.ctrip-list-city {
-  font-size: 15px;
-  font-weight: 600;
+.back-arrow {
+  font-size: 24px;
   color: #333;
 }
 
-.ctrip-list-dates {
+/* Search Box Container */
+.ctrip-list-search-box {
+  flex: 1;
+  background: #f2f4f8;
+  border-radius: 20px;
+  padding: 6px 10px;
+  display: flex;
+  align-items: center;
+  height: 36px;
+}
+
+.search-city-pill {
+  background: #e6f3ff;
+  padding: 2px 8px;
+  border-radius: 12px;
+}
+
+.search-city-pill Text {
+  color: #0086f6;
+  font-size: 13px;
+  font-weight: 600;
+}
+
+.search-divider {
+  width: 1px;
+  height: 14px;
+  background: #ddd;
+  margin: 0 8px;
+}
+
+.search-dates {
+  display: flex;
+  align-items: baseline;
+  margin-right: 8px;
+}
+
+.date-label {
+  font-size: 10px;
+  color: #999;
+  margin-right: 2px;
+}
+
+.date-val {
   font-size: 12px;
-  color: #666;
+  color: #0086f6;
+  font-weight: 500;
+  margin-right: 4px;
+}
+
+.date-nights {
+  font-size: 10px;
+  color: #999;
+}
+
+.search-input-wrap {
+  flex: 1;
+  display: flex;
+  align-items: center;
+}
+
+.search-icon {
+  font-size: 12px;
+  margin-right: 4px;
+  color: #999;
+}
+
+.search-input-inner {
+  font-size: 13px;
+  color: #333;
+  width: 100%;
 }
 
 .ctrip-list-map {
-  font-size: 13px;
-  color: #ff6b00;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
 }
 
-.ctrip-list-search-row {
-  padding: 10px 16px;
-  background: #fff;
-  border-bottom: 1px solid #f0f0f0;
+.map-icon {
+  font-size: 16px;
 }
 
-.ctrip-list-search-input {
-  border-radius: 8px;
-  background: #f5f5f5;
-  padding: 8px 12px;
-  font-size: 14px;
+.map-text {
+  font-size: 10px;
+  color: #333;
 }
 
+/* Filters */
 .ctrip-list-filters {
+  background: #fff;
+  padding-bottom: 8px;
+}
+
+.filter-row-main {
+  display: flex;
+  justify-content: space-around;
+  padding: 8px 0;
+  border-bottom: 1px solid #f5f5f5;
+}
+
+.ctrip-filter-item {
+  font-size: 13px;
+  color: #333;
   display: flex;
   align-items: center;
-  gap: 4px;
-  padding: 10px 16px;
-  background: #fff;
-  border-bottom: 1px solid #f0f0f0;
-  overflow-x: auto;
+  gap: 2px;
 }
 
-.ctrip-list-filter-item {
-  flex-shrink: 0;
-  font-size: 13px;
-  color: #666;
-  padding: 4px 10px;
-  border-radius: 6px;
-
-  &.active {
-    color: #ff6b00;
-    background: #fff5eb;
-    font-weight: 500;
-  }
+.ctrip-filter-item.active {
+  color: #0086f6;
+  font-weight: 500;
 }
 
-.ctrip-list-quick-tags {
+.filter-arrow {
+  font-size: 10px;
+  color: #ccc;
+}
+
+.filter-row-quick {
+  white-space: nowrap;
+  padding: 8px 12px 0;
   display: flex;
-  flex-wrap: wrap;
   gap: 8px;
-  padding: 10px 16px;
-  background: #fff;
-  border-bottom: 1px solid #f0f0f0;
 }
 
-.ctrip-list-quick-tag {
-  font-size: 12px;
-  color: #666;
-  padding: 4px 12px;
+.ctrip-quick-filter-tag {
+  display: inline-block;
   background: #f5f5f5;
-  border-radius: 16px;
+  padding: 4px 10px;
+  border-radius: 4px;
+  font-size: 12px;
+  color: #333;
+  margin-right: 8px;
 }
 
+/* Hotel Card */
 .ctrip-list-scroll {
   flex: 1;
-  height: 60vh;
-}
-
-.ctrip-list-loading,
-.ctrip-empty {
-  display: flex;
-  justify-content: center;
-  padding: 48px 0;
-  font-size: 14px;
-  color: #666;
 }
 
 .ctrip-list-card {
   display: flex;
   background: #fff;
-  border-radius: 12px;
+  margin: 10px 12px;
+  border-radius: 8px;
   overflow: hidden;
-  margin: 12px 16px;
-  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.06);
+  /* box-shadow: 0 2px 6px rgba(0,0,0,0.05); Less shadow in flat design */
 }
 
 .ctrip-list-card-cover {
-  width: 130px;
-  min-width: 130px;
+  width: 110px;
   height: 160px;
-  background: #e8e8e8;
+  position: relative;
 }
 
 .ctrip-list-card-img {
   width: 100%;
   height: 100%;
+  background: #eee;
 }
 
 .ctrip-list-card-placeholder {
   width: 100%;
   height: 100%;
-  background: linear-gradient(135deg, #fff0e6, #ffd9bf);
+  background: #eee;
+}
+
+.card-video-icon {
+  position: absolute;
+  bottom: 6px;
+  right: 6px;
+  background: rgba(0, 0, 0, 0.5);
+  width: 20px;
+  height: 20px;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.card-video-icon Text {
+  color: #fff;
+  font-size: 10px;
 }
 
 .ctrip-list-card-body {
   flex: 1;
-  min-width: 0;
-  padding: 10px 12px;
+  padding: 10px;
   display: flex;
   flex-direction: column;
+}
+
+.card-top-row {
+  display: flex;
+  align-items: flex-start;
   justify-content: space-between;
 }
 
 .ctrip-list-card-name {
-  font-size: 15px;
-  font-weight: 600;
-  color: #333;
-  overflow: hidden;
-  text-overflow: ellipsis;
-  white-space: nowrap;
-}
-
-.ctrip-list-card-meta {
-  margin-top: 4px;
-}
-
-.ctrip-list-card-stars {
-  font-size: 11px;
-  color: #faad14;
-}
-
-.ctrip-list-card-score {
-  display: inline-flex;
-  align-items: center;
-  gap: 4px;
-  margin-top: 6px;
-  padding: 2px 8px;
-  background: linear-gradient(135deg, #1a7cff 0%, #4d9eff 100%);
-  color: #fff;
-  border-radius: 4px;
-  width: fit-content;
-  font-size: 12px;
-}
-
-.ctrip-list-card-score-num {
+  font-size: 16px;
   font-weight: 700;
-  font-size: 13px;
+  color: #333;
+  line-height: 1.3;
+  margin-bottom: 4px;
 }
 
-.ctrip-list-card-score-label {
-  margin-right: 4px;
+.card-stars {
+  font-size: 10px;
+  color: #ffa000;
+  margin-left: 4px;
 }
 
-.ctrip-list-card-score-reviews {
-  opacity: 0.95;
+.ctrip-list-card-score-row {
+  display: flex;
+  align-items: center;
+  margin-bottom: 4px;
+}
+
+.score-badge {
+  display: flex;
+  align-items: center;
+  background: #fff;
+  /* Actually screenshot shows blue text on white or transparent, wait. Screenshot shows a BLUE BOX for the '4.8 Superb' part' */
+  background: linear-gradient(90deg, #2b92ff, #0066cc);
+  border-radius: 4px 4px 4px 0;
+  padding: 1px 4px;
+  margin-right: 6px;
+}
+
+.score-num {
+  font-size: 12px;
+  font-weight: 700;
+  color: #fff;
+  margin-right: 2px;
+}
+
+.score-txt {
   font-size: 11px;
+  color: #fff;
+}
+
+.review-count {
+  font-size: 11px;
+  color: #666;
 }
 
 .ctrip-list-card-nearby {
   font-size: 12px;
-  color: #666;
-  margin-top: 4px;
-  overflow: hidden;
-  text-overflow: ellipsis;
-  white-space: nowrap;
+  color: #333;
+  margin-bottom: 4px;
 }
 
-.ctrip-list-card-highlight {
-  font-size: 12px;
-  color: #666;
-  margin-top: 4px;
-  overflow: hidden;
-  text-overflow: ellipsis;
-  white-space: nowrap;
+.ctrip-list-card-boss-tag {
+  font-size: 11px;
+  color: #0086f6;
+  margin-bottom: 4px;
 }
 
 .ctrip-list-card-tags {
   display: flex;
   flex-wrap: wrap;
-  gap: 6px;
-  margin-top: 6px;
+  gap: 4px;
+  margin-bottom: auto;
+  /* Push price to bottom */
 }
 
 .ctrip-list-tag {
-  padding: 2px 8px;
-  background: #f5f5f5;
-  color: #666;
-  font-size: 11px;
-  border-radius: 4px;
+  font-size: 10px;
+  color: #0086f6;
+  border: 1px solid rgba(0, 134, 246, 0.2);
+  padding: 1px 4px;
+  border-radius: 2px;
 }
 
 .ctrip-list-card-price-row {
-  margin-top: auto;
-  padding-top: 8px;
-  text-align: right;
+  display: flex;
+  justify-content: flex-end;
+  margin-top: 8px;
 }
 
 .ctrip-list-card-price-wrap {
   display: flex;
   flex-direction: column;
   align-items: flex-end;
-  gap: 2px;
 }
 
-.ctrip-price-num {
-  color: #ff6b00;
-  font-size: 20px;
-  font-weight: 700;
+.price-main {
+  display: flex;
+  align-items: baseline;
 }
 
-.ctrip-price-suffix {
+.currency {
   font-size: 12px;
+  color: #0086f6;
+  font-weight: 600;
+}
+
+.amount {
+  font-size: 22px;
+  color: #0086f6;
+  font-weight: 700;
+  line-height: 1;
+}
+
+.suffix {
+  font-size: 11px;
   color: #999;
   margin-left: 2px;
 }
 
-.ctrip-list-card-original {
-  font-size: 11px;
-  color: #999;
-  text-decoration: line-through;
-  margin-left: 4px;
-}
-
-.ctrip-list-card-offers {
-  font-size: 11px;
-  color: #ff6b00;
+.diamond-price {
+  font-size: 10px;
+  color: #d4a01c;
+  /* Gold/Diamond color */
+  border: 1px solid #d4a01c;
+  padding: 0 4px;
+  border-radius: 2px;
   margin-top: 2px;
 }
 
+.ctrip-list-loading,
+.ctrip-empty,
 .ctrip-list-more,
 .ctrip-list-more-hint {
+  padding: 20px;
   text-align: center;
-  padding: 16px;
   color: #999;
-  font-size: 13px;
+  font-size: 12px;
 }
