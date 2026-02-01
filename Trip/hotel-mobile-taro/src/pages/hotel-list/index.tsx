@@ -39,14 +39,32 @@ function parsePriceRange(range: string): { minPrice?: number; maxPrice?: number 
   return {};
 }
 
+function decodeParam(value: string | undefined): string {
+  if (!value || typeof value !== 'string') return '';
+  try {
+    return decodeURIComponent(value);
+  } catch {
+    return value;
+  }
+}
+
 export default function HotelList() {
   const router = useRouter();
-  const params = router.params || {};
+  const rawParams = router.params || {};
+  const params = {
+    city: decodeParam(rawParams.city) || rawParams.city || '',
+    keyword: decodeParam(rawParams.keyword) || rawParams.keyword || '',
+    checkIn: rawParams.checkIn,
+    checkOut: rawParams.checkOut,
+    starRating: rawParams.starRating,
+    priceRange: rawParams.priceRange,
+  };
   const [list, setList] = useState<Hotel[]>([]);
   const [loading, setLoading] = useState(false);
   const [loadingMore, setLoadingMore] = useState(false);
   const [page, setPage] = useState(1);
   const [total, setTotal] = useState(0);
+  const [loadError, setLoadError] = useState<string | null>(null);
   const [keyword, setKeyword] = useState(params.keyword || '');
   const [city, setCity] = useState(params.city || '上海');
   const [starRating, setStarRating] = useState(Number(params.starRating) || 0);
@@ -66,6 +84,7 @@ export default function HotelList() {
     async (pageNum: number, append: boolean) => {
       if (pageNum === 1) setLoading(true);
       else setLoadingMore(true);
+      setLoadError(null);
       try {
         const reqParams: any = { page: pageNum, pageSize: PAGE_SIZE };
         if (keyword.trim()) reqParams.keyword = keyword.trim();
@@ -81,8 +100,11 @@ export default function HotelList() {
         }
         setTotal(res.total || 0);
         setPage(pageNum);
-      } catch {
-        if (!append) setList([]);
+      } catch (err) {
+        if (!append) {
+          setList([]);
+          setLoadError(err instanceof Error ? err.message : '加载失败，请检查网络或稍后重试');
+        }
       } finally {
         setLoading(false);
         setLoadingMore(false);
@@ -138,6 +160,7 @@ export default function HotelList() {
     if (params.checkIn) q.set('checkIn', params.checkIn);
     if (params.checkOut) q.set('checkOut', params.checkOut);
     if (params.starRating) q.set('starRating', params.starRating);
+    if (params.priceRange) q.set('priceRange', params.priceRange);
     return q.toString();
   };
 
@@ -156,7 +179,10 @@ export default function HotelList() {
           <View className="search-dates">
             <Text className="date-label">住</Text>
             <Text className="date-val">{checkIn.format('MM-DD')}</Text>
-            <Text className="date-nights">{nights}晚</Text>
+            <Text className="date-sep"> </Text>
+            <Text className="date-label">离</Text>
+            <Text className="date-val">{checkOut.format('MM-DD')}</Text>
+            <Text className="date-nights">共{nights}晚</Text>
           </View>
           <View className="search-input-wrap">
             <Text className="search-icon">🔍</Text>
@@ -205,6 +231,11 @@ export default function HotelList() {
           <View className="ctrip-list-loading">
             <Text>加载中...</Text>
           </View>
+        ) : loadError ? (
+          <View className="ctrip-empty">
+            <Text className="ctrip-empty-msg">{loadError}</Text>
+            <Text className="ctrip-empty-hint">请确认已启动后端：cd hotel-management/backend && npm run start:dev</Text>
+          </View>
         ) : list.length === 0 ? (
           <View className="ctrip-empty">
             <Text>暂无酒店</Text>
@@ -239,7 +270,11 @@ export default function HotelList() {
                   <View className="ctrip-list-card-body">
                     <View className="card-top-row">
                       <Text className="ctrip-list-card-name">{hotel.nameCn}</Text>
-                      <View className="card-stars">{'★'.repeat(hotel.starRating)}</View>
+                      {hotel.starRating >= 5 ? (
+                        <Text className="card-star-diamond">💎💎💎💎💎</Text>
+                      ) : (
+                        <View className="card-stars">{'★'.repeat(hotel.starRating)}</View>
+                      )}
                     </View>
 
                     <View className="ctrip-list-card-score-row">
@@ -247,19 +282,14 @@ export default function HotelList() {
                         <Text className="score-num">{score}</Text>
                         <Text className="score-txt">{getRatingLabel(score)}</Text>
                       </View>
-                      <Text className="review-count">{reviews}点评 · {favorites}收藏</Text>
+                      <Text className="review-count">{reviews}点评 · {favorites}收藏 · "{getRatingLabel(score)}推荐"</Text>
                     </View>
 
                     <Text className="ctrip-list-card-nearby">{nearbyText}</Text>
 
-                    {hotel.description && (
-                      <Text className="ctrip-list-card-boss-tag">
-                        BOSS: {hotel.description.slice(0, 12)}...
-                      </Text>
-                    )}
-
                     <View className="ctrip-list-card-tags">
-                      {tags.map((t) => (
+                      <Text className="ctrip-tag-boss">BOSS推荐</Text>
+                      {tags.slice(0, 2).map((t) => (
                         <Text key={t} className="ctrip-list-tag">{t}</Text>
                       ))}
                     </View>
@@ -271,7 +301,12 @@ export default function HotelList() {
                           <Text className="amount">{minPrice}</Text>
                           <Text className="suffix">起</Text>
                         </View>
-                        <Text className="diamond-price">钻石贵宾价 &gt;</Text>
+                        {originalPrice > minPrice && (
+                          <View className="price-bottom">
+                            <Text className="diamond-price">钻石贵宾价</Text>
+                            <Text className="price-del">¥{originalPrice}</Text>
+                          </View>
+                        )}
                       </View>
                     </View>
                   </View>

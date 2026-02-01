@@ -348,7 +348,25 @@
 }
 
 .ctrip-list-loading,
-.ctrip-empty,
+.ctrip-empty {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 8px;
+  padding: 20px;
+  text-align: center;
+  color: #999;
+
+  .ctrip-empty-msg {
+    color: #333;
+  }
+
+  .ctrip-empty-hint {
+    font-size: 24px;
+    color: #999;
+  }
+}
+
 .ctrip-list-more,
 .ctrip-list-more-hint {
   padding: 20px;
