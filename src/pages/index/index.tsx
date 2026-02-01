@@ -40,9 +40,7 @@ export default function Index() {
   const [starRating, setStarRating] = useState(0);
   const [priceRange, setPriceRange] = useState('不限');
   const [bannerHotels, setBannerHotels] = useState<Hotel[]>([]);
-  const [showCheckInCalendar, setShowCheckInCalendar] = useState(false);
-  const [showCheckOutCalendar, setShowCheckOutCalendar] = useState(false);
-  const [pickingCheckIn, setPickingCheckIn] = useState(true);
+  const [showDatePicker, setShowDatePicker] = useState<'checkIn' | 'checkOut' | null>(null);
   const [showCityModal, setShowCityModal] = useState(false);
   const [showFilterModal, setShowFilterModal] = useState(false);
   const [gpsLoading, setGpsLoading] = useState(false);
@@ -58,9 +56,9 @@ export default function Index() {
     publicHotelApi
       .getList({ page: 1, pageSize: 5 })
       .then((res) => setBannerHotels(res.data || []))
-      .catch(() =>
+      .catch((e) =>
         Taro.showToast({
-          title: '加载失败，请确认已启动后端（hotel-management/backend）',
+          title: e?.message || '加载失败，请确认已启动后端（hotel-management/backend）',
           icon: 'none',
           duration: 3000,
         })
@@ -113,21 +111,25 @@ export default function Index() {
     });
   };
 
-  const openCalendar = (isCheckIn: boolean) => {
-    setPickingCheckIn(isCheckIn);
-    if (isCheckIn) setShowCheckInCalendar(true);
-    else setShowCheckOutCalendar(true);
+  const openCalendar = (type: 'checkIn' | 'checkOut') => {
+    setShowDatePicker(type);
   };
 
   const onCalendarSelect = (date: Dayjs) => {
-    if (pickingCheckIn) {
+    if (showDatePicker === 'checkIn') {
       setCheckIn(date);
-      if (checkOut && date.isAfter(checkOut, 'day')) setCheckOut(date.add(1, 'day'));
-      setShowCheckInCalendar(false);
-    } else {
-      setCheckOut(date);
-      if (checkIn && date.isBefore(checkIn, 'day')) setCheckIn(date.subtract(1, 'day'));
-      setShowCheckOutCalendar(false);
+      if (!checkOut || date.isAfter(checkOut, 'day') || date.isSame(checkOut, 'day')) {
+        setCheckOut(date.add(1, 'day'));
+      }
+      setShowDatePicker(null);
+      return;
+    }
+
+    if (showDatePicker === 'checkOut') {
+      const minCheckOut = (checkIn || minDate).add(1, 'day');
+      const nextCheckOut = date.isBefore(minCheckOut, 'day') || date.isSame(minCheckOut, 'day') ? minCheckOut : date;
+      setCheckOut(nextCheckOut);
+      setShowDatePicker(null);
     }
   };
 
@@ -152,10 +154,12 @@ export default function Index() {
 
         <View
           className="ctrip-img-card"
-          onClick={() => bannerHotels[0] && Taro.navigateTo({ url: `/pages/hotel-detail/index?id=${bannerHotels[0].id}` })}
-          style={{ cursor: bannerHotels[0] ? 'pointer' : 'default' }}
         >
-          <View className="ctrip-img-banner">
+          <View
+            className="ctrip-img-banner"
+            onClick={() => bannerHotels[0] && Taro.navigateTo({ url: `/pages/hotel-detail/index?id=${bannerHotels[0].id}` })}
+            style={{ cursor: bannerHotels[0] ? 'pointer' : 'default' }}
+          >
             <View className="banner-title-row">
               <Text className="banner-big-text">酒店7折起</Text>
               <Text className="banner-sub">大促</Text>
@@ -206,7 +210,7 @@ export default function Index() {
 
               {/* Dates */}
               <View className="search-row date-row border-bottom">
-                <View className="date-col" onClick={() => openCalendar(true)}>
+                <View className="date-col" onClick={() => openCalendar('checkIn')}>
                   <View className="date-header">
                     <Text className="date-label">入住</Text>
                     <Text className="date-big">{checkIn ? checkIn.format('MM月DD日') : '入住'}</Text>
@@ -216,7 +220,7 @@ export default function Index() {
                 <View className="date-duration">
                   <Text className="duration-text">{nights}晚</Text>
                 </View>
-                <View className="date-col" onClick={() => openCalendar(false)}>
+                <View className="date-col" onClick={() => openCalendar('checkOut')}>
                   <View className="date-header">
                     <Text className="date-label">离店</Text>
                     <Text className="date-big">{checkOut ? checkOut.format('MM月DD日') : '离店'}</Text>
@@ -301,14 +305,20 @@ export default function Index() {
         )}
 
         {/* Calendar Picker */}
-        {(showCheckInCalendar || showCheckOutCalendar) && (
-          <View className="ctrip-search-calendar-wrap">
-            <Calendar
-              value={pickingCheckIn ? checkIn || undefined : checkOut || undefined}
-              minDate={pickingCheckIn ? minDate : (checkIn || minDate)}
-              onChange={onCalendarSelect}
-              title={pickingCheckIn ? '选择入住日期' : '选择离店日期'}
-            />
+        {showDatePicker && (
+          <View className="ctrip-search-calendar-wrap" onClick={() => setShowDatePicker(null)}>
+            <View onClick={(e) => e.stopPropagation?.()}>
+              <Calendar
+                value={showDatePicker === 'checkIn' ? checkIn || undefined : checkOut || undefined}
+                minDate={
+                  showDatePicker === 'checkIn'
+                    ? minDate
+                    : (checkIn || minDate).add(1, 'day')
+                }
+                onChange={onCalendarSelect}
+                title={showDatePicker === 'checkIn' ? '选择入住日期' : '选择离店日期'}
+              />
+            </View>
           </View>
         )}
 

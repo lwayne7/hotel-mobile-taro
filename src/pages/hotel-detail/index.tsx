@@ -14,6 +14,7 @@ export default function HotelDetail() {
   const params = router.params || {};
   const [hotel, setHotel] = useState<Hotel | null>(null);
   const [loading, setLoading] = useState(true);
+  const [loadError, setLoadError] = useState<string | null>(null);
   const [collected, setCollected] = useState(false);
   const [checkIn, setCheckIn] = useState<dayjs.Dayjs | null>(
     params.checkIn ? dayjs(params.checkIn) : dayjs()
@@ -36,10 +37,15 @@ export default function HotelDetail() {
 
   useEffect(() => {
     if (!id) return;
+    setLoading(true);
+    setLoadError(null);
     publicHotelApi
       .getById(parseInt(id, 10))
       .then(setHotel)
-      .catch(() => setHotel(null))
+      .catch((e) => {
+        setHotel(null);
+        setLoadError(e?.message || '加载失败，请稍后重试');
+      })
       .finally(() => setLoading(false));
   }, [id]);
 
@@ -64,7 +70,7 @@ export default function HotelDetail() {
           返回列表
         </Button>
         <View className="ctrip-detail-error">
-          <Text>酒店不存在或未发布</Text>
+          <Text>{loadError || '酒店不存在或未发布'}</Text>
         </View>
       </View>
     );
