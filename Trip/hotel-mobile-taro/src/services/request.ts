@@ -4,6 +4,9 @@ const getBaseUrl = () => {
   if (process.env.TARO_ENV === 'h5') {
     return process.env.TARO_APP_API_BASE || '';
   }
+  if (process.env.TARO_ENV === 'rn') {
+    return process.env.TARO_APP_API_BASE || 'http://localhost:3000';
+  }
   return process.env.TARO_APP_API_BASE || '';
 };
 
