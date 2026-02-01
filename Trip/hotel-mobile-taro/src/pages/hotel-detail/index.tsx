@@ -76,8 +76,9 @@ export default function HotelDetail() {
   return (
     <View className="ctrip-detail">
       <View className="ctrip-detail-header ctrip-detail-header-overlay">
-        <Text className="ctrip-back-btn" onClick={() => Taro.navigateBack()}>‹</Text>
-        <Text className="ctrip-detail-title" numberOfLines={1}>{hotel.nameCn}</Text>
+        <View className="ctrip-back-btn" onClick={() => Taro.navigateBack()}>
+          <Text className="back-arrow">‹</Text>
+        </View>
         <View className="ctrip-detail-header-actions">
           <Text className="ctrip-detail-action" onClick={() => setCollected(!collected)}>
             {collected ? '❤' : '♡'}
@@ -86,30 +87,27 @@ export default function HotelDetail() {
         </View>
       </View>
 
-      <View className="ctrip-detail-gallery">
-        <Swiper className="ctrip-detail-swiper" autoplay circular indicatorDots>
-          {images.map((img: any, index: number) => (
-            <SwiperItem key={img.id ?? index}>
-              {img.imageUrl ? (
-                <Image src={img.imageUrl} mode="aspectFill" className="ctrip-detail-slide-img" />
-              ) : (
-                <View className="ctrip-detail-slide-placeholder" />
-              )}
-            </SwiperItem>
-          ))}
-        </Swiper>
-        <View className="ctrip-detail-gallery-tags">
-          <Text className="ctrip-detail-gallery-tag">封面</Text>
-          <Text className="ctrip-detail-gallery-tag">精选</Text>
-          <Text className="ctrip-detail-gallery-tag">位置</Text>
-          <Text className="ctrip-detail-gallery-tag ctrip-detail-gallery-tag-link">相册 ›</Text>
-        </View>
-        <View className="ctrip-detail-gallery-mute">
-          <Text>🔇 ×</Text>
-        </View>
-      </View>
-
       <ScrollView scrollY className="ctrip-detail-scroll">
+        <View className="ctrip-detail-gallery">
+          <Swiper className="ctrip-detail-swiper" autoplay circular indicatorDots>
+            {images.map((img: any, index: number) => (
+              <SwiperItem key={img.id ?? index}>
+                {img.imageUrl ? (
+                  <Image src={img.imageUrl} mode="aspectFill" className="ctrip-detail-slide-img" />
+                ) : (
+                  <View className="ctrip-detail-slide-placeholder" />
+                )}
+              </SwiperItem>
+            ))}
+          </Swiper>
+          <View className="ctrip-detail-gallery-tags">
+            <Text className="ctrip-detail-gallery-tag">封面</Text>
+            <Text className="ctrip-detail-gallery-tag">精选</Text>
+            <Text className="ctrip-detail-gallery-tag">位置</Text>
+            <Text className="ctrip-detail-gallery-tag ctrip-detail-gallery-tag-link">相册 ›</Text>
+          </View>
+        </View>
+
         <View className="ctrip-detail-content">
           <View className="ctrip-detail-name-row">
             <Text className="ctrip-detail-name">{hotel.nameCn}</Text>
@@ -117,16 +115,24 @@ export default function HotelDetail() {
           </View>
           <View className="ctrip-detail-badges">
             <Text className="ctrip-detail-badge-link">上海美景酒店榜 No.16 ›</Text>
-            <Text className="ctrip-detail-badge-gold">口碑榜 上榜酒店</Text>
           </View>
 
           <View className="ctrip-detail-features-row">
-            <Text className="ctrip-detail-feature">{openYear}年开业</Text>
-            {features.slice(0, 4).map((f) => (
-              <Text key={f} className="ctrip-detail-feature">{f}</Text>
+            <View className="feature-item">
+              <Text className="feature-icon">▤</Text>
+              <Text className="feature-text">{openYear}年开业</Text>
+            </View>
+            <View className="feature-item">
+              <Text className="feature-icon">◈</Text>
+              <Text className="feature-text">新中式风</Text>
+            </View>
+            {features.slice(0, 2).map((f) => (
+              <View key={f} className="feature-item">
+                <Text className="feature-icon">℗</Text>
+                <Text className="feature-text">{f}</Text>
+              </View>
             ))}
-            <Text className="ctrip-detail-feature-link">设施 ›</Text>
-            <Text className="ctrip-detail-feature-link">政策 ›</Text>
+            <Text className="ctrip-detail-feature-link">设施政策 ›</Text>
           </View>
 
           <View className="ctrip-detail-score-location">
@@ -134,89 +140,76 @@ export default function HotelDetail() {
               <View className="ctrip-detail-score-pill">
                 <Text className="ctrip-detail-score-num">{score}</Text>
                 <Text className="ctrip-detail-score-label">超棒</Text>
-                <Text className="ctrip-detail-score-reviews">{reviewCount}条 ›</Text>
               </View>
-              <Text className="ctrip-detail-review-quote">"{reviewQuote}"</Text>
+              <Text className="ctrip-detail-score-reviews">{reviewCount}条点评 ›</Text>
             </View>
+            <View className="ctrip-detail-divider-v" />
             <View className="ctrip-detail-location-block">
-              <Text className="ctrip-detail-transport">{transportText}</Text>
-              <Text className="ctrip-detail-addr">{hotel.address}</Text>
-              <Text className="ctrip-detail-map-link">📍 地图</Text>
+              <Text className="ctrip-detail-addr">{transportText}</Text>
+              <Text className="ctrip-detail-map-link">地图</Text>
             </View>
           </View>
+        </View>
 
-          <View className="ctrip-detail-dates-row">
-            <Text className="ctrip-detail-dates-icon">📅</Text>
-            <Text className="ctrip-detail-dates-text">
-              {checkIn?.format('M月DD日')} {checkInLabel || ''} {nights}晚 {checkOut?.format('M月DD日')} {checkOutLabel || ''}
+        <View className="ctrip-detail-dates-card">
+          <View className="dates-row">
+            <Text className="date-val">{checkIn?.format('MM月DD日')}</Text>
+            <Text className="date-label">{checkInLabel}</Text>
+            <Text className="date-nights">{nights}晚</Text>
+            <Text className="date-val">{checkOut?.format('MM月DD日')}</Text>
+            <Text className="date-label">{checkOutLabel}</Text>
+            <Text className="dates-arrow">›</Text>
+          </View>
+          <View className="dates-tip">
+            <Text className="tip-badge">🌙</Text>
+            <Text className="tip-text">当前已过0点，如需今天凌晨6点前入住，请选择"今天凌晨"</Text>
+          </View>
+        </View>
+
+        <View className="ctrip-detail-room-filters">
+          {ROOM_FILTER_TAGS.map((tag) => (
+            <Text
+              key={tag}
+              className={`ctrip-detail-room-filter-tag ${roomFilter === tag ? 'active' : ''}`}
+              onClick={() => setRoomFilter(roomFilter === tag ? null : tag)}
+            >
+              {tag}
             </Text>
-            <Text className="ctrip-detail-dates-arrow">›</Text>
-          </View>
-          <View className="ctrip-detail-dates-tip">
-            <Text className="ctrip-detail-tip-icon">🌙</Text>
-            <Text>当前已过0点，如需今天凌晨6点前入住，请选择"今天凌晨"</Text>
-          </View>
+          ))}
+        </View>
 
-          <View className="ctrip-detail-room-filters">
-            {ROOM_FILTER_TAGS.map((tag) => (
-              <Text
-                key={tag}
-                className={`ctrip-detail-room-filter-tag ${roomFilter === tag ? 'active' : ''}`}
-                onClick={() => setRoomFilter(roomFilter === tag ? null : tag)}
-              >
-                {tag}
-              </Text>
-            ))}
-          </View>
-
-          <Text className="ctrip-detail-rooms-title">房型与价格</Text>
+        <View className="ctrip-detail-rooms">
           {roomTypes.length === 0 ? (
             <Text className="ctrip-detail-no-room">暂无房型</Text>
           ) : (
-            <View className="ctrip-detail-rooms">
+            <>
               {roomTypes.map((room: any, index: number) => (
                 <View key={room.id ?? index} className="ctrip-detail-room">
-                  {room.imageUrl && (
-                    <View className="ctrip-detail-room-thumb">
-                      <Image src={room.imageUrl} mode="aspectFill" className="ctrip-detail-room-thumb-img" />
-                    </View>
-                  )}
+                  <View className="ctrip-detail-room-thumb">
+                    <Image src={room.imageUrl || hotel.images?.[0]?.imageUrl} mode="aspectFill" className="ctrip-detail-room-thumb-img" />
+                  </View>
                   <View className="ctrip-detail-room-info">
                     <Text className="ctrip-detail-room-name">{room.name}</Text>
                     <Text className="ctrip-detail-room-desc">
-                      {[room.bedType, room.roomSize && `${room.roomSize}㎡`, room.maxGuests && `${room.maxGuests}人入住`, room.floors]
-                        .filter(Boolean)
-                        .join(' ')}
+                      {[room.bedType, room.roomSize && `${room.roomSize}㎡`, room.maxGuests && `${room.maxGuests}人入住`].filter(Boolean).join(' ')}
                     </Text>
-                    <View className="ctrip-detail-room-price-row">
-                      <Text className="ctrip-price-num">¥{room.price}</Text>
-                      {room.originalPrice && (
-                        <Text className="ctrip-detail-room-original">¥{room.originalPrice}</Text>
-                      )}
-                      <Text className="ctrip-detail-room-unit">/晚</Text>
+                    <View className="room-price-row">
+                      <View className="price-wrap">
+                        <Text className="currency">¥</Text>
+                        <Text className="amount">{room.price}</Text>
+                        <Text className="suffix">起</Text>
+                      </View>
+                      <Button className="view-room-btn">查看房型</Button>
                     </View>
                   </View>
-                  <Text className="ctrip-detail-room-info-icon">ⓘ</Text>
                 </View>
               ))}
-            </View>
+            </>
           )}
         </View>
 
         <View className="ctrip-detail-bottom-spacer" />
       </ScrollView>
-
-      <View className="ctrip-detail-bottom">
-        <View className="ctrip-detail-bottom-left">
-          <Text className="ctrip-detail-ask-icon">💬</Text>
-          <Text>问酒店</Text>
-        </View>
-        <View className="ctrip-detail-bottom-price">
-          <Text className="ctrip-detail-bottom-label">¥{minPrice}</Text>
-          <Text className="ctrip-detail-bottom-suffix">起</Text>
-        </View>
-        <Button className="ctrip-detail-bottom-btn">查看房型</Button>
-      </View>
     </View>
   );
 }
