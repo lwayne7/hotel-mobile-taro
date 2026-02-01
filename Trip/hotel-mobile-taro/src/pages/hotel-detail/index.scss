@@ -1,0 +1,492 @@
+.ctrip-detail {
+  max-width: 480px;
+  margin: 0 auto;
+  min-height: 100vh;
+  background: #f5f5f5;
+  padding-bottom: 72px;
+}
+
+.ctrip-detail.loading-wrap {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  min-height: 60vh;
+  font-size: 14px;
+  color: #666;
+}
+
+.ctrip-detail-back-btn {
+  margin: 16px;
+  background: #ff6b00;
+  color: #fff;
+  border: none;
+  padding: 8px 16px;
+  border-radius: 8px;
+}
+
+.ctrip-detail-error {
+  padding: 24px;
+  text-align: center;
+  color: #666;
+  font-size: 14px;
+}
+
+.ctrip-detail-header-overlay {
+  position: absolute;
+  top: 0;
+  left: 50%;
+  transform: translateX(-50%);
+  width: 100%;
+  max-width: 480px;
+  z-index: 10;
+  background: transparent;
+  padding: 12px 16px;
+  display: flex;
+  align-items: center;
+}
+
+.ctrip-detail-header-overlay .ctrip-back-btn {
+  color: #fff;
+  margin-right: 8px;
+  font-size: 24px;
+  padding: 4px;
+  background: transparent;
+}
+
+.ctrip-detail-title {
+  flex: 1;
+  font-size: 16px;
+  font-weight: 600;
+  color: #fff;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  text-shadow: 0 1px 2px rgba(0, 0, 0, 0.3);
+}
+
+.ctrip-detail-header-actions {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+}
+
+.ctrip-detail-action {
+  padding: 4px 8px;
+  color: #fff;
+  font-size: 14px;
+  text-shadow: 0 1px 2px rgba(0, 0, 0, 0.3);
+}
+
+.ctrip-detail-gallery {
+  position: relative;
+  background: #e8e8e8;
+}
+
+.ctrip-detail-swiper {
+  width: 100%;
+  height: 240px;
+}
+
+.ctrip-detail-slide-img {
+  width: 100%;
+  height: 100%;
+}
+
+.ctrip-detail-slide-placeholder {
+  width: 100%;
+  height: 100%;
+  background: linear-gradient(135deg, #fff0e6, #ffd9bf);
+}
+
+.ctrip-detail-gallery-tags {
+  position: absolute;
+  bottom: 12px;
+  left: 12px;
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  z-index: 2;
+}
+
+.ctrip-detail-gallery-tag {
+  padding: 4px 10px;
+  background: rgba(0, 0, 0, 0.5);
+  color: #fff;
+  font-size: 12px;
+  border-radius: 4px;
+}
+
+.ctrip-detail-gallery-tag-link {
+  background: rgba(0, 0, 0, 0.6);
+}
+
+.ctrip-detail-gallery-mute {
+  position: absolute;
+  bottom: 12px;
+  right: 12px;
+  padding: 4px 8px;
+  background: rgba(0, 0, 0, 0.5);
+  color: #fff;
+  font-size: 12px;
+  border-radius: 4px;
+  z-index: 2;
+}
+
+.ctrip-detail-scroll {
+  height: calc(100vh - 240px - 60px);
+}
+
+.ctrip-detail-content {
+  padding: 16px;
+  background: #fff;
+  margin: 12px;
+  border-radius: 12px;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.06);
+}
+
+.ctrip-detail-name-row {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  flex-wrap: wrap;
+}
+
+.ctrip-detail-name {
+  font-size: 18px;
+  font-weight: 700;
+  color: #333;
+}
+
+.ctrip-detail-rate {
+  font-size: 13px;
+  color: #faad14;
+}
+
+.ctrip-detail-badges {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  margin-top: 8px;
+  flex-wrap: wrap;
+}
+
+.ctrip-detail-badge-link {
+  font-size: 12px;
+  color: #666;
+}
+
+.ctrip-detail-badge-gold {
+  padding: 4px 10px;
+  background: linear-gradient(135deg, #d4a84b 0%, #e8c872 100%);
+  color: #5c3d0a;
+  font-size: 12px;
+  font-weight: 500;
+  border-radius: 4px;
+}
+
+.ctrip-detail-features-row {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  margin-top: 12px;
+  padding: 10px 0;
+  overflow-x: auto;
+}
+
+.ctrip-detail-feature {
+  flex-shrink: 0;
+  font-size: 12px;
+  color: #666;
+  padding: 4px 8px;
+  background: #f5f5f5;
+  border-radius: 4px;
+}
+
+.ctrip-detail-feature-link {
+  flex-shrink: 0;
+  font-size: 12px;
+  color: #ff6b00;
+}
+
+.ctrip-detail-score-location {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 16px;
+  margin-top: 16px;
+  padding-top: 16px;
+  border-top: 1px solid #f0f0f0;
+}
+
+.ctrip-detail-score-block {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.ctrip-detail-score-pill {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  padding: 6px 12px;
+  background: linear-gradient(135deg, #1a7cff 0%, #4d9eff 100%);
+  color: #fff;
+  border-radius: 6px;
+  width: fit-content;
+  font-size: 13px;
+}
+
+.ctrip-detail-score-num {
+  font-weight: 700;
+  font-size: 16px;
+}
+
+.ctrip-detail-score-label {
+  margin-right: 4px;
+}
+
+.ctrip-detail-score-reviews {
+  opacity: 0.95;
+  font-size: 12px;
+}
+
+.ctrip-detail-review-quote {
+  font-size: 12px;
+  color: #666;
+  font-style: italic;
+}
+
+.ctrip-detail-location-block {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+
+.ctrip-detail-transport {
+  font-size: 12px;
+  color: #666;
+}
+
+.ctrip-detail-addr {
+  font-size: 13px;
+  color: #333;
+  line-height: 1.4;
+}
+
+.ctrip-detail-map-link {
+  font-size: 12px;
+  color: #ff6b00;
+  margin-top: 4px;
+}
+
+.ctrip-detail-dates-row {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  margin-top: 16px;
+  padding: 12px;
+  background: #f5f5f5;
+  border-radius: 8px;
+}
+
+.ctrip-detail-dates-icon {
+  font-size: 16px;
+}
+
+.ctrip-detail-dates-text {
+  flex: 1;
+  font-size: 13px;
+  color: #333;
+}
+
+.ctrip-detail-dates-arrow {
+  font-size: 14px;
+  color: #999;
+}
+
+.ctrip-detail-dates-tip {
+  display: flex;
+  align-items: flex-start;
+  gap: 8px;
+  margin-top: 10px;
+  padding: 10px 12px;
+  background: #fffbe6;
+  border: 1px solid #ffe58f;
+  border-radius: 8px;
+  font-size: 12px;
+  color: #ad8b00;
+}
+
+.ctrip-detail-tip-icon {
+  flex-shrink: 0;
+}
+
+.ctrip-detail-room-filters {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  margin-top: 16px;
+}
+
+.ctrip-detail-room-filter-tag {
+  padding: 6px 12px;
+  background: #f5f5f5;
+  color: #666;
+  font-size: 12px;
+  border-radius: 16px;
+
+  &.active {
+    background: #fff5eb;
+    color: #ff6b00;
+    font-weight: 500;
+  }
+}
+
+.ctrip-detail-rooms-title {
+  font-size: 15px;
+  font-weight: 600;
+  margin-top: 20px;
+  margin-bottom: 12px;
+}
+
+.ctrip-detail-no-room {
+  font-size: 13px;
+  color: #999;
+  padding: 12px 0;
+}
+
+.ctrip-detail-rooms {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+.ctrip-detail-room {
+  display: flex;
+  align-items: flex-start;
+  padding: 12px;
+  background: #f5f5f5;
+  border-radius: 10px;
+  gap: 12px;
+}
+
+.ctrip-detail-room-thumb {
+  width: 80px;
+  height: 80px;
+  flex-shrink: 0;
+  border-radius: 8px;
+  overflow: hidden;
+  background: #e8e8e8;
+}
+
+.ctrip-detail-room-thumb-img {
+  width: 100%;
+  height: 100%;
+}
+
+.ctrip-detail-room-info {
+  flex: 1;
+  min-width: 0;
+}
+
+.ctrip-detail-room-name {
+  font-size: 14px;
+  font-weight: 600;
+  color: #333;
+}
+
+.ctrip-detail-room-desc {
+  font-size: 12px;
+  color: #999;
+  margin-top: 4px;
+  line-height: 1.4;
+}
+
+.ctrip-detail-room-price-row {
+  margin-top: 8px;
+}
+
+.ctrip-detail-room-price-row .ctrip-price-num {
+  color: #ff6b00;
+  font-size: 16px;
+  font-weight: 700;
+}
+
+.ctrip-detail-room-original {
+  font-size: 11px;
+  color: #999;
+  text-decoration: line-through;
+  margin-left: 6px;
+}
+
+.ctrip-detail-room-unit {
+  font-size: 11px;
+  color: #999;
+  margin-left: 2px;
+}
+
+.ctrip-detail-room-info-icon {
+  flex-shrink: 0;
+  font-size: 14px;
+  color: #999;
+}
+
+.ctrip-detail-bottom-spacer {
+  height: 20px;
+}
+
+.ctrip-detail-bottom {
+  position: fixed;
+  bottom: 0;
+  left: 50%;
+  transform: translateX(-50%);
+  width: 100%;
+  max-width: 480px;
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 12px 16px;
+  background: #fff;
+  box-shadow: 0 -2px 12px rgba(0, 0, 0, 0.08);
+  z-index: 20;
+}
+
+.ctrip-detail-bottom-left {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+  font-size: 13px;
+  color: #666;
+  flex-shrink: 0;
+}
+
+.ctrip-detail-ask-icon {
+  font-size: 16px;
+}
+
+.ctrip-detail-bottom-price {
+  flex-shrink: 0;
+}
+
+.ctrip-detail-bottom-label {
+  color: #ff6b00;
+  font-size: 20px;
+  font-weight: 700;
+}
+
+.ctrip-detail-bottom-suffix {
+  font-size: 12px;
+  color: #999;
+  margin-left: 2px;
+}
+
+.ctrip-detail-bottom-btn {
+  flex: 1;
+  height: 44px;
+  font-size: 16px;
+  font-weight: 600;
+  border-radius: 8px;
+  background: #ff6b00;
+  color: #fff;
+  border: none;
+  line-height: 44px;
+}
