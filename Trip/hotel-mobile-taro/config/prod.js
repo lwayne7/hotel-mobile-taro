@@ -2,8 +2,11 @@ module.exports = {
   env: {
     NODE_ENV: '"production"',
   },
-  defineConstants: {},
+  defineConstants: {
+    TARO_APP_API_BASE: '""',
+  },
   mini: {},
+  rn: {},
   h5: {
     /**
      * WebpackChain 插件配置

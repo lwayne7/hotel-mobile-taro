@@ -6,8 +6,10 @@
   "scripts": {
     "build:h5": "taro build --type h5",
     "build:weapp": "taro build --type weapp",
+    "build:rn": "taro build --type rn",
     "dev:h5": "taro build --type h5 --watch",
-    "dev:weapp": "taro build --type weapp --watch"
+    "dev:weapp": "taro build --type weapp --watch",
+    "dev:rn": "taro build --type rn --watch"
   },
   "browserslist": [
     "last 3 versions",
@@ -18,24 +20,39 @@
   "dependencies": {
     "@babel/runtime": "^7.24.0",
     "@tarojs/components": "3.6.27",
+    "@tarojs/components-rn": "3.6.27",
     "@tarojs/helper": "3.6.27",
     "@tarojs/plugin-framework-react": "3.6.27",
     "@tarojs/plugin-platform-h5": "3.6.27",
     "@tarojs/plugin-platform-weapp": "3.6.27",
     "@tarojs/react": "3.6.27",
     "@tarojs/runtime": "3.6.27",
+    "@tarojs/runtime-rn": "3.6.27",
     "@tarojs/taro": "3.6.27",
+    "@tarojs/taro-rn": "3.6.27",
     "dayjs": "^1.11.19",
-    "react": "^18.2.0",
-    "react-dom": "^18.2.0"
+    "expo": "~47.0.3",
+    "react": "^18.1.0",
+    "react-dom": "^18.1.0",
+    "react-native": "^0.70.5"
+  },
+  "overrides": {
+    "@tarojs/taro-rn": "3.6.27",
+    "@tarojs/components-rn": "3.6.27",
+    "@tarojs/runtime-rn": "3.6.27",
+    "@tarojs/rn-supporter": "3.6.27"
   },
   "devDependencies": {
     "@babel/core": "^7.24.0",
     "@babel/preset-typescript": "^7.28.5",
+    "@pmmmwh/react-refresh-webpack-plugin": "^0.6.2",
     "@tarojs/cli": "3.6.27",
+    "@tarojs/rn-runner": "3.6.27",
+    "@tarojs/rn-supporter": "3.6.27",
     "@tarojs/webpack5-runner": "3.6.27",
     "@types/react": "^18.2.0",
     "babel-preset-taro": "^3.6.27",
+    "rollup": "^2.79.0",
     "sass": "^1.69.0",
     "typescript": "^5.3.0",
     "webpack": "5.78.0"

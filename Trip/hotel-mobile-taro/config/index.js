@@ -13,7 +13,10 @@ const config = {
   sourceRoot: 'src',
   outputRoot: 'dist',
   plugins: ['@tarojs/plugin-framework-react'],
-  defineConstants: {},
+  defineConstants: {
+    'process.env.TARO_ENV': JSON.stringify(process.env.TARO_ENV),
+    'process.env.TARO_APP_API_BASE': JSON.stringify(process.env.TARO_APP_API_BASE || ''),
+  },
   copy: {
     patterns: [],
     options: {},
@@ -72,6 +75,26 @@ const config = {
       },
     },
     esnextModules: ['taro-ui'],
+  },
+  rn: {
+    appName: 'taroDemo',
+    postcss: {
+      cssModules: {
+        enable: false,
+      },
+    },
+    output: {
+      iosSourceMapUrl: '',
+      iosSourcemapOutput: 'dist/ios/main.map',
+      iosSourcemapSourcesRoot: '',
+      androidSourceMapUrl: '',
+      androidSourcemapOutput: 'dist/android/index.android.map',
+      androidSourcemapSourcesRoot: '',
+      ios: 'dist/ios/main.jsbundle',
+      iosAssetsDest: 'dist/ios',
+      android: 'dist/android/index.android.bundle',
+      androidAssetsDest: 'dist/android',
+    },
   },
 };
 
