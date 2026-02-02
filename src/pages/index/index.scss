@@ -1,12 +1,31 @@
 @use '../../styles/tokens' as *;
 
+/* 强制移动端布局 - 防止宽屏拉伸 */
 .page-search {
   height: 100vh;
+  max-width: 500px;
+  /* 限制最大宽度，保持移动端样式 */
+  margin: 0 auto;
+  /* 居中显示 */
   background: linear-gradient(180deg, #f0f4f8 0%, $ctrip-bg-page 100%);
   display: flex;
   flex-direction: column;
   position: relative;
   overflow: hidden;
+  box-shadow: 0 0 20px rgba(0, 0, 0, 0.1);
+  /* 宽屏时显示阴影边框 */
+}
+
+/* 超出主容器的背景填充 */
+.page-search::before {
+  content: '';
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: #f5f7fa;
+  z-index: -1;
 }
 
 .ctrip-search-scroll {
