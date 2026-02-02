@@ -71,7 +71,7 @@ export default function Index() {
   const { navigateToList, navigateToDetail } = useSearch();
 
   // TanStack Query - 推荐酒店
-  const { data: bannerData, isLoading: bannersLoading } = useHotelList({
+  const { data: bannerData, isLoading: bannersLoading, isError: bannersError, error: bannerError, refetch: refetchBanners } = useHotelList({
     page: 1,
     pageSize: 5,
   });
@@ -356,6 +356,21 @@ export default function Index() {
                 <Skeleton loading rows={0} avatar avatarSize={100} avatarShape="square" />
                 <Skeleton loading rows={0} avatar avatarSize={100} avatarShape="square" />
               </View>
+            ) : bannersError ? (
+              <View className="error-container">
+                <Text className="error-icon">⚠️</Text>
+                <Text className="error-message">
+                  {bannerError?.message?.includes('无法连接') 
+                    ? '无法连接服务器，请确保后端已启动' 
+                    : '加载失败，请重试'}
+                </Text>
+                <Text className="error-hint">
+                  提示：cd hotel-management/backend && npm run start:dev
+                </Text>
+                <View className="error-retry" onClick={() => refetchBanners()}>
+                  <Text>点击重试</Text>
+                </View>
+              </View>
             ) : bannerHotels.length > 0 ? (
               <ScrollView scrollX className="ctrip-banner-scroll">
                 {bannerHotels.map((h) => (
@@ -379,7 +394,10 @@ export default function Index() {
                 ))}
               </ScrollView>
             ) : (
-              <Text className="no-hotels">暂无推荐酒店</Text>
+              <View className="empty-container">
+                <Text className="empty-icon">🏨</Text>
+                <Text className="empty-message">暂无推荐酒店</Text>
+              </View>
             )}
           </View>
         </View>
