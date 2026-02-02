@@ -1,8 +1,11 @@
 node_modules
 dist
+dist-h5
+dist-rn
 .taro
 .swc
 .DS_Store
+project.private.config.json
 *.log
 .env.local
 .env.*.local

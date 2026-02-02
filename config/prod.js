@@ -3,7 +3,7 @@ module.exports = {
     NODE_ENV: '"production"',
   },
   defineConstants: {
-    'process.env.TARO_APP_API_BASE': '""',
+    'process.env.TARO_APP_API_BASE': JSON.stringify(process.env.TARO_APP_API_BASE || ''),
   },
   mini: {},
   rn: {},

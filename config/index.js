@@ -1,5 +1,9 @@
 const path = require('path');
 
+const taroEnv = process.env.TARO_ENV || 'weapp';
+const outputRoot =
+    taroEnv === 'h5' ? 'dist-h5' : taroEnv === 'rn' ? 'dist-rn' : 'dist';
+
 const config = {
     projectName: 'hotel-mobile-taro',
     date: '2026-2-1',
@@ -10,7 +14,7 @@ const config = {
         828: 1.81 / 2,
     },
     sourceRoot: 'src',
-    outputRoot: 'dist',
+    outputRoot,
     plugins: [],
     defineConstants: {},
     copy: {
