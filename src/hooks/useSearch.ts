@@ -33,6 +33,22 @@ export function useSearch() {
     });
   }, [city, keyword, checkIn, checkOut, starRating, minPrice, maxPrice]);
 
+  // 带有指定关键词的导航（用于快捷标签点击即搜索）
+  const navigateToListWithKeyword = useCallback((overrideKeyword: string) => {
+    const queryString = toQueryString({
+      city,
+      keyword: overrideKeyword,
+      checkIn,
+      checkOut,
+      starRating: starRating > 0 ? starRating : undefined,
+      minPrice,
+      maxPrice,
+    });
+    Taro.navigateTo({
+      url: `/pages/hotel-list/index${queryString ? `?${queryString}` : ''}`,
+    });
+  }, [city, checkIn, checkOut, starRating, minPrice, maxPrice]);
+
   const navigateToDetail = useCallback(
     (hotelId: number) => {
       const queryString = toQueryString({ checkIn, checkOut });
@@ -57,6 +73,7 @@ export function useSearch() {
     minPrice,
     maxPrice,
     navigateToList,
+    navigateToListWithKeyword,
     navigateToDetail,
     nights: nights(),
   };

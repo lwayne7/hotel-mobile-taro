@@ -15,7 +15,7 @@ import { SearchCard, HotCities, RecommendSection, RecentlyViewed } from './compo
 import './index.scss';
 
 export default function Index() {
-  const { navigateToList, navigateToDetail } = useSearch();
+  const { navigateToList, navigateToListWithKeyword, navigateToDetail } = useSearch();
 
   // TanStack Query - 推荐酒店
   const {
@@ -86,7 +86,7 @@ export default function Index() {
               </View>
             </View>
 
-            <SearchCard onSearch={handleSearch} />
+            <SearchCard onSearch={handleSearch} onQuickTagSearch={navigateToListWithKeyword} />
           </View>
 
           {/* 热门城市 */}

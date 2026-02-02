@@ -43,9 +43,10 @@ const QUICK_TAGS = ['亲子', '豪华', '免费停车场', '含早餐', '健身�
 
 export interface SearchCardProps {
     onSearch: () => void;
+    onQuickTagSearch?: (keyword: string) => void;
 }
 
-export function SearchCard({ onSearch }: SearchCardProps) {
+export function SearchCard({ onSearch, onQuickTagSearch }: SearchCardProps) {
     // Zustand store - 使用选择器
     const city = useSearchStore((s) => s.city);
     const keyword = useSearchStore((s) => s.keyword);
@@ -171,11 +172,15 @@ export function SearchCard({ onSearch }: SearchCardProps) {
 
     // 快捷标签点击即查询
     const handleQuickTagClick = useCallback((tag: string) => {
-        // 将标签设置为关键词
-        setKeyword(tag);
-        // 立即触发搜索
-        onSearch();
-    }, [setKeyword, onSearch]);
+        // 如果有快捷标签搜索回调，直接使用（解决状态延迟问题）
+        if (onQuickTagSearch) {
+            onQuickTagSearch(tag);
+        } else {
+            // 降级方案：设置关键词后触发搜索
+            setKeyword(tag);
+            onSearch();
+        }
+    }, [onQuickTagSearch, setKeyword, onSearch]);
 
     return (
         <>
