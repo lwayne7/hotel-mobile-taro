@@ -68,7 +68,6 @@ export function SearchCard({ onSearch }: SearchCardProps) {
     const [showCityModal, setShowCityModal] = useState(false);
     const [showFilterModal, setShowFilterModal] = useState(false);
     const [gpsLoading, setGpsLoading] = useState(false);
-    const [selectedTags, setSelectedTags] = useState<string[]>([]);
 
     // 日期计算
     const checkIn = storeCheckIn ? dayjs(storeCheckIn) : dayjs();
@@ -170,11 +169,13 @@ export function SearchCard({ onSearch }: SearchCardProps) {
         return parts.length > 0 ? parts.join('/') : '低价/高档';
     }, [starRating, priceRange]);
 
-    const toggleTag = useCallback((tag: string) => {
-        setSelectedTags((prev) =>
-            prev.includes(tag) ? prev.filter((t) => t !== tag) : [...prev, tag]
-        );
-    }, []);
+    // 快捷标签点击即查询
+    const handleQuickTagClick = useCallback((tag: string) => {
+        // 将标签设置为关键词
+        setKeyword(tag);
+        // 立即触发搜索
+        onSearch();
+    }, [setKeyword, onSearch]);
 
     return (
         <>
@@ -253,8 +254,8 @@ export function SearchCard({ onSearch }: SearchCardProps) {
                             {QUICK_TAGS.slice(0, 3).map((t) => (
                                 <View
                                     key={t}
-                                    className={`quick-tag-item ${selectedTags.includes(t) ? 'active' : ''}`}
-                                    onClick={() => toggleTag(t)}
+                                    className="quick-tag-item"
+                                    onClick={() => handleQuickTagClick(t)}
                                 >
                                     <Text>{t}</Text>
                                 </View>
