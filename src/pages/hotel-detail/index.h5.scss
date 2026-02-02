@@ -1,14 +1,140 @@
 @import './index.scss';
 
+/* H5 端居中显示 */
 .ctrip-detail {
   max-width: 480px;
   margin: 0 auto;
+  background: linear-gradient(180deg, #f5f7fa 0%, #eef1f5 100%);
 }
 
+/* H5 端底部栏居中 */
 .ctrip-detail-bottom {
   left: 50%;
   right: auto;
   transform: translateX(-50%);
   max-width: 480px;
+  border-radius: 20px 20px 0 0;
+  box-shadow: 0 -4px 24px rgba(0, 0, 0, 0.1);
 }
 
+/* H5 端头部按钮优化 */
+.ctrip-back-btn,
+.ctrip-detail-action {
+  cursor: pointer;
+  transition: all 0.2s ease;
+  backdrop-filter: blur(10px);
+}
+
+.ctrip-back-btn:hover,
+.ctrip-detail-action:hover {
+  background: rgba(255, 255, 255, 0.95);
+  transform: scale(1.05);
+}
+
+/* H5 端图库优化 */
+.ctrip-detail-gallery {
+  height: 360px;
+}
+
+.ctrip-detail-gallery-tag {
+  backdrop-filter: blur(10px);
+  transition: all 0.2s ease;
+}
+
+/* H5 端内容卡片优化 */
+.ctrip-detail-content {
+  margin: -24px 16px 0;
+  border-radius: 20px;
+  box-shadow: 0 8px 32px rgba(0, 0, 0, 0.08);
+}
+
+/* H5 端日期卡片优化 */
+.ctrip-detail-dates-card {
+  margin: 16px;
+  border-radius: 16px;
+  box-shadow: 0 4px 16px rgba(0, 0, 0, 0.06);
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.ctrip-detail-dates-card:hover {
+  box-shadow: 0 6px 20px rgba(0, 0, 0, 0.1);
+}
+
+/* H5 端房型筛选优化 */
+.ctrip-detail-room-filter-tag {
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.ctrip-detail-room-filter-tag:hover {
+  background: #e6f4ff;
+  color: #0086f6;
+}
+
+/* H5 端房间卡片优化 */
+.ctrip-detail-room {
+  border-radius: 16px;
+  box-shadow: 0 4px 16px rgba(0, 0, 0, 0.06);
+  transition: all 0.3s ease;
+  cursor: pointer;
+}
+
+.ctrip-detail-room:hover {
+  transform: translateY(-4px);
+  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.1);
+}
+
+/* H5 端预订按钮优化 */
+.view-room-btn {
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.view-room-btn:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 6px 16px rgba(0, 134, 246, 0.4);
+}
+
+/* H5 端底部按钮优化 */
+.ctrip-detail-bottom-btn {
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.ctrip-detail-bottom-btn:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 8px 20px rgba(255, 107, 0, 0.4);
+}
+
+/* H5 端咨询按钮优化 */
+.ctrip-detail-bottom-left {
+  cursor: pointer;
+  transition: all 0.2s ease;
+  padding: 8px;
+  border-radius: 8px;
+}
+
+.ctrip-detail-bottom-left:hover {
+  background: #f5f5f5;
+}
+
+/* H5 端评分区域优化 */
+.ctrip-detail-score-location {
+  background: linear-gradient(135deg, #f0f7ff 0%, #f9faff 100%);
+  transition: all 0.2s ease;
+}
+
+/* H5 端设施图标优化 */
+.feature-item {
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.feature-item:hover {
+  transform: translateY(-2px);
+}
+
+.feature-item:hover .feature-icon {
+  background: #e6f4ff;
+}
