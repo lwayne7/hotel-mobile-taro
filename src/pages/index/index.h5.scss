@@ -1,4 +1,4 @@
-@import './index.scss';
+@use './index.scss' as *;
 
 /* H5 端优化 - 居中显示并限制最大宽度 */
 .page-search {

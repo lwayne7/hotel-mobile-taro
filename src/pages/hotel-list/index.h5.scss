@@ -1,4 +1,4 @@
-@import './index.scss';
+@use './index.scss' as *;
 
 /* H5 端居中显示 */
 .ctrip-list {

@@ -1,4 +1,4 @@
-@import '../../styles/tokens';
+@use '../../styles/tokens' as *;
 
 .ctrip-list {
   flex: 1;
