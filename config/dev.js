@@ -8,7 +8,7 @@ const taroEnv = process.env.TARO_ENV || 'weapp';
 console.log('[dev.js] TARO_ENV:', taroEnv);
 
 // H5 使用空字符串走代理，其他平台使用完整 URL
-const defaultApiBase = taroEnv === 'h5' ? '' : 'http://127.0.0.1:3000';
+const defaultApiBase = taroEnv === 'h5' ? '' : 'http://localhost:3000';
 const apiBase = process.env.TARO_APP_API_BASE || defaultApiBase;
 
 module.exports = {

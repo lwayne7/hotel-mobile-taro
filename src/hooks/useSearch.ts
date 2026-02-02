@@ -2,6 +2,7 @@ import { useCallback } from 'react';
 import Taro from '@tarojs/taro';
 import dayjs from 'dayjs';
 import { useSearchStore } from '../store/useSearchStore';
+import { toQueryString } from '../utils/queryString';
 
 /**
  * 搜索相关 Hook，封装搜索参数和导航逻辑
@@ -18,16 +19,15 @@ export function useSearch() {
   const maxPrice = useSearchStore((s) => s.maxPrice);
 
   const navigateToList = useCallback(() => {
-    const query = new URLSearchParams();
-    if (city) query.set('city', city);
-    if (keyword) query.set('keyword', keyword);
-    if (checkIn) query.set('checkIn', checkIn);
-    if (checkOut) query.set('checkOut', checkOut);
-    if (starRating > 0) query.set('starRating', String(starRating));
-    if (minPrice !== undefined) query.set('minPrice', String(minPrice));
-    if (maxPrice !== undefined) query.set('maxPrice', String(maxPrice));
-
-    const queryString = query.toString();
+    const queryString = toQueryString({
+      city,
+      keyword,
+      checkIn,
+      checkOut,
+      starRating: starRating > 0 ? starRating : undefined,
+      minPrice,
+      maxPrice,
+    });
     Taro.navigateTo({
       url: `/pages/hotel-list/index${queryString ? `?${queryString}` : ''}`,
     });
@@ -35,11 +35,7 @@ export function useSearch() {
 
   const navigateToDetail = useCallback(
     (hotelId: number) => {
-      const query = new URLSearchParams();
-      if (checkIn) query.set('checkIn', checkIn);
-      if (checkOut) query.set('checkOut', checkOut);
-
-      const queryString = query.toString();
+      const queryString = toQueryString({ checkIn, checkOut });
       Taro.navigateTo({
         url: `/pages/hotel-detail/index?id=${hotelId}${queryString ? `&${queryString}` : ''}`,
       });

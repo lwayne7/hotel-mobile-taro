@@ -46,18 +46,19 @@
   min-height: 80px;
   background: linear-gradient(135deg, #4facfe 0%, #00f2fe 100%);
   border-radius: 16px;
-  padding: 16px 20px;
+  padding: 12px 20px;
   position: relative;
   z-index: 1;
   display: flex;
   justify-content: space-between;
-  align-items: center;
+  /* 底部会被搜索卡片遮住一部分，内容需要更靠上 */
+  align-items: flex-start;
   color: #fff;
 }
 
 .banner-title-row {
   display: flex;
-  align-items: baseline;
+  align-items: center;
   gap: 8px;
   flex-wrap: wrap;
 }
@@ -80,6 +81,7 @@
   margin-top: 0;
   display: flex;
   gap: 6px;
+  align-items: center;
 }
 
 .banner-tag {
