@@ -2,7 +2,7 @@
 
 .page-search {
   flex: 1;
-  background: $ctrip-bg-page;
+  background: linear-gradient(180deg, #4facfe 0%, #f5f7fa 25%);
   display: flex;
   flex-direction: column;
   position: relative;
@@ -15,17 +15,12 @@
 
 .ctrip-search {
   padding-bottom: 24px;
-  background: $ctrip-bg-page;
+  background: transparent;
 }
 
-/* Page Title */
+/* Page Title - 小程序端隐藏，由导航栏显示 */
 .ctrip-header-title {
-  padding: 12px 16px;
-  font-size: 18px;
-  font-weight: 600;
-  color: $ctrip-text;
-  background: #fff;
-  text-align: center;
+  display: none;
 }
 
 /* Banner + Card Container wrapper */
@@ -33,7 +28,7 @@
   position: relative;
   margin: 0;
   padding: 10px 12px 60px;
-  background: $ctrip-bg-page;
+  background: transparent;
 }
 
 /* Banner Area - 与 Vite 一致：蓝底 */
@@ -102,8 +97,8 @@
   position: relative;
   z-index: 2;
   background: #fff;
-  border-radius: 12px;
-  box-shadow: 0 4px 16px rgba(0, 0, 0, 0.08);
+  border-radius: 20px;
+  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.1);
   padding: 0 16px 20px;
   overflow: hidden;
 }
@@ -353,14 +348,19 @@
 }
 
 .ctrip-section {
-  padding: 20px 16px;
+  padding: 16px;
+  margin: 0 12px 12px;
+  background: #fff;
+  border-radius: 16px;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.04);
 }
 
 .ctrip-section-title {
-  font-size: 16px;
-  font-weight: 600;
-  margin-bottom: 12px;
+  font-size: 17px;
+  font-weight: 700;
+  margin-bottom: 16px;
   display: block;
+  color: #333;
 }
 
 .ctrip-city-chips {
@@ -369,13 +369,14 @@
 }
 
 .ctrip-chip {
-  background: #fff;
-  padding: 6px 12px;
-  border-radius: 16px;
+  background: #f5f7fa;
+  padding: 8px 16px;
+  border-radius: 20px;
   font-size: 13px;
   color: $ctrip-text;
   margin-right: 10px;
   margin-bottom: 10px;
+  border: 1px solid #eef1f5;
 }
 
 /* Filter Summary */
@@ -406,21 +407,25 @@
 .ctrip-banner-scroll {
   display: flex;
   white-space: nowrap;
+  padding: 4px 0 8px;
 }
 
 .ctrip-banner-card {
   display: inline-block;
-  width: 140px;
+  width: 150px;
   margin-right: 12px;
   vertical-align: top;
+  background: #fff;
+  border-radius: 12px;
+  overflow: hidden;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08);
 }
 
 .ctrip-banner-cover {
-  width: 140px;
-  height: 100px;
-  border-radius: 8px;
+  width: 150px;
+  height: 110px;
   overflow: hidden;
-  background: #eee;
+  background: linear-gradient(135deg, #f0f0f0, #e8e8e8);
 }
 
 .ctrip-banner-img {
@@ -431,26 +436,27 @@
 .ctrip-banner-placeholder {
   width: 100%;
   height: 100%;
-  background: #e0e0e0;
+  background: linear-gradient(135deg, #e0e0e0, #f5f5f5);
 }
 
 .ctrip-banner-info {
-  padding: 8px 0;
+  padding: 10px 12px 12px;
 }
 
 .ctrip-banner-name {
-  font-size: 13px;
+  font-size: 14px;
   font-weight: 600;
   color: #333;
   display: block;
   overflow: hidden;
   text-overflow: ellipsis;
   white-space: nowrap;
+  margin-bottom: 4px;
 }
 
 .ctrip-banner-addr {
   font-size: 11px;
-  color: #999;
+  color: #888;
   display: block;
   overflow: hidden;
   text-overflow: ellipsis;

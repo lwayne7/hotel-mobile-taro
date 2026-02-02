@@ -226,7 +226,10 @@ export default function Index() {
         scrollWithAnimation={false}
       >
         <View className="ctrip-search">
-          <View className="ctrip-header-title">酒店查询页</View>
+          {/* H5端显示标题，小程序端使用导航栏 */}
+          {process.env.TARO_ENV === 'h5' && (
+            <View className="ctrip-header-title">易宿·酒店预订</View>
+          )}
 
           <View className="ctrip-img-card">
             <View
