@@ -1,6 +1,6 @@
 {
   "name": "hotel-mobile-taro",
-  "version": "2.0.0",
+  "version": "2.1.0",
   "private": true,
   "description": "Hotel booking multi-end (H5 + WeChat mini-program + React Native)",
   "scripts": {
@@ -10,8 +10,10 @@
     "dev:h5": "taro build --type h5 --watch",
     "dev:weapp": "taro build --type weapp --watch",
     "dev:rn": "taro build --type rn --watch",
+    "dev:all": "npm run dev:h5 & npm run dev:weapp",
     "test": "vitest",
-    "test:coverage": "vitest run --coverage"
+    "test:coverage": "vitest run --coverage",
+    "typecheck": "tsc --noEmit"
   },
   "browserslist": [
     "last 3 versions",
@@ -21,7 +23,6 @@
   "author": "",
   "dependencies": {
     "@babel/runtime": "^7.24.0",
-    "@nutui/nutui-react-taro": "^2.6.0",
     "@tanstack/react-query": "^5.62.0",
     "@tarojs/components": "4.0.9",
     "@tarojs/components-rn": "4.0.9",
@@ -35,10 +36,10 @@
     "@tarojs/taro": "4.0.9",
     "@tarojs/taro-rn": "4.0.9",
     "dayjs": "^1.11.19",
-    "expo": "~50.0.0",
+    "expo": "~51.0.0",
     "react": "^18.2.0",
     "react-dom": "^18.2.0",
-    "react-native": "^0.73.0",
+    "react-native": "^0.76.0",
     "zustand": "^5.0.0"
   },
   "overrides": {
@@ -49,7 +50,7 @@
   },
   "devDependencies": {
     "@babel/core": "^7.24.0",
-    "@babel/preset-typescript": "^7.28.5",
+    "@babel/preset-typescript": "^7.23.3",
     "@pmmmwh/react-refresh-webpack-plugin": "^0.6.2",
     "@tarojs/cli": "4.0.9",
     "@tarojs/rn-runner": "4.0.9",
@@ -63,7 +64,6 @@
     "@vitest/coverage-v8": "^2.1.0",
     "babel-preset-taro": "^4.0.9",
     "jsdom": "^25.0.0",
-    "rollup": "^2.79.0",
     "sass": "^1.69.0",
     "typescript": "^5.3.0",
     "vitest": "^2.1.0",
