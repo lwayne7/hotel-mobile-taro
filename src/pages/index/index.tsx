@@ -48,7 +48,7 @@ export default function Index() {
   }, [navigateToDetail]);
 
   return (
-    <View className="page-search">
+    <View className="page-search" style={{ maxWidth: '500px', margin: '0 auto' }}>
       <ScrollView
         scrollY
         className="ctrip-search-scroll"
