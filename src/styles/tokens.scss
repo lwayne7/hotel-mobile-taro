@@ -6,16 +6,29 @@ $ctrip-primary-dark: #e85c0d;
 $ctrip-blue: #0086f6;
 $ctrip-blue-dark: #006ed3;
 $ctrip-blue-light: #e6f4ff;
+$ctrip-blue-gradient: linear-gradient(90deg, #0086f6 0%, #29a1f7 100%);
 
 $ctrip-bg: #f5f5f5;
 $ctrip-bg-page: #f5f7fa;
+$ctrip-bg-skeleton: #f2f2f2;
 $ctrip-card: #fff;
 $ctrip-border: #f2f2f2;
+$ctrip-border-light: #f0f0f0;
+$ctrip-border-medium: #e8e8e8;
 
 $ctrip-price: #ff6b00;
 $ctrip-text: #333;
 $ctrip-text-secondary: #666;
 $ctrip-text-placeholder: #999;
+
+// 语义色
+$ctrip-star: #ffa000; // 星级颜色
+$ctrip-gold: #ffd700; // 金色标签
+$ctrip-warning: #ff9900; // 警告色
+$ctrip-danger: #ff3b30; // 危险色
+$ctrip-success: #34c759; // 成功色
+$ctrip-vip: #946c35; // VIP 棕色
+$ctrip-vip-bg: #fdf5e6; // VIP 背景
 
 // ============ 间距变量 ============
 $spacing-xs: 8px;
@@ -25,12 +38,12 @@ $spacing-lg: 24px;
 $spacing-xl: 32px;
 
 // ============ 字号变量 ============
-$font-xs: 20px;   // 10px * 2 (设计稿 750)
-$font-sm: 24px;   // 12px * 2
-$font-md: 28px;   // 14px * 2
-$font-lg: 32px;   // 16px * 2
-$font-xl: 36px;   // 18px * 2
-$font-xxl: 40px;  // 20px * 2
+$font-xs: 20px; // 10px * 2 (设计稿 750)
+$font-sm: 24px; // 12px * 2
+$font-md: 28px; // 14px * 2
+$font-lg: 32px; // 16px * 2
+$font-xl: 36px; // 18px * 2
+$font-xxl: 40px; // 20px * 2
 
 // ============ 圆角变量 ============
 $radius-sm: 8px;
@@ -47,4 +60,3 @@ $shadow-lg: 0 8px 24px rgba(0, 0, 0, 0.12);
 // ============ 安全区域 ============
 $safe-area-top: env(safe-area-inset-top, 0);
 $safe-area-bottom: env(safe-area-inset-bottom, 0);
-

@@ -72,7 +72,7 @@ export function HotelCard({
     <View className={`hotel-card ${className}`} style={cardStyle} onClick={handleClick}>
       <View className="hotel-card-image-wrap">
         {image ? (
-          <Image src={image} mode="aspectFill" className="hotel-card-image" />
+          <Image src={image} mode="aspectFill" lazyLoad className="hotel-card-image" />
         ) : (
           <View className="hotel-card-image-placeholder">
             <Text className="hotel-card-image-placeholder-text">暂无图片</Text>
