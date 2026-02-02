@@ -5,7 +5,7 @@
  * 1. 修复 Zustand useEffect 无限循环
  * 2. 类名与 SCSS 保持一致（ctrip- 前缀）
  */
-import React, { useState, useCallback, useEffect, useRef } from 'react';
+import { useState, useCallback, useEffect, useRef } from 'react';
 import { View, Text, Swiper, SwiperItem, Image, ScrollView } from '@tarojs/components';
 import Taro, { useRouter } from '@tarojs/taro';
 import { useHotelDetail } from '../../hooks/useHotels';

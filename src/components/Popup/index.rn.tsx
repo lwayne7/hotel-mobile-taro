@@ -51,7 +51,7 @@ export function Popup({
   duration = 300,
 }: PopupProps) {
   const [show, setShow] = useState(false);
-  const [animating, setAnimating] = useState(false);
+  const [_animating, setAnimating] = useState(false);
 
   useEffect(() => {
     if (visible) {
@@ -103,20 +103,20 @@ export function Popup({
   const maskAnimationClass = visible ? 'rn-popup-mask-enter' : 'rn-popup-mask-leave';
 
   return (
-    <View 
-      className={`rn-popup-mask ${maskAnimationClass}`} 
-      style={{ 
+    <View
+      className={`rn-popup-mask ${maskAnimationClass}`}
+      style={{
         animationDuration: `${duration}ms`,
-        ...overlayStyle 
+        ...overlayStyle
       }}
       onClick={handleMaskClick}
     >
       <View
         className={`rn-popup-content rn-popup-${position} ${round ? 'rn-popup-round' : ''} ${contentAnimationClass} ${className}`}
-        style={{ 
-          ...getSafeAreaStyle(), 
+        style={{
+          ...getSafeAreaStyle(),
           animationDuration: `${duration}ms`,
-          ...style 
+          ...style
         }}
         onClick={handleContentClick}
       >

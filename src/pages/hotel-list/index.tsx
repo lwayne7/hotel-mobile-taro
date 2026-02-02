@@ -13,6 +13,7 @@ import { useSearchStore } from '../../store/useSearchStore';
 import { useHotelStore } from '../../store/useHotelStore';
 import { HotelCard, Skeleton } from '../../components/ui';
 import type { Hotel, HotelListResponse } from '../../types/hotel';
+import { toQueryString } from '../../utils/queryString';
 import dayjs from 'dayjs';
 import './index.scss';
 
@@ -104,11 +105,12 @@ export default function HotelList() {
   // 处理卡片点击
   const handleCardClick = useCallback((hotel: Hotel) => {
     addToRecentlyViewed(hotel);
-    const query = new URLSearchParams();
-    query.set('id', String(hotel.id));
-    if (rawParams.checkIn) query.set('checkIn', rawParams.checkIn);
-    if (rawParams.checkOut) query.set('checkOut', rawParams.checkOut);
-    Taro.navigateTo({ url: `/pages/hotel-detail/index?${query.toString()}` });
+    const queryString = toQueryString({
+      id: hotel.id,
+      checkIn: rawParams.checkIn,
+      checkOut: rawParams.checkOut,
+    });
+    Taro.navigateTo({ url: `/pages/hotel-detail/index?${queryString}` });
   }, [addToRecentlyViewed, rawParams.checkIn, rawParams.checkOut]);
 
   const goBack = useCallback(() => {

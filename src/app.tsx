@@ -13,7 +13,7 @@ const queryClient = new QueryClient({
   },
 });
 
-function App(props) {
+function App(props: React.PropsWithChildren) {
   return (
     <QueryClientProvider client={queryClient}>
       {props.children}

@@ -48,12 +48,12 @@ export function Popup({
   style,
 }: PopupProps) {
   const [showContent, setShowContent] = useState(false);
-  const [animating, setAnimating] = useState(false);
+  const [isAnimating, setIsAnimating] = useState(false);
 
   useEffect(() => {
     if (visible) {
       setShowContent(true);
-      setAnimating(true);
+      setIsAnimating(true);
       onOpen?.();
       // 防止滚动穿透 - 仅 H5 环境
       if (lockScroll && isH5 && typeof document !== 'undefined') {
@@ -63,14 +63,14 @@ export function Popup({
       if (lockScroll && !isH5) {
         Taro.pageScrollTo?.({ scrollTop: 0, duration: 0 });
       }
-      setTimeout(() => setAnimating(false), 50);
+      setTimeout(() => setIsAnimating(false), 50);
     } else {
-      setAnimating(true);
+      setIsAnimating(true);
       if (lockScroll && isH5 && typeof document !== 'undefined') {
         document.body.style.overflow = '';
       }
       setTimeout(() => {
-        setAnimating(false);
+        setIsAnimating(false);
         if (destroyOnClose) {
           setShowContent(false);
         }
@@ -93,24 +93,21 @@ export function Popup({
     e.stopPropagation();
   };
 
-  // 阻止小程序滚动穿透
-  const catchMove = () => false;
-
   if (!showContent && !visible) return null;
 
   const positionClass = `ht-popup--${position}`;
-  const visibleClass = visible && !animating ? 'ht-popup--visible' : '';
+  const visibleClass = visible && !isAnimating ? 'ht-popup--visible' : '';
   const roundClass = round && (position === 'bottom' || position === 'top') ? 'ht-popup--round' : '';
 
   return (
     <View
       className={`ht-popup-wrapper ${visible ? 'ht-popup-wrapper--visible' : ''}`}
       style={{ zIndex }}
-      catchMove={catchMove}
+      catchMove={lockScroll}
     >
       {overlay && (
         <View
-          className={`ht-popup-overlay ${visible && !animating ? 'ht-popup-overlay--visible' : ''}`}
+          className={`ht-popup-overlay ${visible && !isAnimating ? 'ht-popup-overlay--visible' : ''}`}
           onClick={handleOverlayClick}
           style={{ transitionDuration: `${duration}ms` }}
         />
