@@ -1,4 +1,4 @@
-@import '../../styles/tokens';
+@use '../../styles/tokens' as *;
 
 .page-search {
   height: 100vh;
@@ -11,22 +11,23 @@
 
 .ctrip-search-scroll {
   flex: 1;
+  /* 注意：小程序 scroll-view 不支持 padding，使用内部容器 */
 }
 
 .ctrip-search {
   width: 100%;
-  min-height: 100vh;
-  padding-bottom: 24px;
+  min-height: 100%;
+  padding: 0 0 16px 0;
   background: $ctrip-bg-page;
 }
 
 /* Header */
 .ctrip-header-title {
-  padding: 12px 16px;
+  padding: 16px 16px 12px;
   font-size: 18px;
   font-weight: 600;
   color: $ctrip-text;
-  background: #fff;
+  background: linear-gradient(180deg, #fff 0%, #f8f9fa 100%);
   text-align: center;
 }
 
@@ -35,16 +36,16 @@
   position: relative;
   margin: 0;
   background: linear-gradient(180deg, #fff 0%, $ctrip-bg-page 100%);
-  padding: 10px 12px 60px;
+  padding: 8px 12px 16px;
 }
 
 /* Banner Area - 与 Vite 一致：蓝底 */
 .ctrip-img-banner {
-  height: 100px;
-  min-height: 80px;
+  height: 90px;
+  min-height: 70px;
   background: linear-gradient(135deg, #4facfe 0%, #00f2fe 100%);
   border-radius: 12px;
-  padding: 16px 20px;
+  padding: 12px 16px;
   position: relative;
   z-index: 1;
   display: flex;
@@ -99,13 +100,13 @@
 
 /* Search Card overlapping the banner - 与 Vite 一致 */
 .search-card-container {
-  margin-top: -40px;
+  margin-top: -35px;
   position: relative;
   z-index: 2;
   background: #fff;
-  border-radius: 12px;
-  box-shadow: 0 4px 16px rgba(0, 0, 0, 0.08);
-  padding: 0 16px 20px;
+  border-radius: 16px;
+  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.1);
+  padding: 0 16px 16px;
   overflow: hidden;
 }
 
@@ -306,25 +307,27 @@
   display: flex;
   align-items: center;
   justify-content: space-between;
-  padding: 16px 0 20px;
+  padding: 12px 0 16px;
 }
 
 .price-star-selector {
   display: flex;
-  align-items: baseline;
-  gap: 8px;
-  flex: 1;
+  align-items: center;
+  gap: 6px;
+  flex-shrink: 0;
 }
 
 .price-val {
-  font-size: 16px;
+  font-size: 15px;
   font-weight: 500;
   color: #333;
+  white-space: nowrap;
 }
 
 .price-sub {
   font-size: 12px;
   color: #999;
+  white-space: nowrap;
 }
 
 /* Quick Tags */
@@ -365,7 +368,7 @@
 }
 
 .ctrip-section {
-  padding: 20px 16px;
+  padding: 12px 16px;
 }
 
 .ctrip-section-title {
@@ -625,4 +628,29 @@
   display: flex;
   align-items: center;
   justify-content: center;
+}
+
+/* Calendar Popup */
+.calendar-popup-content {
+  padding: 16px;
+  max-height: 70vh;
+  overflow-y: auto;
+}
+
+/* No Hotels Hint */
+.no-hotels {
+  display: block;
+  text-align: center;
+  padding: 40px 20px;
+  color: #999;
+  font-size: 14px;
+  background: #fff;
+  border-radius: 12px;
+}
+
+/* Banner Skeleton */
+.banner-skeleton {
+  display: flex;
+  gap: 12px;
+  padding: 8px 0;
 }

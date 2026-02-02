@@ -1,8 +1,18 @@
-import React, { useEffect, useState, useCallback } from 'react';
-import { View, Text, Input, ScrollView, Image } from '@tarojs/components';
+/**
+ * 酒店列表页 - 修复版本
+ * 
+ * 修复内容：
+ * 1. 类名与 SCSS 保持一致（ctrip- 前缀）
+ * 2. 使用正确的 Zustand 选择器
+ */
+import React, { useMemo, useCallback } from 'react';
+import { View, Text, Input, ScrollView } from '@tarojs/components';
 import Taro, { useRouter } from '@tarojs/taro';
-import { publicHotelApi } from '../../services/api';
-import type { Hotel } from '../../types/hotel';
+import { useInfiniteHotelList, flattenHotelPages, getTotalFromPages } from '../../hooks/useHotels';
+import { useSearchStore } from '../../store/useSearchStore';
+import { useHotelStore } from '../../store/useHotelStore';
+import { HotelCard, Skeleton } from '../../components/ui';
+import type { Hotel, HotelListResponse } from '../../types/hotel';
 import dayjs from 'dayjs';
 import './index.scss';
 
@@ -13,31 +23,6 @@ const SORT_OPTIONS = [
   { key: 'price', label: '价格/星级' },
   { key: 'filter', label: '筛选' },
 ];
-const QUICK_TAGS = ['外滩', '双床房', '含早餐', '免费兑早餐', '可订'];
-
-function getReviewStats(hotel: Hotel) {
-  const base = (hotel.id * 137) % 8000 + 1000;
-  const reviews = base;
-  const favorites = Math.floor(base * (1.2 + (hotel.id % 10) * 0.1));
-  return { reviews, favorites: favorites >= 10000 ? (favorites / 10000).toFixed(1) + '万' : String(favorites) };
-}
-
-function getRatingLabel(score: number) {
-  if (score >= 4.8) return '超棒';
-  if (score >= 4.5) return '很棒';
-  if (score >= 4.0) return '不错';
-  return '好评';
-}
-
-// Parse price range string to minPrice/maxPrice
-function parsePriceRange(range: string): { minPrice?: number; maxPrice?: number } {
-  if (!range || range === '不限') return {};
-  if (range === '¥150以下') return { maxPrice: 150 };
-  if (range === '¥600以上') return { minPrice: 600 };
-  const match = range.match(/¥(\d+)-(\d+)/);
-  if (match) return { minPrice: Number(match[1]), maxPrice: Number(match[2]) };
-  return {};
-}
 
 function decodeParam(value: string | undefined): string {
   if (!value || typeof value !== 'string') return '';
@@ -51,152 +36,120 @@ function decodeParam(value: string | undefined): string {
 export default function HotelList() {
   const router = useRouter();
   const rawParams = router.params || {};
-  const params = {
-    city: decodeParam(rawParams.city) || rawParams.city || '',
-    keyword: decodeParam(rawParams.keyword) || rawParams.keyword || '',
-    checkIn: rawParams.checkIn,
-    checkOut: rawParams.checkOut,
-    starRating: rawParams.starRating,
-    priceRange: decodeParam(rawParams.priceRange) || rawParams.priceRange || '',
-  };
-  const [list, setList] = useState<Hotel[]>([]);
-  const [loading, setLoading] = useState(false);
-  const [loadingMore, setLoadingMore] = useState(false);
-  const [page, setPage] = useState(1);
-  const [total, setTotal] = useState(0);
-  const [loadError, setLoadError] = useState<string | null>(null);
-  const [keyword, setKeyword] = useState(params.keyword || '');
-  const [city, setCity] = useState(params.city || '上海');
-  const [starRating, setStarRating] = useState(Number(params.starRating) || 0);
-  const [priceRange] = useState(params.priceRange || '');
-  const [sortBy, setSortBy] = useState('popular');
-  const checkInParam = params.checkIn;
-  const checkOutParam = params.checkOut;
-  const checkIn = checkInParam ? dayjs(checkInParam) : dayjs();
-  const checkOut = checkOutParam ? dayjs(checkOutParam) : dayjs().add(1, 'day');
-  const nights = Math.max(1, checkOut.diff(checkIn, 'day'));
-  const hasMore = list.length < total;
 
-  // Parse price range once
-  const { minPrice, maxPrice } = parsePriceRange(priceRange);
+  // Zustand - 使用选择器
+  const city = useSearchStore((s) => s.city);
+  const keyword = useSearchStore((s) => s.keyword);
+  const starRating = useSearchStore((s) => s.starRating);
+  const minPrice = useSearchStore((s) => s.minPrice);
+  const maxPrice = useSearchStore((s) => s.maxPrice);
+  const storeCheckIn = useSearchStore((s) => s.checkIn);
+  const storeCheckOut = useSearchStore((s) => s.checkOut);
+  const setKeyword = useSearchStore((s) => s.setKeyword);
+  const addToRecentlyViewed = useHotelStore((s) => s.addToRecentlyViewed);
 
-  const loadPage = useCallback(
-    async (pageNum: number, append: boolean) => {
-      if (pageNum === 1) setLoading(true);
-      else setLoadingMore(true);
-      setLoadError(null);
-      try {
-        const reqParams: any = { page: pageNum, pageSize: PAGE_SIZE };
-        if (keyword.trim()) reqParams.keyword = keyword.trim();
-        if (city.trim()) reqParams.city = city.trim();
-        if (starRating > 0) reqParams.starRating = starRating;
-        if (minPrice !== undefined) reqParams.minPrice = minPrice;
-        if (maxPrice !== undefined) reqParams.maxPrice = maxPrice;
-        const res = await publicHotelApi.getList(reqParams);
-        if (append) {
-          setList((prev) => [...prev, ...(res.data || [])]);
-        } else {
-          setList(res.data || []);
-        }
-        setTotal(res.total || 0);
-        setPage(pageNum);
-      } catch (err) {
-        if (!append) {
-          setList([]);
-          setLoadError(err instanceof Error ? err.message : '加载失败，请检查网络或稍后重试');
-        }
-      } finally {
-        setLoading(false);
-        setLoadingMore(false);
-      }
-    },
-    [keyword, city, starRating, minPrice, maxPrice]
+  // 本地 UI 状态
+  const [sortBy, setSortBy] = React.useState('popular');
+  const [localKeyword, setLocalKeyword] = React.useState(
+    decodeParam(rawParams.keyword) || keyword
   );
 
-  useEffect(() => {
-    loadPage(1, false);
-  }, [loadPage]);
+  // 搜索参数
+  const searchParams = useMemo(
+    () => ({
+      city: decodeParam(rawParams.city) || city || '上海',
+      keyword: localKeyword.trim() || undefined,
+      starRating: Number(rawParams.starRating) || starRating || undefined,
+      minPrice: minPrice,
+      maxPrice: maxPrice,
+      pageSize: PAGE_SIZE,
+    }),
+    [rawParams.city, rawParams.starRating, city, localKeyword, starRating, minPrice, maxPrice]
+  );
 
-  const handleSearch = () => {
-    loadPage(1, false);
-  };
+  // 使用 TanStack Query 的无限滚动 hook
+  const {
+    data,
+    isLoading,
+    isError,
+    error,
+    fetchNextPage,
+    hasNextPage,
+    isFetchingNextPage,
+    refetch,
+  } = useInfiniteHotelList(searchParams);
 
-  const onScrollToLower = () => {
-    if (loadingMore || !hasMore || list.length === 0) return;
-    loadPage(page + 1, true);
-  };
+  // 扁平化分页数据
+  const hotels = flattenHotelPages(data as { pages: HotelListResponse[] } | undefined);
+  const total = getTotalFromPages(data as { pages: HotelListResponse[] } | undefined);
 
-  const getMinPrice = (hotel: Hotel) => {
-    const prices = hotel.roomTypes?.map((r: any) => Number(r?.price)).filter((n: number) => !Number.isNaN(n)) || [];
-    return prices.length ? Math.min(...prices) : 0;
-  };
+  // 日期计算
+  const checkIn = rawParams.checkIn ? dayjs(rawParams.checkIn) : dayjs(storeCheckIn);
+  const checkOut = rawParams.checkOut ? dayjs(rawParams.checkOut) : dayjs(storeCheckOut);
+  const nights = Math.max(1, checkOut.diff(checkIn, 'day'));
 
-  const getOriginalPrice = (hotel: Hotel) => {
-    const prices = hotel.roomTypes?.map((r: any) => Number(r?.originalPrice)).filter((n: number) => !Number.isNaN(n) && n > 0) || [];
-    return prices.length ? Math.min(...prices) : 0;
-  };
+  // 处理搜索
+  const handleSearch = useCallback(() => {
+    setKeyword(localKeyword);
+    refetch();
+  }, [localKeyword, setKeyword, refetch]);
 
-  const getTags = (hotel: Hotel) => {
-    const tags: string[] = [];
-    if (hotel.facilities?.length) tags.push(...hotel.facilities.slice(0, 4));
-    if (tags.length === 0) tags.push('免费WiFi', '免费停车', '含早');
-    return tags.slice(0, 4);
-  };
+  // 处理滚动加载更多
+  const handleScrollToLower = useCallback(() => {
+    if (hasNextPage && !isFetchingNextPage) {
+      fetchNextPage();
+    }
+  }, [hasNextPage, isFetchingNextPage, fetchNextPage]);
 
-  const getScore = (hotel: Hotel) => {
-    const s = (hotel.id % 31) / 10 + 4.3;
-    return Math.min(5, Math.round(s * 10) / 10);
-  };
+  // 处理卡片点击
+  const handleCardClick = useCallback((hotel: Hotel) => {
+    addToRecentlyViewed(hotel);
+    const query = new URLSearchParams();
+    query.set('id', String(hotel.id));
+    if (rawParams.checkIn) query.set('checkIn', rawParams.checkIn);
+    if (rawParams.checkOut) query.set('checkOut', rawParams.checkOut);
+    Taro.navigateTo({ url: `/pages/hotel-detail/index?${query.toString()}` });
+  }, [addToRecentlyViewed, rawParams.checkIn, rawParams.checkOut]);
 
-  const getNearbyText = (hotel: Hotel) => {
-    const att = hotel.nearbyAttractions?.slice(0, 2).join('·') || hotel.address?.slice(0, 12) || '交通便利';
-    return att.length > 20 ? att.slice(0, 20) + '…' : att;
-  };
-
-  const queryString = () => {
-    const q = new URLSearchParams();
-    if (keyword.trim()) q.set('keyword', keyword.trim());
-    if (city.trim()) q.set('city', city.trim());
-    if (checkInParam) q.set('checkIn', checkInParam);
-    if (checkOutParam) q.set('checkOut', checkOutParam);
-    if (starRating > 0) q.set('starRating', String(starRating));
-    if (priceRange) q.set('priceRange', priceRange);
-    return q.toString();
-  };
+  const goBack = useCallback(() => {
+    Taro.navigateBack().catch(() => {
+      Taro.redirectTo({ url: '/pages/index/index' });
+    });
+  }, []);
 
   return (
     <View className="ctrip-list">
-      {/* Header with integrated search box */}
+      {/* Header */}
       <View className="ctrip-list-header">
-        <View className="ctrip-back-btn" onClick={() => Taro.navigateBack()}>
+        <View className="ctrip-back-btn" onClick={goBack}>
           <Text className="back-arrow">‹</Text>
         </View>
         <View className="ctrip-list-search-box">
           <View className="search-box-row">
-            <Text className="search-city">{city || '上海'}</Text>
+            <Text className="search-city">{searchParams.city}</Text>
             <Text className="search-dates">
-              {checkIn.format('MM-DD')} 住 {checkOut.format('MM-DD')} 离
+              {checkIn.format('MM-DD')} - {checkOut.format('MM-DD')}
             </Text>
-            <Text className="search-nights">共{nights}晚</Text>
+            <Text className="search-nights">{nights}晚</Text>
           </View>
           <View className="search-box-input">
             <Text className="search-icon">🔍</Text>
             <Input
-              placeholder="位置/品牌/酒店"
-              placeholderClass="search-placeholder"
-              value={keyword}
-              onInput={(e) => setKeyword(e.detail.value)}
               className="search-input-inner"
+              placeholder="搜索酒店/地名/商圈"
+              placeholderClass="search-placeholder"
+              value={localKeyword}
+              onInput={(e) => setLocalKeyword(e.detail.value)}
               onConfirm={handleSearch}
             />
           </View>
         </View>
-        <View className="ctrip-list-map" onClick={() => Taro.showToast({ title: '地图', icon: 'none' })}>
-          <Text className="map-icon">📍</Text>
-          <Text className="map-text">地图</Text>
+        <View className="ctrip-list-map">
+          <Text className="map-text">📍地图</Text>
         </View>
       </View>
 
+      {/* Filters */}
       <View className="ctrip-list-filters">
         <View className="filter-row-main">
           {SORT_OPTIONS.map((opt) => (
@@ -210,117 +163,58 @@ export default function HotelList() {
             </View>
           ))}
         </View>
-        <ScrollView scrollX className="filter-row-quick">
-          <View className="filter-row-quick-inner">
-            {QUICK_TAGS.map((tag) => (
-              <Text key={tag} className="ctrip-quick-filter-tag">{tag}</Text>
-            ))}
-          </View>
-        </ScrollView>
       </View>
 
+      {/* Content */}
       <ScrollView
         scrollY
         className="ctrip-list-scroll"
-        onScrollToLower={onScrollToLower}
-        lowerThreshold={80}
+        onScrollToLower={handleScrollToLower}
+        lowerThreshold={100}
       >
-        {loading ? (
-          <View className="ctrip-list-loading">
-            <Text>加载中...</Text>
+        {isLoading ? (
+          // 骨架屏
+          <View className="ctrip-list-content">
+            {[1, 2, 3].map((i) => (
+              <Skeleton key={i} loading rows={3} avatar />
+            ))}
           </View>
-        ) : loadError ? (
+        ) : isError ? (
+          // 错误状态
           <View className="ctrip-empty">
-            <Text className="ctrip-empty-msg">{loadError}</Text>
-            <Text className="ctrip-empty-hint">请确认已启动后端：cd hotel-management/backend && npm run start:dev</Text>
+            <Text className="ctrip-empty-msg">{error?.message || '加载失败'}</Text>
             <View className="ctrip-empty-actions">
-              <Text className="ctrip-empty-retry" onClick={() => loadPage(1, false)}>重试</Text>
+              <Text className="ctrip-empty-retry" onClick={() => refetch()}>重试</Text>
             </View>
           </View>
-        ) : list.length === 0 ? (
+        ) : hotels.length === 0 ? (
+          // 空状态
           <View className="ctrip-empty">
-            <Text>暂无酒店</Text>
+            <Text className="ctrip-empty-msg">暂无符合条件的酒店</Text>
+            <Text className="ctrip-empty-hint">试试调整搜索条件？</Text>
           </View>
         ) : (
+          // 酒店列表
           <View className="ctrip-list-content">
-            {list.map((hotel) => {
-              const minPrice = getMinPrice(hotel);
-              const originalPrice = getOriginalPrice(hotel);
-              const tags = getTags(hotel);
-              const score = getScore(hotel);
-              const { reviews, favorites } = getReviewStats(hotel);
-              const nearbyText = getNearbyText(hotel);
-              const qs = queryString();
-              return (
-                <View
-                  key={hotel.id}
-                  className="ctrip-list-card"
-                  onClick={() => Taro.navigateTo({ url: `/pages/hotel-detail/index?id=${hotel.id}${qs ? '&' + qs : ''}` })}
-                >
-                  <View className="ctrip-list-card-cover">
-                    {hotel.images?.[0]?.imageUrl ? (
-                      <Image src={hotel.images[0].imageUrl} mode="aspectFill" className="ctrip-list-card-img" />
-                    ) : (
-                      <View className="ctrip-list-card-placeholder" />
-                    )}
-                    <View className="ctrip-video-icon">
-                      <Text className="video-triangle">▶</Text>
-                    </View>
-                  </View>
-                  <View className="ctrip-list-card-body">
-                    <View className="ctrip-list-card-name-row">
-                      <Text className="ctrip-list-card-name">{hotel.nameCn}</Text>
-                      {hotel.starRating >= 5 ? (
-                        <Text className="ctrip-card-star">💎💎💎💎💎</Text>
-                      ) : (
-                        <Text className="ctrip-card-stars">{'★'.repeat(hotel.starRating)}</Text>
-                      )}
-                    </View>
-
-                    <View className="ctrip-list-card-score-row">
-                      <View className="ctrip-score-box">
-                        <Text className="score-num">{score}</Text>
-                        <Text className="score-label">{getRatingLabel(score)}</Text>
-                      </View>
-                      <Text className="ctrip-score-text">{reviews}点评 · {favorites}收藏 · "{getRatingLabel(score)}推荐"</Text>
-                    </View>
-
-                    <Text className="ctrip-list-card-nearby">{nearbyText}</Text>
-
-                    <View className="ctrip-list-card-tags">
-                      <Text className="ctrip-tag-boss">BOSS推荐</Text>
-                      {tags.slice(0, 2).map((t) => (
-                        <Text key={t} className="ctrip-list-tag">{t}</Text>
-                      ))}
-                    </View>
-
-                    <View className="ctrip-list-card-price-row">
-                      <View className="ctrip-price-block">
-                        <View className="price-top">
-                          <Text className="currency">¥</Text>
-                          <Text className="price-val">{minPrice}</Text>
-                          <Text className="price-up">起</Text>
-                        </View>
-                        {originalPrice > minPrice && (
-                          <View className="price-bottom">
-                            <Text className="price-diamond">钻石贵宾价</Text>
-                            <Text className="price-del">¥{originalPrice}</Text>
-                          </View>
-                        )}
-                      </View>
-                    </View>
-                  </View>
-                </View>
-              );
-            })}
-            {loadingMore && (
+            <Text style={{ color: '#999', fontSize: '12px', marginBottom: '8px', display: 'block' }}>
+              共 {total} 家酒店
+            </Text>
+            {hotels.map((hotel) => (
+              <HotelCard
+                key={hotel.id}
+                hotel={hotel}
+                nights={nights}
+                onClick={handleCardClick}
+              />
+            ))}
+            {isFetchingNextPage && (
               <View className="ctrip-list-more">
-                <Text>加载更多...</Text>
+                <Text>加载中...</Text>
               </View>
             )}
-            {!loadingMore && hasMore && list.length > 0 && (
+            {!hasNextPage && hotels.length > 0 && (
               <View className="ctrip-list-more-hint">
-                <Text>上滑加载更多</Text>
+                <Text>已加载全部</Text>
               </View>
             )}
           </View>

@@ -1,4 +1,4 @@
-@import '../../styles/tokens';
+@use '../../styles/tokens' as *;
 
 .ctrip-list {
   width: 100%;
@@ -12,10 +12,10 @@
 /* Header */
 .ctrip-list-header {
   background: #fff;
-  padding: 8px 12px;
+  padding: 12px 16px;
   display: flex;
   align-items: center;
-  box-shadow: 0 1px 4px rgba(0, 0, 0, 0.05);
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.06);
   z-index: 10;
 }
 
@@ -162,10 +162,12 @@
 /* Content */
 .ctrip-list-scroll {
   flex: 1;
+  /* 注意：小程序 scroll-view 不支持 padding，使用内部容器 */
 }
 
 .ctrip-list-content {
-  padding: 10px 12px;
+  padding: 12px;
+  padding-bottom: 24px;
 }
 
 /* Hotel Card */
