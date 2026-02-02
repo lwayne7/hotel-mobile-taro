@@ -1,21 +1,51 @@
-$ctrip-primary: #ff6b00;
-$ctrip-primary-light: #ff8533;
-$ctrip-primary-dark: #e85c0d;
-$ctrip-bg: #f5f5f5;
-$ctrip-card: #fff;
-$ctrip-price: #ff6b00;
-$ctrip-text: #333;
-$ctrip-text-secondary: #666;
-$ctrip-text-placeholder: #999;
+@import './styles/tokens';
 
 page {
   font-family: -apple-system, BlinkMacSystemFont, "PingFang SC", "Hiragino Sans GB", "Microsoft YaHei",
     "Helvetica Neue", Arial, sans-serif;
-  background-color: $ctrip-bg;
+  background-color: $ctrip-bg-page;
   color: $ctrip-text;
   box-sizing: border-box;
 }
 
-* {
+view,
+scroll-view,
+swiper,
+swiper-item,
+movable-area,
+movable-view,
+cover-view,
+cover-image,
+icon,
+text,
+rich-text,
+progress,
+button,
+checkbox,
+checkbox-group,
+editor,
+form,
+input,
+label,
+picker,
+picker-view,
+picker-view-column,
+radio,
+radio-group,
+slider,
+switch,
+textarea,
+navigator,
+image,
+video,
+camera,
+live-player,
+live-pusher,
+map,
+canvas,
+open-data,
+web-view,
+ad,
+official-account {
   box-sizing: border-box;
 }
