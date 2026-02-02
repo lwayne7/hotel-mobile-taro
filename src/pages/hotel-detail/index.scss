@@ -136,6 +136,49 @@
   color: #ffa000;
 }
 
+.ctrip-detail-name-en {
+  font-size: 13px;
+  color: $ctrip-text-secondary;
+  margin-top: 4px;
+  display: block;
+}
+
+.ctrip-detail-nearby {
+  margin-top: 16px;
+  padding-top: 16px;
+  border-top: 1px solid #f0f0f0;
+}
+
+.nearby-section {
+  margin-bottom: 12px;
+
+  &:last-child {
+    margin-bottom: 0;
+  }
+}
+
+.nearby-title {
+  font-size: 14px;
+  font-weight: 600;
+  color: $ctrip-text;
+  margin-bottom: 8px;
+  display: block;
+}
+
+.nearby-tags {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+}
+
+.nearby-tag {
+  background: #f5f7fa;
+  color: $ctrip-text-secondary;
+  font-size: 12px;
+  padding: 4px 10px;
+  border-radius: 12px;
+}
+
 .ctrip-detail-badges {
   margin-top: 8px;
   display: flex;

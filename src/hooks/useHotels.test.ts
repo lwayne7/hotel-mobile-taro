@@ -9,18 +9,18 @@ describe('hotelKeys', () => {
     it('should generate correct query keys for list', () => {
         const params = { city: '上海', keyword: 'test' };
         const key = hotelKeys.list(params);
-        expect(key).toEqual(['hotels', 'list', params]);
+        expect(key).toEqual(['hotels', 'relative', 'list', params]);
     });
 
     it('should generate correct query keys for detail', () => {
         const key = hotelKeys.detail(123);
-        expect(key).toEqual(['hotels', 'detail', 123]);
+        expect(key).toEqual(['hotels', 'relative', 'detail', 123]);
     });
 
     it('should generate correct base keys', () => {
-        expect(hotelKeys.all).toEqual(['hotels']);
-        expect(hotelKeys.lists()).toEqual(['hotels', 'list']);
-        expect(hotelKeys.details()).toEqual(['hotels', 'detail']);
+        expect(hotelKeys.all()).toEqual(['hotels', 'relative']);
+        expect(hotelKeys.lists()).toEqual(['hotels', 'relative', 'list']);
+        expect(hotelKeys.details()).toEqual(['hotels', 'relative', 'detail']);
     });
 });
 

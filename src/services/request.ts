@@ -3,7 +3,9 @@ import Taro from '@tarojs/taro';
 // ============ 配置常量 ============
 const API_BASE_STORAGE_KEY = 'TARO_APP_API_BASE';
 const TOKEN_STORAGE_KEY = 'TARO_APP_TOKEN';
-const DEFAULT_DEV_API_BASE = 'http://10.95.27.124:3000';
+// 默认开发后端地址（小程序/APP 端必须是完整 URL；H5 开发走 proxy 不需要）
+// 使用 127.0.0.1 避免部分环境下 localhost 解析异常
+const DEFAULT_DEV_API_BASE = 'http://127.0.0.1:3000';
 const REQUEST_TIMEOUT = 10000;
 
 // ============ 类型定义 ============
@@ -26,6 +28,16 @@ export interface RequestInterceptor {
 
 // ============ 拦截器注册 ============
 const interceptors: RequestInterceptor[] = [];
+
+// 用于 React Query 等缓存 Key 的 API Base 标识（避免切换后端/环境后仍复用旧缓存导致“修复后依然空列表”）
+export function getApiBaseCacheKey(): string {
+  try {
+    const base = getBaseUrl();
+    return base ? base : 'relative';
+  } catch {
+    return 'unknown';
+  }
+}
 
 export function addInterceptor(interceptor: RequestInterceptor): () => void {
   interceptors.push(interceptor);
@@ -82,10 +94,15 @@ const getRuntimeBaseUrl = (): string => {
 };
 
 const getBaseUrl = (): string => {
-  const stored = getRuntimeBaseUrl();
-  if (stored) return stored;
-  const envBase = process.env.TARO_APP_API_BASE || '';
+  // 以构建期注入的 env 为准，避免小程序端残留 Storage 配置导致“H5 正常、小程序命中错误后端/空库”
+  const envBase = (process.env.TARO_APP_API_BASE || '').trim();
   if (envBase) return envBase;
+
+  // 运行期 Storage 覆盖仅在开发环境启用，避免生产包因为旧缓存命中错误后端
+  if (process.env.NODE_ENV !== 'production') {
+    const stored = getRuntimeBaseUrl().trim();
+    if (stored && /^https?:\/\//.test(stored)) return stored;
+  }
 
   // H5 开发可使用 devServer proxy（保持空字符串）
   if (process.env.TARO_ENV === 'h5') return '';
@@ -160,9 +177,9 @@ export async function request<T = any>(options: RequestOptions): Promise<T> {
   const primaryUrl = base ? `${base.replace(/\/$/, '')}${processedOptions.url}` : processedOptions.url;
 
   const shouldDebugLog =
-    process.env.NODE_ENV !== 'production' &&
     process.env.TARO_ENV === 'weapp' &&
-    /\/api\/public\/hotels/.test(processedOptions.url);
+    /\/api\/public\/hotels/.test(processedOptions.url) &&
+    (process.env.NODE_ENV !== 'production' || isWeappDevtools());
 
   const normalizeSuccessData = (data: any, url: string): any => {
     let normalized = data;
@@ -215,7 +232,16 @@ export async function request<T = any>(options: RequestOptions): Promise<T> {
   const doRequest = async (url: string): Promise<T> => {
     if (shouldDebugLog) {
       // eslint-disable-next-line no-console
-      console.log('[request] ->', { url, method: processedOptions.method || 'GET', data: processedOptions.data });
+      console.log('[request] ->', {
+        url,
+        base,
+        envBase: process.env.TARO_APP_API_BASE || '',
+        storageBase: getRuntimeBaseUrl(),
+        nodeEnv: process.env.NODE_ENV,
+        taroEnv: process.env.TARO_ENV,
+        method: processedOptions.method || 'GET',
+        data: processedOptions.data,
+      });
     }
 
     const res = await Taro.request({
@@ -278,7 +304,7 @@ export async function request<T = any>(options: RequestOptions): Promise<T> {
       }
     }
 
-    if (process.env.NODE_ENV !== 'production') {
+    if (process.env.NODE_ENV !== 'production' || isWeappDevtools()) {
       // eslint-disable-next-line no-console
       console.warn('[request] failed', { url: primaryUrl, err });
     }

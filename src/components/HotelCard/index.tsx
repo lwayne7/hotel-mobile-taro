@@ -45,6 +45,26 @@ export function HotelCard({
     return tags.slice(0, 3);
   };
 
+  // 获取折扣标签
+  const getDiscountLabel = (): string | null => {
+    const room = hotel.roomTypes?.find((r: any) => r.discountType && r.discountType !== 'none');
+    if (!room) return null;
+
+    const discountType = room.discountType;
+    const originalPrice = Number(room.originalPrice);
+    const price = Number(room.price);
+
+    if (discountType === 'percentage' && originalPrice > price) {
+      const discount = Math.round((1 - price / originalPrice) * 100);
+      return `${discount}%OFF`;
+    } else if (discountType === 'fixed' && originalPrice > price) {
+      return `减¥${Math.round(originalPrice - price)}`;
+    } else if (discountType === 'package') {
+      return '套餐优惠';
+    }
+    return null;
+  };
+
   // 模拟评分
   const getScore = (): number => {
     const s = (hotel.id % 31) / 10 + 4.3;
@@ -61,6 +81,7 @@ export function HotelCard({
   const originalPrice = getOriginalPrice();
   const tags = getTags();
   const score = getScore();
+  const discountLabel = getDiscountLabel();
   const image = hotel.images?.[0]?.imageUrl || '';
 
   const cardStyle: React.CSSProperties = {
@@ -76,6 +97,11 @@ export function HotelCard({
         ) : (
           <View className="hotel-card-image-placeholder">
             <Text className="hotel-card-image-placeholder-text">暂无图片</Text>
+          </View>
+        )}
+        {discountLabel && (
+          <View className="hotel-card-discount-badge">
+            <Text className="hotel-card-discount-text">{discountLabel}</Text>
           </View>
         )}
       </View>

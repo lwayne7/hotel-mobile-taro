@@ -734,3 +734,104 @@
   font-size: 14px;
   color: #999;
 }
+
+.empty-debug {
+  margin-top: 8px;
+  font-size: 11px;
+  color: #b0b0b0;
+  word-break: break-all;
+}
+
+/* Recently Viewed Section */
+.recently-viewed {
+  margin: 8px 12px;
+  background: #fff;
+  border-radius: 16px;
+  box-shadow: 0 2px 12px rgba(0, 0, 0, 0.06);
+  padding: 16px;
+}
+
+.recently-viewed-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 12px;
+}
+
+.recently-viewed-title {
+  font-size: 17px;
+  font-weight: 700;
+  color: $ctrip-text;
+}
+
+.recently-viewed-count {
+  font-size: 12px;
+  color: $ctrip-text-secondary;
+}
+
+.recently-viewed-scroll {
+  white-space: nowrap;
+}
+
+.recently-viewed-list {
+  display: flex;
+  gap: 12px;
+  padding: 4px 0 8px;
+}
+
+.recently-viewed-item {
+  display: inline-flex;
+  flex-direction: column;
+  align-items: center;
+  width: 80px;
+  flex-shrink: 0;
+}
+
+.recently-viewed-image-wrap {
+  width: 70px;
+  height: 70px;
+  border-radius: 10px;
+  overflow: hidden;
+  background: #f0f4f8;
+  margin-bottom: 6px;
+}
+
+.recently-viewed-image {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+.recently-viewed-image-placeholder {
+  width: 100%;
+  height: 100%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 24px;
+  background: linear-gradient(135deg, #e8f4ff 0%, #f0f8ff 100%);
+}
+
+.recently-viewed-name {
+  font-size: 12px;
+  color: $ctrip-text;
+  width: 100%;
+  text-align: center;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  line-height: 1.4;
+}
+
+.recently-viewed-price {
+  font-size: 13px;
+  font-weight: 600;
+  color: $ctrip-price;
+  line-height: 1.4;
+
+  .price-suffix {
+    font-size: 10px;
+    font-weight: 400;
+    color: $ctrip-text-secondary;
+  }
+}

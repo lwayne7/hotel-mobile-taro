@@ -108,11 +108,36 @@ export default function HotelDetail() {
 
   // 数据处理
   const images = hotel.images?.length ? hotel.images : [{ imageUrl: '', description: '暂无图片' }];
-  const roomTypes = (hotel.roomTypes || [])
+  const allRoomTypes = (hotel.roomTypes || [])
     .slice()
     .sort((a: any, b: any) => Number(a?.price ?? 0) - Number(b?.price ?? 0));
-  const minPrice = roomTypes.length
-    ? Math.min(...roomTypes.map((r: any) => Number(r?.price)).filter((n: number) => !isNaN(n)))
+
+  // 根据筛选标签过滤房型
+  const roomTypes = allRoomTypes.filter((room: any) => {
+    if (!roomFilter) return true;
+
+    const bedType = room.bedType?.toLowerCase() || '';
+    const amenities = (room.amenities || []).map((a: string) => a.toLowerCase());
+    const roomName = room.name?.toLowerCase() || '';
+
+    switch (roomFilter) {
+      case '含早餐':
+        return amenities.includes('早餐') || amenities.includes('含早餐') || amenities.includes('含早');
+      case '立即确认':
+        return amenities.includes('立即确认') || amenities.includes('闪订');
+      case '大床房':
+        return bedType.includes('大床') || roomName.includes('大床');
+      case '双床房':
+        return bedType.includes('双床') || bedType.includes('标准') || roomName.includes('双床') || roomName.includes('标准');
+      case '免费取消':
+        return amenities.includes('免费取消') || amenities.includes('可取消');
+      default:
+        return true;
+    }
+  });
+
+  const minPrice = allRoomTypes.length
+    ? Math.min(...allRoomTypes.map((r: any) => Number(r?.price)).filter((n: number) => !isNaN(n)))
     : 0;
 
   const score = 4.8;
@@ -165,6 +190,9 @@ export default function HotelDetail() {
             <Text className="ctrip-detail-name">{hotel.nameCn}</Text>
             <Text className="ctrip-detail-rate">{'★'.repeat(hotel.starRating)}</Text>
           </View>
+          {hotel.nameEn && (
+            <Text className="ctrip-detail-name-en">{hotel.nameEn}</Text>
+          )}
 
           <View className="ctrip-detail-badges">
             <Text className="ctrip-detail-badge-link">{openYear}年开业</Text>
@@ -200,6 +228,33 @@ export default function HotelDetail() {
               </View>
             </View>
           </View>
+
+          {/* Nearby Info */}
+          {((hotel.nearbyAttractions && hotel.nearbyAttractions.length > 0) ||
+            (hotel.transportation && hotel.transportation.length > 0)) && (
+              <View className="ctrip-detail-nearby">
+                {hotel.nearbyAttractions && hotel.nearbyAttractions.length > 0 && (
+                  <View className="nearby-section">
+                    <Text className="nearby-title">🎯 附近景点</Text>
+                    <View className="nearby-tags">
+                      {hotel.nearbyAttractions.slice(0, 4).map((item: string, idx: number) => (
+                        <Text key={idx} className="nearby-tag">{item}</Text>
+                      ))}
+                    </View>
+                  </View>
+                )}
+                {hotel.transportation && hotel.transportation.length > 0 && (
+                  <View className="nearby-section">
+                    <Text className="nearby-title">🚇 交通信息</Text>
+                    <View className="nearby-tags">
+                      {hotel.transportation.slice(0, 4).map((item: string, idx: number) => (
+                        <Text key={idx} className="nearby-tag">{item}</Text>
+                      ))}
+                    </View>
+                  </View>
+                )}
+              </View>
+            )}
         </View>
 
         {/* Date Card */}

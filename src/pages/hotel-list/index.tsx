@@ -14,6 +14,7 @@ import { useHotelStore } from '../../store/useHotelStore';
 import { HotelCard, Skeleton } from '../../components/ui';
 import type { Hotel, HotelListResponse } from '../../types/hotel';
 import { toQueryString } from '../../utils/queryString';
+import { getApiBaseCacheKey } from '../../services/request';
 import dayjs from 'dayjs';
 import './index.scss';
 
@@ -37,6 +38,14 @@ function decodeParam(value: string | undefined): string {
 export default function HotelList() {
   const router = useRouter();
   const rawParams = router.params || {};
+  const isWeappDevtools = useMemo(() => {
+    if (process.env.TARO_ENV !== 'weapp') return false;
+    try {
+      return Taro.getSystemInfoSync().platform === 'devtools';
+    } catch {
+      return false;
+    }
+  }, []);
 
   // Zustand - 使用选择器
   const city = useSearchStore((s) => s.city);
@@ -194,6 +203,9 @@ export default function HotelList() {
           <View className="ctrip-empty">
             <Text className="ctrip-empty-msg">暂无符合条件的酒店</Text>
             <Text className="ctrip-empty-hint">试试调整搜索条件？</Text>
+            {isWeappDevtools && (
+              <Text className="ctrip-empty-debug">Debug: API_BASE={getApiBaseCacheKey()}</Text>
+            )}
           </View>
         ) : (
           // 酒店列表

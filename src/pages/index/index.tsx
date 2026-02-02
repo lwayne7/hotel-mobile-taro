@@ -11,7 +11,7 @@ import { View, Text, ScrollView } from '@tarojs/components';
 import { useDidShow } from '@tarojs/taro';
 import { useSearch } from '../../hooks/useSearch';
 import { useHotelList } from '../../hooks/useHotels';
-import { SearchCard, HotCities, RecommendSection } from './components';
+import { SearchCard, HotCities, RecommendSection, RecentlyViewed } from './components';
 import './index.scss';
 
 export default function Index() {
@@ -82,6 +82,9 @@ export default function Index() {
 
           {/* 热门城市 */}
           <HotCities />
+
+          {/* 最近浏览 */}
+          <RecentlyViewed />
 
           {/* 推荐酒店 */}
           <View className="ctrip-section">

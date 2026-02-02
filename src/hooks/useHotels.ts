@@ -1,13 +1,14 @@
 import { useQuery, useInfiniteQuery, UseQueryOptions } from '@tanstack/react-query';
 import { publicHotelApi } from '../services/api';
+import { getApiBaseCacheKey } from '../services/request';
 import type { Hotel, HotelListResponse } from '../types/hotel';
 
 // ============ 查询键常量 ============
 export const hotelKeys = {
-  all: ['hotels'] as const,
-  lists: () => [...hotelKeys.all, 'list'] as const,
+  all: () => ['hotels', getApiBaseCacheKey()] as const,
+  lists: () => [...hotelKeys.all(), 'list'] as const,
   list: (params: HotelSearchParams) => [...hotelKeys.lists(), params] as const,
-  details: () => [...hotelKeys.all, 'detail'] as const,
+  details: () => [...hotelKeys.all(), 'detail'] as const,
   detail: (id: number) => [...hotelKeys.details(), id] as const,
 };
 

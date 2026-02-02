@@ -18,6 +18,22 @@
   border-radius: 8px;
   overflow: hidden;
   margin-right: 12px;
+  position: relative;
+}
+
+.hotel-card-discount-badge {
+  position: absolute;
+  top: 0;
+  left: 0;
+  background: linear-gradient(135deg, #ff6b00 0%, #ff8c3d 100%);
+  padding: 2px 8px;
+  border-bottom-right-radius: 8px;
+}
+
+.hotel-card-discount-text {
+  color: #fff;
+  font-size: 10px;
+  font-weight: 600;
 }
 
 .hotel-card-image {

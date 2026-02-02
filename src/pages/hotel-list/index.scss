@@ -401,6 +401,13 @@
   color: $ctrip-text-placeholder;
 }
 
+.ctrip-empty-debug {
+  margin-top: 8px;
+  font-size: 11px;
+  color: $ctrip-text-placeholder;
+  word-break: break-all;
+}
+
 .ctrip-empty-actions {
   margin-top: 12px;
   display: flex;

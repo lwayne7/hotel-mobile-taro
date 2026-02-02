@@ -8,3 +8,5 @@ export { RecommendSection } from './RecommendSection';
 export type { RecommendSectionProps } from './RecommendSection';
 
 export { HotCities } from './HotCities';
+
+export { RecentlyViewed } from './RecentlyViewed';

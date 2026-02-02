@@ -9,11 +9,15 @@ export interface RoomType {
   name?: string;
   price?: number;
   originalPrice?: number;
+  discountType?: 'none' | 'percentage' | 'fixed' | 'package';
+  discountValue?: number;
+  discountDescription?: string;
   bedType?: string;
   roomSize?: string;
   maxGuests?: number;
   floors?: string;
   imageUrl?: string;
+  amenities?: string[];
 }
 
 export interface Hotel {
