@@ -612,3 +612,67 @@
   align-items: center;
   justify-content: center;
 }
+
+/* Error Container */
+.error-container {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  padding: 32px 20px;
+  background: #fff;
+  border-radius: 12px;
+  text-align: center;
+}
+
+.error-icon {
+  font-size: 40px;
+  margin-bottom: 12px;
+}
+
+.error-message {
+  font-size: 14px;
+  color: #333;
+  font-weight: 500;
+  margin-bottom: 8px;
+  text-align: center;
+}
+
+.error-hint {
+  font-size: 11px;
+  color: #999;
+  margin-bottom: 16px;
+  text-align: center;
+}
+
+.error-retry {
+  background: $ctrip-blue;
+  color: #fff;
+  padding: 10px 28px;
+  border-radius: 20px;
+  font-size: 14px;
+  font-weight: 500;
+}
+
+/* Empty Container */
+.empty-container {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  padding: 40px 20px;
+  background: #fff;
+  border-radius: 12px;
+  text-align: center;
+}
+
+.empty-icon {
+  font-size: 48px;
+  margin-bottom: 12px;
+}
+
+.empty-message {
+  font-size: 14px;
+  color: #999;
+  text-align: center;
+}
