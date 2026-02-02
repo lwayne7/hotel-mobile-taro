@@ -1,0 +1,193 @@
+@use '../../styles/tokens' as *;
+
+// ============ Button 基础样式 ============
+.ht-btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  padding: 0 16px;
+  height: 40px;
+  font-size: 14px;
+  font-weight: 500;
+  border-radius: 20px;
+  border: 1px solid transparent;
+  transition: all 0.2s ease;
+  box-sizing: border-box;
+  cursor: pointer;
+  user-select: none;
+}
+
+// ============ 类型变体 ============
+.ht-btn--default {
+  background-color: #fff;
+  border-color: #ddd;
+  color: $ctrip-text;
+
+  &:active {
+    background-color: #f5f5f5;
+  }
+}
+
+.ht-btn--primary {
+  background: linear-gradient(90deg, $ctrip-blue 0%, #29a1f7 100%);
+  border-color: $ctrip-blue;
+  color: #fff;
+  box-shadow: 0 2px 8px rgba(0, 134, 246, 0.3);
+
+  &:active {
+    opacity: 0.9;
+  }
+}
+
+.ht-btn--info {
+  background-color: $ctrip-blue;
+  border-color: $ctrip-blue;
+  color: #fff;
+}
+
+.ht-btn--warning {
+  background-color: #ff9900;
+  border-color: #ff9900;
+  color: #fff;
+}
+
+.ht-btn--danger {
+  background-color: #ff3b30;
+  border-color: #ff3b30;
+  color: #fff;
+}
+
+.ht-btn--success {
+  background-color: #34c759;
+  border-color: #34c759;
+  color: #fff;
+}
+
+// ============ 镂空变体 ============
+.ht-btn--plain {
+  background-color: transparent !important;
+  box-shadow: none !important;
+
+  &.ht-btn--primary {
+    color: $ctrip-blue;
+    border-color: $ctrip-blue;
+  }
+
+  &.ht-btn--info {
+    color: $ctrip-blue;
+    border-color: $ctrip-blue;
+  }
+
+  &.ht-btn--warning {
+    color: #ff9900;
+    border-color: #ff9900;
+  }
+
+  &.ht-btn--danger {
+    color: #ff3b30;
+    border-color: #ff3b30;
+  }
+
+  &.ht-btn--success {
+    color: #34c759;
+    border-color: #34c759;
+  }
+}
+
+// ============ 尺寸变体 ============
+.ht-btn--large {
+  height: 50px;
+  padding: 0 24px;
+  font-size: 18px;
+  border-radius: 25px;
+}
+
+.ht-btn--normal {
+  height: 40px;
+  padding: 0 16px;
+  font-size: 14px;
+}
+
+.ht-btn--small {
+  height: 32px;
+  padding: 0 12px;
+  font-size: 12px;
+  border-radius: 16px;
+}
+
+.ht-btn--mini {
+  height: 24px;
+  padding: 0 8px;
+  font-size: 10px;
+  border-radius: 12px;
+}
+
+// ============ 形状变体 ============
+.ht-btn--square {
+  border-radius: 4px;
+
+  &.ht-btn--large {
+    border-radius: 6px;
+  }
+}
+
+.ht-btn--round {
+  // 圆角按钮，默认已在基础样式中设置
+  border-radius: 20px;
+
+  &.ht-btn--large {
+    border-radius: 25px;
+  }
+
+  &.ht-btn--small {
+    border-radius: 16px;
+  }
+
+  &.ht-btn--mini {
+    border-radius: 12px;
+  }
+}
+
+// ============ 块级按钮 ============
+.ht-btn--block {
+  display: flex;
+  width: 100%;
+}
+
+// ============ 禁用状态 ============
+.ht-btn--disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+  pointer-events: none;
+}
+
+// ============ 加载状态 ============
+.ht-btn--loading {
+  cursor: wait;
+  pointer-events: none;
+}
+
+.ht-btn-loading {
+  margin-right: 4px;
+  animation: spin 1s linear infinite;
+}
+
+@keyframes spin {
+  from {
+    transform: rotate(0deg);
+  }
+  to {
+    transform: rotate(360deg);
+  }
+}
+
+// ============ 图标 ============
+.ht-btn-icon {
+  margin-right: 4px;
+  display: flex;
+  align-items: center;
+}
+
+.ht-btn-text {
+  display: inline;
+}

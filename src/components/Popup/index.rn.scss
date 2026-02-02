@@ -1,0 +1,156 @@
+.rn-popup-mask {
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background-color: rgba(0, 0, 0, 0.5);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 1000;
+}
+
+.rn-popup-mask-enter {
+  animation: fadeIn 0.3s ease-out;
+}
+
+.rn-popup-mask-leave {
+  animation: fadeOut 0.3s ease-in;
+}
+
+@keyframes fadeIn {
+  from { opacity: 0; }
+  to { opacity: 1; }
+}
+
+@keyframes fadeOut {
+  from { opacity: 1; }
+  to { opacity: 0; }
+}
+
+.rn-popup-content {
+  background-color: #fff;
+  max-height: 80%;
+  overflow: hidden;
+}
+
+.rn-popup-enter {
+  animation: slideUp 0.3s ease-out;
+}
+
+.rn-popup-leave {
+  animation: slideDown 0.3s ease-in;
+}
+
+@keyframes slideUp {
+  from { transform: translateY(100%); }
+  to { transform: translateY(0); }
+}
+
+@keyframes slideDown {
+  from { transform: translateY(0); }
+  to { transform: translateY(100%); }
+}
+
+.rn-popup-bottom {
+  position: absolute;
+  bottom: 0;
+  left: 0;
+  right: 0;
+}
+
+.rn-popup-top {
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+}
+
+.rn-popup-center {
+  width: 80%;
+  max-width: 320px;
+}
+
+.rn-popup-left {
+  position: absolute;
+  left: 0;
+  top: 0;
+  bottom: 0;
+  width: 80%;
+  max-width: 320px;
+}
+
+.rn-popup-right {
+  position: absolute;
+  right: 0;
+  top: 0;
+  bottom: 0;
+  width: 80%;
+  max-width: 320px;
+}
+
+.rn-popup-round {
+  border-top-left-radius: 16px;
+  border-top-right-radius: 16px;
+}
+
+.rn-popup-header {
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+  justify-content: center;
+  padding-top: 16px;
+  padding-bottom: 12px;
+  padding-left: 16px;
+  padding-right: 16px;
+  border-bottom-width: 1px;
+  border-bottom-color: #f2f2f2;
+  position: relative;
+}
+
+.rn-popup-header-content {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+
+.rn-popup-title {
+  font-size: 16px;
+  font-weight: 600;
+  color: #333;
+  text-align: center;
+}
+
+.rn-popup-description {
+  font-size: 12px;
+  color: #999;
+  margin-top: 4px;
+  text-align: center;
+}
+
+.rn-popup-close {
+  position: absolute;
+  font-size: 18px;
+  color: #999;
+  padding: 8px;
+  z-index: 1;
+}
+
+.rn-popup-close-left {
+  left: 8px;
+  top: 50%;
+  transform: translateY(-50%);
+}
+
+.rn-popup-close-right {
+  right: 8px;
+  top: 50%;
+  transform: translateY(-50%);
+}
+
+.rn-popup-body {
+  padding: 16px;
+  overflow-y: auto;
+}

@@ -1,0 +1,144 @@
+// ============ Popup 基础样式 ============
+.ht-popup-wrapper {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  pointer-events: none;
+  z-index: 1000;
+
+  &--visible {
+    pointer-events: auto;
+  }
+}
+
+// ============ 遮罩层 ============
+.ht-popup-overlay {
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background-color: rgba(0, 0, 0, 0);
+  transition: background-color 0.3s ease;
+
+  &--visible {
+    background-color: rgba(0, 0, 0, 0.5);
+  }
+}
+
+// ============ 弹出层内容 ============
+.ht-popup {
+  position: absolute;
+  background-color: #fff;
+  transition: transform 0.3s ease, opacity 0.3s ease;
+  max-height: 80vh;
+  overflow-y: auto;
+  box-sizing: border-box;
+}
+
+// ============ 位置变体 ============
+.ht-popup--center {
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%) scale(0.9);
+  opacity: 0;
+  min-width: 280px;
+  max-width: 90vw;
+  border-radius: 12px;
+
+  &.ht-popup--visible {
+    transform: translate(-50%, -50%) scale(1);
+    opacity: 1;
+  }
+}
+
+.ht-popup--bottom {
+  bottom: 0;
+  left: 0;
+  right: 0;
+  transform: translateY(100%);
+  border-radius: 16px 16px 0 0;
+
+  &.ht-popup--visible {
+    transform: translateY(0);
+  }
+}
+
+.ht-popup--top {
+  top: 0;
+  left: 0;
+  right: 0;
+  transform: translateY(-100%);
+  border-radius: 0 0 16px 16px;
+
+  &.ht-popup--visible {
+    transform: translateY(0);
+  }
+}
+
+.ht-popup--left {
+  top: 0;
+  bottom: 0;
+  left: 0;
+  transform: translateX(-100%);
+  width: 70vw;
+  max-width: 300px;
+
+  &.ht-popup--visible {
+    transform: translateX(0);
+  }
+}
+
+.ht-popup--right {
+  top: 0;
+  bottom: 0;
+  right: 0;
+  transform: translateX(100%);
+  width: 70vw;
+  max-width: 300px;
+
+  &.ht-popup--visible {
+    transform: translateX(0);
+  }
+}
+
+// ============ 圆角变体 ============
+.ht-popup--round {
+  &.ht-popup--bottom {
+    border-radius: 16px 16px 0 0;
+  }
+
+  &.ht-popup--top {
+    border-radius: 0 0 16px 16px;
+  }
+}
+
+// ============ 关闭按钮 ============
+.ht-popup-close {
+  position: absolute;
+  width: 32px;
+  height: 32px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 18px;
+  color: #999;
+  cursor: pointer;
+  z-index: 1;
+
+  &:active {
+    opacity: 0.7;
+  }
+
+  &--top-right {
+    top: 12px;
+    right: 12px;
+  }
+
+  &--top-left {
+    top: 12px;
+    left: 12px;
+  }
+}

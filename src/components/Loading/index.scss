@@ -1,0 +1,78 @@
+@use '../../styles/tokens' as *;
+
+// ============ Loading 基础样式 ============
+.ht-loading {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  
+  &--horizontal {
+    flex-direction: row;
+    
+    .ht-loading-text {
+      margin-left: 8px;
+    }
+  }
+  
+  &--vertical {
+    flex-direction: column;
+    
+    .ht-loading-text {
+      margin-top: 8px;
+    }
+  }
+}
+
+// ============ Loading Icon ============
+.ht-loading-icon {
+  display: inline-block;
+  box-sizing: border-box;
+  
+  &--circular {
+    border: 2px solid $ctrip-blue;
+    border-top-color: transparent;
+    border-radius: 50%;
+    animation: ht-loading-spin 0.8s linear infinite;
+  }
+  
+  &--spinner {
+    position: relative;
+    
+    &::before,
+    &::after {
+      content: '';
+      position: absolute;
+      top: 0;
+      left: 50%;
+      width: 2px;
+      height: 100%;
+      background-color: $ctrip-blue;
+      border-radius: 1px;
+      transform-origin: center;
+    }
+    
+    &::before {
+      animation: ht-loading-spin 1s linear infinite;
+    }
+    
+    &::after {
+      animation: ht-loading-spin 1s linear infinite;
+      animation-delay: 0.5s;
+    }
+  }
+}
+
+@keyframes ht-loading-spin {
+  from {
+    transform: rotate(0deg);
+  }
+  to {
+    transform: rotate(360deg);
+  }
+}
+
+// ============ Loading Text ============
+.ht-loading-text {
+  font-size: 14px;
+  color: $ctrip-text-secondary;
+}

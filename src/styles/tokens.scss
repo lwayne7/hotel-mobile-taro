@@ -1,3 +1,4 @@
+// ============ 颜色变量 ============
 $ctrip-primary: #ff6b00;
 $ctrip-primary-light: #ff8533;
 $ctrip-primary-dark: #e85c0d;
@@ -15,3 +16,35 @@ $ctrip-price: #ff6b00;
 $ctrip-text: #333;
 $ctrip-text-secondary: #666;
 $ctrip-text-placeholder: #999;
+
+// ============ 间距变量 ============
+$spacing-xs: 8px;
+$spacing-sm: 12px;
+$spacing-md: 16px;
+$spacing-lg: 24px;
+$spacing-xl: 32px;
+
+// ============ 字号变量 ============
+$font-xs: 20px;   // 10px * 2 (设计稿 750)
+$font-sm: 24px;   // 12px * 2
+$font-md: 28px;   // 14px * 2
+$font-lg: 32px;   // 16px * 2
+$font-xl: 36px;   // 18px * 2
+$font-xxl: 40px;  // 20px * 2
+
+// ============ 圆角变量 ============
+$radius-sm: 8px;
+$radius-md: 12px;
+$radius-lg: 16px;
+$radius-xl: 24px;
+$radius-full: 9999px;
+
+// ============ 阴影变量（仅 H5/小程序使用，RN 需用 rn-utils.ts）============
+$shadow-sm: 0 2px 8px rgba(0, 0, 0, 0.06);
+$shadow-md: 0 4px 16px rgba(0, 0, 0, 0.08);
+$shadow-lg: 0 8px 24px rgba(0, 0, 0, 0.12);
+
+// ============ 安全区域 ============
+$safe-area-top: env(safe-area-inset-top, 0);
+$safe-area-bottom: env(safe-area-inset-bottom, 0);
+
