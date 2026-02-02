@@ -1,7 +1,108 @@
 @import './index.scss';
 
+/* H5 端居中显示 */
 .ctrip-list {
   max-width: 480px;
   margin: 0 auto;
+  background: linear-gradient(180deg, #f5f7fa 0%, #eef1f5 100%);
 }
 
+/* H5 端头部优化 */
+.ctrip-list-header {
+  background: linear-gradient(90deg, #fff 0%, #fafbfc 100%);
+  box-shadow: 0 4px 16px rgba(0, 0, 0, 0.08);
+  padding: 14px 16px;
+}
+
+.ctrip-back-btn {
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.ctrip-back-btn:hover {
+  background: #f5f5f5;
+  border-radius: 50%;
+}
+
+/* H5 端搜索框优化 */
+.ctrip-list-search-box {
+  background: #f8f9fa;
+  border: 1px solid #e8e8e8;
+  transition: all 0.2s ease;
+}
+
+.ctrip-list-search-box:focus-within {
+  border-color: #0086f6;
+  box-shadow: 0 0 0 3px rgba(0, 134, 246, 0.1);
+}
+
+/* H5 端筛选器优化 */
+.ctrip-filter-item {
+  cursor: pointer;
+  transition: all 0.2s ease;
+  border-radius: 6px;
+  padding: 6px 12px;
+}
+
+.ctrip-filter-item:hover {
+  background: rgba(0, 134, 246, 0.05);
+}
+
+.ctrip-filter-item.active {
+  background: rgba(0, 134, 246, 0.1);
+}
+
+/* H5 端地图按钮优化 */
+.ctrip-list-map {
+  cursor: pointer;
+  transition: all 0.2s ease;
+  padding: 6px;
+  border-radius: 8px;
+}
+
+.ctrip-list-map:hover {
+  background: #f0f0f0;
+}
+
+/* H5 端酒店卡片优化 */
+.hotel-card {
+  cursor: pointer;
+  transition: all 0.3s ease;
+  border-radius: 12px;
+}
+
+.hotel-card:hover {
+  transform: translateY(-4px);
+  box-shadow: 0 12px 32px rgba(0, 0, 0, 0.12);
+}
+
+/* H5 端列表内容优化 */
+.ctrip-list-content {
+  padding: 16px;
+}
+
+/* H5 端空状态优化 */
+.ctrip-empty {
+  background: #fff;
+  border-radius: 16px;
+  padding: 48px 24px;
+  margin: 16px;
+  box-shadow: 0 4px 16px rgba(0, 0, 0, 0.06);
+}
+
+.ctrip-empty-retry {
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.ctrip-empty-retry:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 6px 16px rgba(0, 134, 246, 0.3);
+}
+
+/* H5 端加载更多优化 */
+.ctrip-list-more,
+.ctrip-list-more-hint {
+  background: transparent;
+  padding: 24px;
+}
