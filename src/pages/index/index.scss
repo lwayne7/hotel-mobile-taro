@@ -1,27 +1,41 @@
+@import '../../styles/tokens';
+
 .page-search {
   height: 100vh;
-  background: #f8fafc;
+  background: $ctrip-bg-page;
+  display: flex;
+  flex-direction: column;
+  position: relative;
+  overflow: hidden;
+}
+
+.ctrip-search-scroll {
+  flex: 1;
 }
 
 .ctrip-search {
+  width: 100%;
   min-height: 100vh;
   padding-bottom: 24px;
+  background: $ctrip-bg-page;
 }
 
-/* Large Page Title */
+/* Header */
 .ctrip-header-title {
-  padding: 12px 20px 0;
-  font-size: 28px;
-  font-weight: 800;
-  color: #000;
+  padding: 12px 16px;
+  font-size: 18px;
+  font-weight: 600;
+  color: $ctrip-text;
   background: #fff;
-  /* Assume white or transparent background depending on scroll, but for now fixed */
+  text-align: center;
 }
 
 /* Banner + Card Container wrapper */
 .ctrip-img-card {
   position: relative;
-  margin: 10px 12px;
+  margin: 0;
+  background: linear-gradient(180deg, #fff 0%, $ctrip-bg-page 100%);
+  padding: 10px 12px 60px;
 }
 
 /* Banner Area - 与 Vite 一致：蓝底 */
@@ -55,7 +69,7 @@
 .banner-sub {
   font-size: 12px;
   background: #fff;
-  color: #0086f6;
+  color: $ctrip-blue;
   padding: 1px 4px;
   border-radius: 4px;
 }
@@ -112,7 +126,7 @@
 }
 
 .ctrip-search-tab.active {
-  color: #0086f6;
+  color: $ctrip-blue;
   font-weight: 600;
 }
 
@@ -128,7 +142,7 @@
   transform: translateX(-50%);
   width: 24px;
   height: 3px;
-  background: linear-gradient(90deg, #0086f6, #50bfff);
+  background: linear-gradient(90deg, $ctrip-blue, #50bfff);
   border-radius: 3px;
 }
 
@@ -191,7 +205,7 @@
   flex-direction: column;
   align-items: center;
   justify-content: center;
-  color: #0086f6;
+  color: $ctrip-blue;
   font-size: 10px;
   gap: 2px;
 }
@@ -287,7 +301,14 @@
   flex: 1;
 }
 
-/* Price/Star - 与 Vite 一致 */
+/* Price/Star - Merged Row */
+.price-row {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 16px 0 20px;
+}
+
 .price-star-selector {
   display: flex;
   align-items: baseline;
@@ -295,46 +316,52 @@
   flex: 1;
 }
 
-.price-placeholder {
+.price-val {
   font-size: 16px;
-  color: #333;
   font-weight: 500;
+  color: #333;
+}
+
+.price-sub {
+  font-size: 12px;
+  color: #999;
 }
 
 /* Quick Tags */
-.quick-tags-row {
+.quick-tags-clean {
   display: flex;
-  flex-wrap: wrap;
   gap: 8px;
-  margin-top: 10px;
-  margin-bottom: 20px;
 }
 
 .quick-tag-item {
   background: #f5f7fa;
-  padding: 6px 12px;
+  padding: 4px 8px;
   border-radius: 4px;
   font-size: 11px;
   color: #666;
 }
 
 .quick-tag-item.active {
-  background: #e6f4ff;
-  color: #0086f6;
+  background: $ctrip-blue-light;
+  color: $ctrip-blue;
   font-weight: 500;
 }
 
 /* Search Button */
 .search-submit-btn {
-  background: linear-gradient(90deg, #0086f6 0%, #29a1f7 100%);
+  background: linear-gradient(90deg, $ctrip-blue 0%, #29a1f7 100%);
   color: white;
   font-size: 18px;
   font-weight: 600;
   border: none;
-  border-radius: 8px;
+  border-radius: 24px;
   height: 50px;
   line-height: 50px;
   box-shadow: 0 4px 10px rgba(0, 134, 246, 0.3);
+}
+
+.search-submit-btn::after {
+  border: none;
 }
 
 .ctrip-section {
@@ -365,7 +392,7 @@
 /* Filter Summary */
 .filter-summary {
   font-size: 14px;
-  color: #0086f6;
+  color: $ctrip-blue;
   margin-left: 12px;
 }
 
@@ -443,7 +470,7 @@
 
 /* Modal Overlay */
 .ctrip-modal-overlay {
-  position: fixed;
+  position: absolute;
   top: 0;
   left: 0;
   right: 0;
@@ -572,6 +599,10 @@
   border: none;
 }
 
+.modal-btn::after {
+  border: none;
+}
+
 .modal-btn.reset {
   background: #f5f7fa;
   color: #666;
@@ -584,7 +615,7 @@
 
 /* Calendar Wrap */
 .ctrip-search-calendar-wrap {
-  position: fixed;
+  position: absolute;
   top: 0;
   left: 0;
   right: 0;

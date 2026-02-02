@@ -148,260 +148,258 @@ export default function Index() {
   };
 
   return (
-    <ScrollView scrollY className="page-search">
-      <View className="ctrip-search">
-        <View className="ctrip-header-title">酒店查询页</View>
+    <View className="page-search">
+      <ScrollView scrollY className="ctrip-search-scroll">
+        <View className="ctrip-search">
+          <View className="ctrip-header-title">酒店查询页</View>
 
-        <View
-          className="ctrip-img-card"
-        >
-          <View
-            className="ctrip-img-banner"
-            onClick={() => bannerHotels[0] && Taro.navigateTo({ url: `/pages/hotel-detail/index?id=${bannerHotels[0].id}` })}
-            style={{ cursor: bannerHotels[0] ? 'pointer' : 'default' }}
-          >
-            <View className="banner-title-row">
-              <Text className="banner-big-text">酒店7折起</Text>
-              <Text className="banner-sub">大促</Text>
-              <View className="banner-tags">
-                <Text className="banner-tag trans">官方补贴</Text>
-                <Text className="banner-tag trans">资质说明</Text>
+          <View className="ctrip-img-card">
+            <View
+              className="ctrip-img-banner"
+              onClick={() => bannerHotels[0] && Taro.navigateTo({ url: `/pages/hotel-detail/index?id=${bannerHotels[0].id}` })}
+              style={{ cursor: bannerHotels[0] ? 'pointer' : 'default' }}
+            >
+              <View className="banner-title-row">
+                <Text className="banner-big-text">酒店7折起</Text>
+                <Text className="banner-sub">大促</Text>
+                <View className="banner-tags">
+                  <Text className="banner-tag trans">官方补贴</Text>
+                  <Text className="banner-tag trans">资质说明</Text>
+                </View>
               </View>
             </View>
-          </View>
 
-          <View className="search-card-container">
-            <View className="ctrip-search-tabs">
-              {TABS.map((tab) => (
-                <View
-                  key={tab.key}
-                  className={`ctrip-search-tab ${activeTab === tab.key ? 'active' : ''}`}
-                  onClick={() => setActiveTab(tab.key)}
-                >
-                  <Text className="tab-label">{tab.label}</Text>
-                  {activeTab === tab.key && <View className="tab-indicator" />}
-                </View>
-              ))}
-            </View>
-
-            <View className="search-fields">
-              {/* City & Keyword */}
-              <View className="search-row border-bottom">
-                <View className="city-selector" onClick={() => setShowCityModal(true)}>
-                  <Text className="city-text">{city || '选择城市'}</Text>
-                  <Text className="city-arrow">▼</Text>
-                </View>
-                <View className="divider-vertical" />
-                <Input
-                  className="keyword-input"
-                  placeholder="位置/品牌/酒店"
-                  placeholderClass="placeholder-gray"
-                  value={keyword}
-                  onInput={(e) => setKeyword(e.detail.value)}
-                />
-                <View
-                  className={`gps-icon ${gpsLoading ? 'loading' : ''}`}
-                  onClick={handleGpsLocation}
-                >
-                  <Text className="gps-text">{gpsLoading ? '定位中...' : '我的位置'}</Text>
-                  <Text className="gps-symbol">{gpsLoading ? '...' : '⌖'}</Text>
-                </View>
-              </View>
-
-              {/* Dates */}
-              <View className="search-row date-row border-bottom">
-                <View className="date-col" onClick={() => openCalendar('checkIn')}>
-                  <View className="date-header">
-                    <Text className="date-label">入住</Text>
-                    <Text className="date-big">{checkIn ? checkIn.format('MM月DD日') : '入住'}</Text>
-                    <Text className="date-small">{checkInDateLabel}</Text>
-                  </View>
-                </View>
-                <View className="date-duration">
-                  <Text className="duration-text">{nights}晚</Text>
-                </View>
-                <View className="date-col" onClick={() => openCalendar('checkOut')}>
-                  <View className="date-header">
-                    <Text className="date-label">离店</Text>
-                    <Text className="date-big">{checkOut ? checkOut.format('MM月DD日') : '离店'}</Text>
-                    <Text className="date-small">{checkOutDateLabel}</Text>
-                  </View>
-                </View>
-              </View>
-
-              {/* Tip - 与 Vite 一致 */}
-              <View className="search-tip-row">
-                <Text className="tip-badge">🌙</Text>
-                <Text className="tip-text">当前已过0点，如需今天凌晨6点前入住，请选择"今天凌晨"</Text>
-              </View>
-
-              {/* Price/Star */}
-              <View className="search-row border-bottom" style={{ padding: '12px 0' }}>
-                <View className="price-star-selector" onClick={() => setShowFilterModal(true)}>
-                  <Text className="price-placeholder">价格/星级</Text>
-                  <Text className="filter-summary">{getFilterSummary()}</Text>
-                </View>
-              </View>
-
-              {/* Quick Tags - 与 Vite 一致：前 3 个可选中 */}
-              <View className="quick-tags-row">
-                {QUICK_TAGS.slice(0, 3).map((t) => (
+            <View className="search-card-container">
+              <View className="ctrip-search-tabs">
+                {TABS.map((tab) => (
                   <View
-                    key={t}
-                    className={`quick-tag-item ${selectedTags.includes(t) ? 'active' : ''}`}
-                    onClick={() => toggleTag(t)}
+                    key={tab.key}
+                    className={`ctrip-search-tab ${activeTab === tab.key ? 'active' : ''}`}
+                    onClick={() => setActiveTab(tab.key)}
                   >
-                    <Text>{t}</Text>
+                    <Text className="tab-label">{tab.label}</Text>
+                    {activeTab === tab.key && <View className="tab-indicator" />}
                   </View>
                 ))}
               </View>
 
-              {/* Button */}
-              <Button className="search-submit-btn" onClick={handleSearch}>
-                查询
-              </Button>
-            </View>
-          </View>
-        </View>
-
-        {/* Section: Hot Cities */}
-        <View className="ctrip-section">
-          <Text className="ctrip-section-title">热门城市</Text>
-          <View className="ctrip-city-chips">
-            {POPULAR_CITIES.map((c) => (
-              <Text key={c} className="ctrip-chip" onClick={() => setCityAndSearch(c)}>
-                {c}
-              </Text>
-            ))}
-          </View>
-        </View>
-
-        {/* Recommended Hotels */}
-        {bannerHotels.length > 0 && (
-          <View className="ctrip-section">
-            <Text className="ctrip-section-title">推荐酒店</Text>
-            <ScrollView scrollX className="ctrip-banner-scroll">
-              {bannerHotels.map((h) => (
-                <View
-                  key={h.id}
-                  className="ctrip-banner-card"
-                  onClick={() => Taro.navigateTo({ url: `/pages/hotel-detail/index?id=${h.id}` })}
-                >
-                  <View className="ctrip-banner-cover">
-                    {h.images?.[0]?.imageUrl ? (
-                      <Image src={h.images[0].imageUrl} mode="aspectFill" className="ctrip-banner-img" />
-                    ) : (
-                      <View className="ctrip-banner-placeholder" />
-                    )}
+              <View className="search-fields">
+                {/* City & Keyword */}
+                <View className="search-row border-bottom">
+                  <View className="city-selector" onClick={() => setShowCityModal(true)}>
+                    <Text className="city-text">{city || '选择城市'}</Text>
+                    <Text className="city-arrow">▼</Text>
                   </View>
-                  <View className="ctrip-banner-info">
-                    <Text className="ctrip-banner-name">{h.nameCn}</Text>
-                    <Text className="ctrip-banner-addr">{h.address}</Text>
+                  <View className="divider-vertical" />
+                  <Input
+                    className="keyword-input"
+                    placeholder="位置/品牌/酒店"
+                    placeholderClass="placeholder-gray"
+                    value={keyword}
+                    onInput={(e) => setKeyword(e.detail.value)}
+                  />
+                  <View
+                    className={`gps-icon ${gpsLoading ? 'loading' : ''}`}
+                    onClick={handleGpsLocation}
+                  >
+                    <Text className="gps-text">{gpsLoading ? '定位中...' : '我的位置'}</Text>
+                    <Text className="gps-symbol">{gpsLoading ? '...' : '⌖'}</Text>
                   </View>
                 </View>
-              ))}
-            </ScrollView>
-          </View>
-        )}
 
-        {/* Calendar Picker */}
-        {showDatePicker && (
-          <View className="ctrip-search-calendar-wrap" onClick={() => setShowDatePicker(null)}>
-            <View onClick={(e) => e.stopPropagation?.()}>
-              <Calendar
-                value={showDatePicker === 'checkIn' ? checkIn || undefined : checkOut || undefined}
-                minDate={
-                  showDatePicker === 'checkIn'
-                    ? minDate
-                    : (checkIn || minDate).add(1, 'day')
-                }
-                onChange={onCalendarSelect}
-                title={showDatePicker === 'checkIn' ? '选择入住日期' : '选择离店日期'}
-              />
+                {/* Dates */}
+                <View className="search-row date-row border-bottom">
+                  <View className="date-col" onClick={() => openCalendar('checkIn')}>
+                    <View className="date-header">
+                      <Text className="date-label">入住</Text>
+                      <Text className="date-big">{checkIn ? checkIn.format('MM月DD日') : '入住'}</Text>
+                      <Text className="date-small">{checkInDateLabel}</Text>
+                    </View>
+                  </View>
+                  <View className="date-duration">
+                    <Text className="duration-text">{nights}晚</Text>
+                  </View>
+                  <View className="date-col" onClick={() => openCalendar('checkOut')}>
+                    <View className="date-header">
+                      <Text className="date-label">离店</Text>
+                      <Text className="date-big">{checkOut ? checkOut.format('MM月DD日') : '离店'}</Text>
+                      <Text className="date-small">{checkOutDateLabel}</Text>
+                    </View>
+                  </View>
+                </View>
+
+                {/* Tip - 与 Vite 一致 */}
+                <View className="search-tip-row">
+                  <Text className="tip-badge">🌙</Text>
+                  <Text className="tip-text">当前已过0点，如需今天凌晨6点前入住，请选择"今天凌晨"</Text>
+                </View>
+
+                {/* Price/Star & Tags */}
+                <View className="search-row price-row">
+                  <View className="price-star-selector" onClick={() => setShowFilterModal(true)}>
+                    <Text className="price-val">价格/星级</Text>
+                    <Text className="price-sub">{getFilterSummary()}</Text>
+                  </View>
+                  <View className="quick-tags-clean">
+                    {QUICK_TAGS.slice(0, 3).map((t) => (
+                      <View
+                        key={t}
+                        className={`quick-tag-item ${selectedTags.includes(t) ? 'active' : ''}`}
+                        onClick={() => toggleTag(t)}
+                      >
+                        <Text>{t}</Text>
+                      </View>
+                    ))}
+                  </View>
+                </View>
+
+                {/* Button */}
+                <Button className="search-submit-btn" onClick={handleSearch}>
+                  查询
+                </Button>
+              </View>
             </View>
           </View>
-        )}
 
-        {/* City Selection Modal */}
-        {showCityModal && (
-          <View className="ctrip-modal-overlay" onClick={() => setShowCityModal(false)}>
-            <View className="ctrip-modal-content" onClick={(e) => e.stopPropagation()}>
-              <View className="modal-header">
-                <Text className="modal-title">选择城市</Text>
-                <Text className="modal-close" onClick={() => setShowCityModal(false)}>✕</Text>
-              </View>
-              <View className="city-modal-list">
-                {POPULAR_CITIES.map((c) => (
-                  <Text
-                    key={c}
-                    className={`city-modal-item ${city === c ? 'active' : ''}`}
-                    onClick={() => {
-                      setCity(c);
-                      setShowCityModal(false);
-                    }}
+          {/* Section: Hot Cities */}
+          <View className="ctrip-section">
+            <Text className="ctrip-section-title">热门城市</Text>
+            <View className="ctrip-city-chips">
+              {POPULAR_CITIES.map((c) => (
+                <Text key={c} className="ctrip-chip" onClick={() => setCityAndSearch(c)}>
+                  {c}
+                </Text>
+              ))}
+            </View>
+          </View>
+
+          {/* Recommended Hotels */}
+          {bannerHotels.length > 0 && (
+            <View className="ctrip-section">
+              <Text className="ctrip-section-title">推荐酒店</Text>
+              <ScrollView scrollX className="ctrip-banner-scroll">
+                {bannerHotels.map((h) => (
+                  <View
+                    key={h.id}
+                    className="ctrip-banner-card"
+                    onClick={() => Taro.navigateTo({ url: `/pages/hotel-detail/index?id=${h.id}` })}
                   >
-                    {c}
+                    <View className="ctrip-banner-cover">
+                      {h.images?.[0]?.imageUrl ? (
+                        <Image src={h.images[0].imageUrl} mode="aspectFill" className="ctrip-banner-img" />
+                      ) : (
+                        <View className="ctrip-banner-placeholder" />
+                      )}
+                    </View>
+                    <View className="ctrip-banner-info">
+                      <Text className="ctrip-banner-name">{h.nameCn}</Text>
+                      <Text className="ctrip-banner-addr">{h.address}</Text>
+                    </View>
+                  </View>
+                ))}
+              </ScrollView>
+            </View>
+          )}
+        </View>
+      </ScrollView>
+
+      {/* Calendar Picker */}
+      {showDatePicker && (
+        <View className="ctrip-search-calendar-wrap" onClick={() => setShowDatePicker(null)}>
+          <View onClick={(e) => e.stopPropagation?.()}>
+            <Calendar
+              value={showDatePicker === 'checkIn' ? checkIn || undefined : checkOut || undefined}
+              minDate={
+                showDatePicker === 'checkIn'
+                  ? minDate
+                  : (checkIn || minDate).add(1, 'day')
+              }
+              onChange={onCalendarSelect}
+              title={showDatePicker === 'checkIn' ? '选择入住日期' : '选择离店日期'}
+            />
+          </View>
+        </View>
+      )}
+
+      {/* City Selection Modal */}
+      {showCityModal && (
+        <View className="ctrip-modal-overlay" onClick={() => setShowCityModal(false)}>
+          <View className="ctrip-modal-content" onClick={(e) => e.stopPropagation()}>
+            <View className="modal-header">
+              <Text className="modal-title">选择城市</Text>
+              <Text className="modal-close" onClick={() => setShowCityModal(false)}>✕</Text>
+            </View>
+            <View className="city-modal-list">
+              {POPULAR_CITIES.map((c) => (
+                <Text
+                  key={c}
+                  className={`city-modal-item ${city === c ? 'active' : ''}`}
+                  onClick={() => {
+                    setCity(c);
+                    setShowCityModal(false);
+                  }}
+                >
+                  {c}
+                </Text>
+              ))}
+            </View>
+          </View>
+        </View>
+      )}
+
+      {/* Filter Modal */}
+      {showFilterModal && (
+        <View className="ctrip-modal-overlay" onClick={() => setShowFilterModal(false)}>
+          <View className="ctrip-modal-content" onClick={(e) => e.stopPropagation()}>
+            <View className="modal-header">
+              <Text className="modal-title">筛选条件</Text>
+              <Text className="modal-close" onClick={() => setShowFilterModal(false)}>✕</Text>
+            </View>
+            <View className="filter-section">
+              <Text className="filter-label">酒店星级</Text>
+              <View className="filter-options">
+                {STAR_OPTIONS.map((s) => (
+                  <Text
+                    key={s.value}
+                    className={`filter-option ${starRating === s.value ? 'active' : ''}`}
+                    onClick={() => setStarRating(s.value)}
+                  >
+                    {s.label}
                   </Text>
                 ))}
               </View>
             </View>
-          </View>
-        )}
-
-        {/* Filter Modal */}
-        {showFilterModal && (
-          <View className="ctrip-modal-overlay" onClick={() => setShowFilterModal(false)}>
-            <View className="ctrip-modal-content" onClick={(e) => e.stopPropagation()}>
-              <View className="modal-header">
-                <Text className="modal-title">筛选条件</Text>
-                <Text className="modal-close" onClick={() => setShowFilterModal(false)}>✕</Text>
-              </View>
-              <View className="filter-section">
-                <Text className="filter-label">酒店星级</Text>
-                <View className="filter-options">
-                  {STAR_OPTIONS.map((s) => (
-                    <Text
-                      key={s.value}
-                      className={`filter-option ${starRating === s.value ? 'active' : ''}`}
-                      onClick={() => setStarRating(s.value)}
-                    >
-                      {s.label}
-                    </Text>
-                  ))}
-                </View>
-              </View>
-              <View className="filter-section">
-                <Text className="filter-label">价格区间</Text>
-                <View className="filter-price-tags">
-                  {PRICE_OPTIONS.map((p) => (
-                    <Text
-                      key={p}
-                      className={`filter-price-tag ${priceRange === p ? 'active' : ''}`}
-                      onClick={() => setPriceRange(p)}
-                    >
-                      {p}
-                    </Text>
-                  ))}
-                </View>
-              </View>
-              <View className="modal-footer">
-                <Button
-                  className="modal-btn reset"
-                  onClick={() => { setStarRating(0); setPriceRange('不限'); }}
-                >
-                  重置
-                </Button>
-                <Button
-                  className="modal-btn confirm"
-                  onClick={() => setShowFilterModal(false)}
-                >
-                  确定
-                </Button>
+            <View className="filter-section">
+              <Text className="filter-label">价格区间</Text>
+              <View className="filter-price-tags">
+                {PRICE_OPTIONS.map((p) => (
+                  <Text
+                    key={p}
+                    className={`filter-price-tag ${priceRange === p ? 'active' : ''}`}
+                    onClick={() => setPriceRange(p)}
+                  >
+                    {p}
+                  </Text>
+                ))}
               </View>
             </View>
+            <View className="modal-footer">
+              <Button
+                className="modal-btn reset"
+                onClick={() => { setStarRating(0); setPriceRange('不限'); }}
+              >
+                重置
+              </Button>
+              <Button
+                className="modal-btn confirm"
+                onClick={() => setShowFilterModal(false)}
+              >
+                确定
+              </Button>
+            </View>
           </View>
-        )}
-      </View>
-    </ScrollView>
+        </View>
+      )}
+    </View>
   );
 }

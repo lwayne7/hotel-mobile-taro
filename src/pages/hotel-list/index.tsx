@@ -172,22 +172,18 @@ export default function HotelList() {
           <Text className="back-arrow">‹</Text>
         </View>
         <View className="ctrip-list-search-box">
-          <View className="search-city-pill">
-            <Text className="search-city-text">{city || '上海'}</Text>
+          <View className="search-box-row">
+            <Text className="search-city">{city || '上海'}</Text>
+            <Text className="search-dates">
+              {checkIn.format('MM-DD')} 住 {checkOut.format('MM-DD')} 离
+            </Text>
+            <Text className="search-nights">共{nights}晚</Text>
           </View>
-          <View className="search-divider" />
-          <View className="search-dates">
-            <Text className="date-label">住</Text>
-            <Text className="date-val">{checkIn.format('MM-DD')}</Text>
-            <Text className="date-sep"> </Text>
-            <Text className="date-label">离</Text>
-            <Text className="date-val">{checkOut.format('MM-DD')}</Text>
-            <Text className="date-nights">共{nights}晚</Text>
-          </View>
-          <View className="search-input-wrap">
+          <View className="search-box-input">
             <Text className="search-icon">🔍</Text>
             <Input
               placeholder="位置/品牌/酒店"
+              placeholderClass="search-placeholder"
               value={keyword}
               onInput={(e) => setKeyword(e.detail.value)}
               className="search-input-inner"
@@ -215,9 +211,11 @@ export default function HotelList() {
           ))}
         </View>
         <ScrollView scrollX className="filter-row-quick">
-          {QUICK_TAGS.map((tag) => (
-            <Text key={tag} className="ctrip-quick-filter-tag">{tag}</Text>
-          ))}
+          <View className="filter-row-quick-inner">
+            {QUICK_TAGS.map((tag) => (
+              <Text key={tag} className="ctrip-quick-filter-tag">{tag}</Text>
+            ))}
+          </View>
         </ScrollView>
       </View>
 
@@ -235,13 +233,16 @@ export default function HotelList() {
           <View className="ctrip-empty">
             <Text className="ctrip-empty-msg">{loadError}</Text>
             <Text className="ctrip-empty-hint">请确认已启动后端：cd hotel-management/backend && npm run start:dev</Text>
+            <View className="ctrip-empty-actions">
+              <Text className="ctrip-empty-retry" onClick={() => loadPage(1, false)}>重试</Text>
+            </View>
           </View>
         ) : list.length === 0 ? (
           <View className="ctrip-empty">
             <Text>暂无酒店</Text>
           </View>
         ) : (
-          <>
+          <View className="ctrip-list-content">
             {list.map((hotel) => {
               const minPrice = getMinPrice(hotel);
               const originalPrice = getOriginalPrice(hotel);
@@ -262,27 +263,26 @@ export default function HotelList() {
                     ) : (
                       <View className="ctrip-list-card-placeholder" />
                     )}
-                    {/* Video play icon simulation */}
-                    <View className="card-video-icon">
-                      <Text className="card-video-triangle">▶</Text>
+                    <View className="ctrip-video-icon">
+                      <Text className="video-triangle">▶</Text>
                     </View>
                   </View>
                   <View className="ctrip-list-card-body">
-                    <View className="card-top-row">
+                    <View className="ctrip-list-card-name-row">
                       <Text className="ctrip-list-card-name">{hotel.nameCn}</Text>
                       {hotel.starRating >= 5 ? (
-                        <Text className="card-star-diamond">💎💎💎💎💎</Text>
+                        <Text className="ctrip-card-star">💎💎💎💎💎</Text>
                       ) : (
-                        <Text className="card-stars">{'★'.repeat(hotel.starRating)}</Text>
+                        <Text className="ctrip-card-stars">{'★'.repeat(hotel.starRating)}</Text>
                       )}
                     </View>
 
                     <View className="ctrip-list-card-score-row">
-                      <View className="score-badge">
+                      <View className="ctrip-score-box">
                         <Text className="score-num">{score}</Text>
-                        <Text className="score-txt">{getRatingLabel(score)}</Text>
+                        <Text className="score-label">{getRatingLabel(score)}</Text>
                       </View>
-                      <Text className="review-count">{reviews}点评 · {favorites}收藏 · "{getRatingLabel(score)}推荐"</Text>
+                      <Text className="ctrip-score-text">{reviews}点评 · {favorites}收藏 · "{getRatingLabel(score)}推荐"</Text>
                     </View>
 
                     <Text className="ctrip-list-card-nearby">{nearbyText}</Text>
@@ -295,15 +295,15 @@ export default function HotelList() {
                     </View>
 
                     <View className="ctrip-list-card-price-row">
-                      <View className="ctrip-list-card-price-wrap">
-                        <View className="price-main">
+                      <View className="ctrip-price-block">
+                        <View className="price-top">
                           <Text className="currency">¥</Text>
-                          <Text className="amount">{minPrice}</Text>
-                          <Text className="suffix">起</Text>
+                          <Text className="price-val">{minPrice}</Text>
+                          <Text className="price-up">起</Text>
                         </View>
                         {originalPrice > minPrice && (
                           <View className="price-bottom">
-                            <Text className="diamond-price">钻石贵宾价</Text>
+                            <Text className="price-diamond">钻石贵宾价</Text>
                             <Text className="price-del">¥{originalPrice}</Text>
                           </View>
                         )}
@@ -323,7 +323,7 @@ export default function HotelList() {
                 <Text>上滑加载更多</Text>
               </View>
             )}
-          </>
+          </View>
         )}
       </ScrollView>
     </View>

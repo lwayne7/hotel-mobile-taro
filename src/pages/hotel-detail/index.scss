@@ -1,9 +1,13 @@
+@import '../../styles/tokens';
+
 .ctrip-detail {
-  max-width: 480px;
-  margin: 0 auto;
-  min-height: 100vh;
-  background: #f5f7fa;
+  width: 100%;
+  height: 100vh;
+  background: $ctrip-bg-page;
   position: relative;
+  overflow-x: hidden;
+  display: flex;
+  flex-direction: column;
 }
 
 .ctrip-detail.loading-wrap {
@@ -11,7 +15,11 @@
   justify-content: center;
   align-items: center;
   height: 100vh;
-  color: #999;
+  color: $ctrip-text-placeholder;
+}
+
+.ctrip-detail-scroll {
+  flex: 1;
 }
 
 /* Header */
@@ -20,9 +28,9 @@
   top: 0;
   left: 0;
   width: 100%;
-  z-index: 10;
-  padding: 44px 16px 12px;
-  /* Status bar spacing simulation */
+  z-index: 50;
+  padding: 16px;
+  /* Status bar spacing simulation removed for H5 */
   display: flex;
   justify-content: space-between;
   align-items: center;
@@ -40,7 +48,7 @@
 
 .back-arrow {
   font-size: 24px;
-  color: #333;
+  color: $ctrip-text;
   line-height: 24px;
 }
 
@@ -58,13 +66,14 @@
   display: flex;
   align-items: center;
   justify-content: center;
-  color: #333;
+  color: $ctrip-text;
 }
 
 /* Gallery */
 .ctrip-detail-gallery {
   position: relative;
-  height: 260px;
+  height: 320px;
+  background: #eee;
 }
 
 .ctrip-detail-swiper {
@@ -84,10 +93,11 @@
 
 .ctrip-detail-gallery-tags {
   position: absolute;
-  bottom: 16px;
+  bottom: 40px;
   left: 16px;
   display: flex;
   gap: 6px;
+  z-index: 10;
 }
 
 .ctrip-detail-gallery-tag {
@@ -118,7 +128,7 @@
 .ctrip-detail-name {
   font-size: 20px;
   font-weight: 700;
-  color: #333;
+  color: $ctrip-text;
 }
 
 .ctrip-detail-rate {
@@ -157,8 +167,8 @@
 
 .feature-icon {
   font-size: 20px;
-  color: #666;
-  background: #f5f7fa;
+  color: $ctrip-text-secondary;
+  background: $ctrip-bg-page;
   width: 32px;
   height: 32px;
   border-radius: 8px;
@@ -169,13 +179,13 @@
 
 .feature-text {
   font-size: 11px;
-  color: #666;
+  color: $ctrip-text-secondary;
 }
 
 .ctrip-detail-feature-link {
   margin-left: auto;
   font-size: 11px;
-  color: #999;
+  color: $ctrip-text-placeholder;
   align-self: center;
 }
 
@@ -203,18 +213,18 @@
 .ctrip-detail-score-num {
   font-size: 24px;
   font-weight: 700;
-  color: #0086f6;
+  color: $ctrip-blue;
 }
 
 .ctrip-detail-score-label {
   font-size: 14px;
   font-weight: 600;
-  color: #0086f6;
+  color: $ctrip-blue;
 }
 
 .ctrip-detail-score-reviews {
   font-size: 12px;
-  color: #666;
+  color: $ctrip-text-secondary;
 }
 
 .ctrip-detail-divider-v {
@@ -233,13 +243,13 @@
 
 .ctrip-detail-addr {
   font-size: 12px;
-  color: #333;
+  color: $ctrip-text;
   line-height: 1.4;
 }
 
 .ctrip-detail-map-link {
   font-size: 12px;
-  color: #0086f6;
+  color: $ctrip-blue;
   white-space: nowrap;
 
   display: flex;
@@ -265,13 +275,13 @@
 .date-val {
   font-size: 18px;
   font-weight: 600;
-  color: #333;
+  color: $ctrip-text;
   margin-right: 4px;
 }
 
 .date-label {
   font-size: 12px;
-  color: #666;
+  color: $ctrip-text-secondary;
   margin-right: 12px;
 }
 
@@ -294,7 +304,7 @@
   display: flex;
   gap: 6px;
   font-size: 11px;
-  color: #999;
+  color: $ctrip-text-placeholder;
 }
 
 /* Room Filters */
@@ -313,7 +323,7 @@
 }
 
 .ctrip-detail-room-filter-tag.active {
-  color: #0086f6;
+  color: $ctrip-blue;
   font-weight: 500;
 }
 
@@ -339,6 +349,13 @@
   border-radius: 8px;
   overflow: hidden;
   background: #eee;
+  flex-shrink: 0;
+}
+
+.ctrip-detail-room-thumb-img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
 }
 
 .ctrip-detail-room-info {
@@ -348,15 +365,25 @@
   justify-content: space-between;
 }
 
+.room-thumb-placeholder {
+  width: 100%;
+  height: 100%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: linear-gradient(135deg, #e8f4ff 0%, #f0f8ff 100%);
+  font-size: 32px;
+}
+
 .ctrip-detail-room-name {
   font-size: 16px;
   font-weight: 600;
-  color: #333;
+  color: $ctrip-text;
 }
 
 .ctrip-detail-room-desc {
   font-size: 12px;
-  color: #666;
+  color: $ctrip-text-secondary;
 }
 
 .room-price-row {
@@ -372,29 +399,35 @@
 
 .currency {
   font-size: 12px;
-  color: #0086f6;
+  color: $ctrip-blue;
   font-weight: 600;
 }
 
 .amount {
   font-size: 20px;
   font-weight: 700;
-  color: #0086f6;
+  color: $ctrip-blue;
 }
 
 .suffix {
   font-size: 11px;
-  color: #999;
+  color: $ctrip-text-placeholder;
 }
 
 .view-room-btn {
-  background: linear-gradient(90deg, #0086f6, #29a1f7);
+  background: linear-gradient(90deg, $ctrip-blue, #29a1f7);
   color: #fff;
   font-size: 13px;
-  padding: 6px 16px;
-  border-radius: 20px;
+  padding: 0 16px;
+  height: 32px;
+  line-height: 32px;
+  border-radius: 18px;
   margin: 0;
-  line-height: 1.5;
+  border: none;
+}
+
+.view-room-btn::after {
+  border: none;
 }
 
 .ctrip-detail-bottom-spacer {
@@ -407,8 +440,7 @@
   bottom: 0;
   left: 0;
   right: 0;
-  max-width: 480px;
-  margin: 0 auto;
+  width: 100%;
   background: #fff;
   padding: 10px 16px;
   display: flex;
@@ -423,7 +455,7 @@
   flex-direction: column;
   align-items: center;
   font-size: 11px;
-  color: #666;
+  color: $ctrip-text-secondary;
 }
 
 .ctrip-detail-ask-icon {
@@ -435,22 +467,23 @@
   flex: 1;
   display: flex;
   align-items: baseline;
+  justify-content: center;
 }
 
 .ctrip-detail-bottom-label {
   font-size: 22px;
   font-weight: 700;
-  color: #ff5500;
+  color: $ctrip-price;
 }
 
 .ctrip-detail-bottom-suffix {
   font-size: 12px;
-  color: #999;
+  color: $ctrip-text-placeholder;
   margin-left: 2px;
 }
 
 .ctrip-detail-bottom-btn {
-  background: linear-gradient(90deg, #ff7700 0%, #ff5500 100%);
+  background: linear-gradient(90deg, $ctrip-primary-light 0%, $ctrip-primary 100%);
   color: #fff;
   font-size: 16px;
   font-weight: 600;
@@ -458,4 +491,9 @@
   border-radius: 24px;
   border: none;
   line-height: 1.2;
+  box-shadow: 0 4px 12px rgba(255, 107, 0, 0.3);
+}
+
+.ctrip-detail-bottom-btn::after {
+  border: none;
 }

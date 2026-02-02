@@ -1,0 +1,14 @@
+@import './index.scss';
+
+.ctrip-detail {
+  max-width: 480px;
+  margin: 0 auto;
+}
+
+.ctrip-detail-bottom {
+  left: 50%;
+  right: auto;
+  transform: translateX(-50%);
+  max-width: 480px;
+}
+

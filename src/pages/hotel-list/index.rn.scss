@@ -1,8 +1,10 @@
+@import '../../styles/tokens';
+
 .ctrip-list {
+  flex: 1;
+  background: $ctrip-bg-page;
   display: flex;
   flex-direction: column;
-  height: 100vh;
-  background: #f5f5f5;
 }
 
 /* Header */
@@ -11,185 +13,183 @@
   padding: 8px 12px;
   display: flex;
   align-items: center;
-  gap: 8px;
-  position: sticky;
-  top: 0;
-  z-index: 10;
 }
 
 .ctrip-back-btn {
   padding: 4px;
+  margin-right: 8px;
 }
 
 .back-arrow {
   font-size: 24px;
-  color: #333;
+  color: $ctrip-text;
+  line-height: 24px;
 }
 
-/* Search Box Container */
 .ctrip-list-search-box {
   flex: 1;
-  background: #f2f4f8;
-  border-radius: 20px;
-  padding: 6px 10px;
+  background: $ctrip-bg-page;
+  border-radius: 18px;
+  padding: 6px 12px;
   display: flex;
+  flex-direction: column;
+  justify-content: center;
+  border-width: 1px;
+  border-style: solid;
+  border-color: #e8e8e8;
+}
+
+.search-box-row {
+  display: flex;
+  flex-direction: row;
   align-items: center;
-  height: 36px;
+  font-size: 12px;
 }
 
-.search-city-pill {
-  background: #e6f3ff;
-  padding: 2px 8px;
-  border-radius: 12px;
-  flex-shrink: 0;
-}
-
-.search-city-text {
-  color: #0086f6;
-  font-size: 13px;
+.search-city {
+  color: $ctrip-text;
   font-weight: 600;
-  display: inline-block;
-  line-height: 1.2;
-  white-space: nowrap;
-}
-
-.search-divider {
-  width: 1px;
-  height: 14px;
-  background: #ddd;
-  margin: 0 8px;
-}
-
-.search-dates {
-  display: flex;
-  align-items: baseline;
   margin-right: 8px;
 }
 
-.date-label {
-  font-size: 10px;
-  color: #999;
-  margin-right: 2px;
-}
-
-.date-val {
-  font-size: 12px;
-  color: #0086f6;
-  font-weight: 500;
-  margin-right: 4px;
-}
-
-.date-nights {
-  font-size: 10px;
-  color: #999;
-}
-
-.search-input-wrap {
+.search-dates {
+  color: $ctrip-text-secondary;
   flex: 1;
+  margin-right: 8px;
+}
+
+.search-nights {
+  color: $ctrip-blue;
+  font-weight: 600;
+  background: $ctrip-blue-light;
+  padding: 1px 6px;
+  border-radius: 10px;
+  font-size: 11px;
+}
+
+.search-box-input {
   display: flex;
+  flex-direction: row;
   align-items: center;
+  margin-top: 2px;
 }
 
 .search-icon {
   font-size: 12px;
-  margin-right: 4px;
-  color: #999;
+  color: $ctrip-text-placeholder;
+  margin-right: 6px;
 }
 
 .search-input-inner {
+  flex: 1;
   font-size: 13px;
-  color: #333;
-  width: 100%;
+  color: $ctrip-text;
+}
+
+.search-placeholder {
+  color: $ctrip-text-placeholder;
 }
 
 .ctrip-list-map {
   display: flex;
   flex-direction: column;
   align-items: center;
-  justify-content: center;
+  margin-left: 10px;
 }
 
 .map-icon {
-  font-size: 16px;
+  margin-bottom: 2px;
 }
 
 .map-text {
   font-size: 10px;
-  color: #333;
+  color: $ctrip-text;
 }
 
 /* Filters */
 .ctrip-list-filters {
   background: #fff;
-  padding-bottom: 8px;
+  padding-bottom: 10px;
 }
 
 .filter-row-main {
   display: flex;
+  flex-direction: row;
   justify-content: space-around;
-  padding: 8px 0;
-  border-bottom: 1px solid #f5f5f5;
+  padding: 10px 12px;
+  border-bottom-width: 1px;
+  border-bottom-color: $ctrip-border;
 }
 
 .ctrip-filter-item {
-  font-size: 13px;
-  color: #333;
+  font-size: 12px;
+  color: $ctrip-text-secondary;
   display: flex;
+  flex-direction: row;
   align-items: center;
-  gap: 2px;
+  padding: 4px 10px;
 }
 
 .ctrip-filter-item.active {
-  color: #0086f6;
-  font-weight: 500;
+  color: $ctrip-blue;
+  font-weight: 600;
 }
 
 .filter-arrow {
   font-size: 10px;
-  color: #ccc;
+  color: #c9c9c9;
+  margin-left: 2px;
 }
 
-.filter-row-quick {
-  white-space: nowrap;
-  padding: 8px 12px 0;
+.filter-row-quick-inner {
+  padding: 0 12px 10px;
   display: flex;
-  gap: 8px;
+  flex-direction: row;
+  align-items: center;
 }
 
 .ctrip-quick-filter-tag {
-  display: inline-block;
-  background: #f5f5f5;
+  background: $ctrip-bg-page;
   padding: 4px 10px;
   border-radius: 4px;
-  font-size: 12px;
-  color: #333;
+  font-size: 11px;
+  color: $ctrip-text-secondary;
   margin-right: 8px;
 }
 
-/* Hotel Card */
+/* Content */
 .ctrip-list-scroll {
   flex: 1;
 }
 
+.ctrip-list-content {
+  padding: 10px 12px;
+}
+
+/* Hotel Card */
 .ctrip-list-card {
   display: flex;
+  flex-direction: row;
   background: #fff;
-  margin: 10px 12px;
-  border-radius: 8px;
+  border-radius: 10px;
   overflow: hidden;
-  /* box-shadow: 0 2px 6px rgba(0,0,0,0.05); Less shadow in flat design */
+  margin-bottom: 10px;
+  padding: 10px;
 }
 
 .ctrip-list-card-cover {
   width: 110px;
-  height: 160px;
+  height: 150px;
+  border-radius: 6px;
+  overflow: hidden;
   position: relative;
+  margin-right: 10px;
+  background: #eee;
 }
 
 .ctrip-list-card-img {
   width: 100%;
   height: 100%;
-  background: #eee;
 }
 
 .ctrip-list-card-placeholder {
@@ -198,104 +198,104 @@
   background: #eee;
 }
 
-.card-video-icon {
+.ctrip-video-icon {
   position: absolute;
-  bottom: 6px;
+  top: 6px;
   right: 6px;
-  background: rgba(0, 0, 0, 0.5);
   width: 20px;
   height: 20px;
+  background: rgba(0, 0, 0, 0.4);
   border-radius: 50%;
   display: flex;
   align-items: center;
   justify-content: center;
 }
 
-.card-video-triangle {
+.video-triangle {
   color: #fff;
-  font-size: 10px;
-  line-height: 1;
+  font-size: 8px;
 }
 
 .ctrip-list-card-body {
   flex: 1;
-  padding: 10px;
   display: flex;
   flex-direction: column;
-  min-width: 0;
+  justify-content: space-between;
 }
 
-.card-top-row {
+.ctrip-list-card-name-row {
   display: flex;
+  flex-direction: row;
   align-items: flex-start;
   justify-content: space-between;
 }
 
 .ctrip-list-card-name {
   font-size: 16px;
-  font-weight: 700;
-  color: #333;
-  line-height: 1.3;
+  font-weight: 600;
+  color: $ctrip-text;
   margin-bottom: 4px;
   flex: 1;
-  min-width: 0;
 }
 
-.card-stars {
+.ctrip-card-star {
+  font-size: 8px;
+}
+
+.ctrip-card-stars {
   font-size: 10px;
   color: #ffa000;
   margin-left: 4px;
-  flex-shrink: 0;
-  line-height: 1.2;
-  white-space: nowrap;
-}
-
-.card-star-diamond {
-  font-size: 8px;
-  margin-left: 4px;
-  flex-shrink: 0;
-  line-height: 1.2;
-  white-space: nowrap;
 }
 
 .ctrip-list-card-score-row {
   display: flex;
+  flex-direction: row;
   align-items: center;
   margin-bottom: 4px;
 }
 
-.score-badge {
+.ctrip-score-box {
+  background: #0066f5;
+  border-radius: 6px;
+  padding: 2px 6px;
   display: flex;
+  flex-direction: row;
   align-items: center;
-  background: #fff;
-  /* Actually screenshot shows blue text on white or transparent, wait. Screenshot shows a BLUE BOX for the '4.8 Superb' part' */
-  background: #0066cc;
-  border-radius: 4px 4px 4px 0;
-  padding: 1px 4px;
   margin-right: 6px;
 }
 
 .score-num {
-  font-size: 12px;
   font-weight: 700;
-  color: #fff;
-  margin-right: 2px;
-}
-
-.score-txt {
-  font-size: 11px;
+  font-size: 13px;
   color: #fff;
 }
 
-.review-count {
+.score-label {
+  font-size: 10px;
+  color: #fff;
+  margin-left: 2px;
+}
+
+.ctrip-score-text {
   font-size: 11px;
-  color: #666;
+  color: $ctrip-blue;
+  font-weight: 500;
+  flex: 1;
 }
 
 .ctrip-list-card-nearby {
-  font-size: 12px;
-  color: #333;
+  font-size: 11px;
+  color: $ctrip-text;
   margin-bottom: 4px;
+  font-weight: 500;
+}
+
+.ctrip-list-card-tags {
+  display: flex;
+  flex-direction: row;
+  flex-wrap: wrap;
+  margin-bottom: 8px;
 }
 
 .ctrip-tag-boss {
@@ -305,112 +305,119 @@
   padding: 1px 4px;
   border-radius: 2px;
   font-weight: 700;
-  display: inline-block;
-  line-height: 1.2;
-}
-
-.ctrip-list-card-tags {
-  display: flex;
-  flex-wrap: wrap;
-  gap: 4px;
-  margin-bottom: auto;
-  /* Push price to bottom */
+  margin-right: 4px;
+  margin-bottom: 4px;
 }
 
 .ctrip-list-tag {
+  color: $ctrip-text-secondary;
   font-size: 10px;
-  color: #666;
-  border: 1px solid #f0f0f0;
-  padding: 1px 4px;
+  border-width: 1px;
+  border-style: solid;
+  border-color: #f0f0f0;
+  padding: 0 4px;
   border-radius: 2px;
-  display: inline-block;
-  line-height: 1.2;
+  margin-right: 4px;
+  margin-bottom: 4px;
 }
 
 .ctrip-list-card-price-row {
   display: flex;
+  flex-direction: row;
   justify-content: flex-end;
-  margin-top: 8px;
+  align-items: flex-end;
 }
 
-.ctrip-list-card-price-wrap {
+.ctrip-price-block {
   display: flex;
   flex-direction: column;
   align-items: flex-end;
 }
 
-.price-main {
+.price-top {
   display: flex;
+  flex-direction: row;
   align-items: baseline;
 }
 
 .currency {
   font-size: 12px;
-  color: #0086f6;
   font-weight: 600;
+  color: $ctrip-blue;
 }
 
-.amount {
-  font-size: 22px;
-  color: #0086f6;
+.price-val {
+  font-size: 20px;
   font-weight: 700;
-  line-height: 1;
+  color: $ctrip-blue;
 }
 
-.suffix {
+.price-up {
   font-size: 11px;
-  color: #999;
+  color: $ctrip-text-placeholder;
   margin-left: 2px;
-}
-
-.diamond-price {
-  font-size: 10px;
-  color: #d4a01c;
-  /* Gold/Diamond color */
-  border: 1px solid #d4a01c;
-  padding: 0 4px;
-  border-radius: 2px;
-  margin-top: 2px;
 }
 
 .price-bottom {
   display: flex;
+  flex-direction: row;
   align-items: center;
-  gap: 4px;
-  justify-content: flex-end;
   margin-top: 2px;
+}
+
+.price-diamond {
+  font-size: 10px;
+  color: $ctrip-text;
+  border-width: 1px;
+  border-style: solid;
+  border-color: #ddd;
+  padding: 0 2px;
+  border-radius: 2px;
+  margin-right: 4px;
 }
 
 .price-del {
   font-size: 11px;
-  color: #999;
+  color: $ctrip-text-placeholder;
   text-decoration: line-through;
 }
 
 .ctrip-list-loading,
 .ctrip-empty {
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  gap: 8px;
-  padding: 20px;
   text-align: center;
-  color: #999;
+  padding: 30px;
+  color: $ctrip-text-placeholder;
+}
 
-  .ctrip-empty-msg {
-    color: #333;
-  }
+.ctrip-empty-msg {
+  color: $ctrip-text;
+  margin-bottom: 6px;
+}
 
-  .ctrip-empty-hint {
-    font-size: 12px;
-    color: #999;
-  }
+.ctrip-empty-hint {
+  font-size: 12px;
+  color: $ctrip-text-placeholder;
+}
+
+.ctrip-empty-actions {
+  margin-top: 12px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.ctrip-empty-retry {
+  background: $ctrip-blue;
+  color: #fff;
+  padding: 8px 18px;
+  border-radius: 18px;
+  font-size: 13px;
 }
 
 .ctrip-list-more,
 .ctrip-list-more-hint {
   padding: 20px;
   text-align: center;
-  color: #999;
+  color: $ctrip-text-placeholder;
   font-size: 12px;
 }
