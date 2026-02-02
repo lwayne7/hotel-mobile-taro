@@ -1,7 +1,161 @@
 @import './index.scss';
 
+/* H5 端优化 - 居中显示并限制最大宽度 */
+.page-search {
+  background: linear-gradient(180deg, #f0f4f8 0%, #e8ecf0 100%);
+}
+
 .ctrip-search {
   max-width: 480px;
   margin: 0 auto;
+  background: transparent;
 }
 
+/* H5 端头部优化 */
+.ctrip-header-title {
+  background: linear-gradient(135deg, #4facfe 0%, #00f2fe 100%);
+  color: #fff;
+  font-size: 20px;
+  padding: 20px 16px 16px;
+  border-radius: 0 0 20px 20px;
+  text-shadow: 0 1px 2px rgba(0, 0, 0, 0.1);
+}
+
+/* H5 端卡片增强阴影 */
+.ctrip-img-card {
+  padding: 12px 16px 20px;
+}
+
+.search-card-container {
+  box-shadow: 0 8px 32px rgba(0, 0, 0, 0.12);
+  border-radius: 20px;
+}
+
+/* H5 端 Tab 优化 */
+.ctrip-search-tab {
+  transition: all 0.2s ease;
+}
+
+.ctrip-search-tab:hover {
+  background: rgba(0, 134, 246, 0.05);
+  border-radius: 8px;
+}
+
+.tab-indicator {
+  height: 4px;
+  border-radius: 4px;
+  transition: width 0.3s ease;
+}
+
+/* H5 端搜索行优化 */
+.search-row {
+  padding: 16px 0;
+}
+
+.city-text {
+  font-size: 20px;
+}
+
+.city-selector:hover {
+  cursor: pointer;
+  opacity: 0.8;
+}
+
+.gps-icon:hover {
+  cursor: pointer;
+  opacity: 0.8;
+}
+
+/* H5 日期选择器优化 */
+.date-col:hover {
+  cursor: pointer;
+  background: rgba(0, 134, 246, 0.03);
+  border-radius: 8px;
+  margin: -4px;
+  padding: 4px;
+}
+
+.date-big {
+  font-size: 20px;
+}
+
+/* H5 城市标签优化 */
+.ctrip-chip {
+  transition: all 0.2s ease;
+  cursor: pointer;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.06);
+}
+
+.ctrip-chip:hover {
+  background: #e6f4ff;
+  color: #0086f6;
+  transform: translateY(-2px);
+  box-shadow: 0 4px 12px rgba(0, 134, 246, 0.15);
+}
+
+/* H5 推荐酒店卡片优化 */
+.ctrip-banner-card {
+  cursor: pointer;
+  transition: all 0.3s ease;
+}
+
+.ctrip-banner-card:hover {
+  transform: translateY(-4px);
+}
+
+.ctrip-banner-card:hover .ctrip-banner-cover {
+  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.15);
+}
+
+.ctrip-banner-cover {
+  border-radius: 12px;
+  transition: box-shadow 0.3s ease;
+}
+
+/* H5 错误提示优化 */
+.error-container {
+  box-shadow: 0 4px 16px rgba(0, 0, 0, 0.08);
+}
+
+.error-retry {
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.error-retry:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 6px 16px rgba(0, 134, 246, 0.4);
+}
+
+/* H5 筛选弹窗优化 */
+.city-modal-item {
+  transition: all 0.2s ease;
+  cursor: pointer;
+}
+
+.city-modal-item:hover {
+  background: #e6f4ff;
+  color: #0086f6;
+}
+
+.filter-option,
+.filter-price-tag {
+  transition: all 0.2s ease;
+  cursor: pointer;
+}
+
+.filter-option:hover,
+.filter-price-tag:hover {
+  background: #e6f4ff;
+}
+
+/* H5 Quick Tags 优化 */
+.quick-tag-item {
+  transition: all 0.2s ease;
+  cursor: pointer;
+}
+
+.quick-tag-item:hover {
+  background: #e6f4ff;
+  color: #0086f6;
+}
