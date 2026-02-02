@@ -32,15 +32,16 @@ describe('publicHotelApi', () => {
       });
 
       expect(result).toEqual(mockResponse);
-      expect(mockRequest).toHaveBeenCalledWith({
-        url: expect.stringContaining('/api/public/hotels'),
-      });
-      expect(mockRequest).toHaveBeenCalledWith({
-        url: expect.stringContaining('page=1'),
-      });
-      expect(mockRequest).toHaveBeenCalledWith({
-        url: expect.stringContaining('city='),
-      });
+      expect(mockRequest).toHaveBeenCalledWith(
+        expect.objectContaining({
+          url: '/api/public/hotels',
+          data: expect.objectContaining({
+            page: 1,
+            pageSize: 10,
+            city: '上海',
+          }),
+        })
+      );
     });
 
     it('should handle empty params', async () => {
@@ -57,6 +58,7 @@ describe('publicHotelApi', () => {
 
       expect(mockRequest).toHaveBeenCalledWith({
         url: '/api/public/hotels',
+        data: {},
       });
     });
 
@@ -70,12 +72,17 @@ describe('publicHotelApi', () => {
         maxPrice: 1000,
       });
 
-      expect(mockRequest).toHaveBeenCalledWith({
-        url: expect.stringContaining('keyword='),
-      });
-      expect(mockRequest).toHaveBeenCalledWith({
-        url: expect.stringContaining('starRating=5'),
-      });
+      expect(mockRequest).toHaveBeenCalledWith(
+        expect.objectContaining({
+          url: '/api/public/hotels',
+          data: expect.objectContaining({
+            keyword: '外滩',
+            starRating: 5,
+            minPrice: 500,
+            maxPrice: 1000,
+          }),
+        })
+      );
     });
   });
 

@@ -29,6 +29,27 @@ describe('request', () => {
       );
     });
 
+    it('should parse JSON string response', async () => {
+      const jsonString = JSON.stringify({ data: [{ id: 1 }], page: 1, pageSize: 10, total: 1, totalPages: 1 });
+      mockTaroRequest.mockResolvedValueOnce({
+        statusCode: 200,
+        data: jsonString,
+      } as any);
+
+      const result = await request({ url: '/api/public/hotels?page=1' });
+
+      expect(result).toEqual(JSON.parse(jsonString));
+    });
+
+    it('should throw on non-JSON string response', async () => {
+      mockTaroRequest.mockResolvedValueOnce({
+        statusCode: 200,
+        data: '<html>not json</html>',
+      } as any);
+
+      await expect(request({ url: '/api/public/hotels' })).rejects.toThrow('接口返回非 JSON');
+    });
+
     it('should make a POST request with data', async () => {
       const postData = { name: 'New Hotel' };
       const mockResponse = { id: 1, ...postData };

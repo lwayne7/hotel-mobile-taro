@@ -3,7 +3,7 @@ import Taro from '@tarojs/taro';
 // ============ 配置常量 ============
 const API_BASE_STORAGE_KEY = 'TARO_APP_API_BASE';
 const TOKEN_STORAGE_KEY = 'TARO_APP_TOKEN';
-const DEFAULT_DEV_API_BASE = 'http://127.0.0.1:3000';
+const DEFAULT_DEV_API_BASE = 'http://10.95.27.124:3000';
 const REQUEST_TIMEOUT = 10000;
 
 // ============ 类型定义 ============
@@ -159,21 +159,89 @@ export async function request<T = any>(options: RequestOptions): Promise<T> {
   const base = getBaseUrl();
   const primaryUrl = base ? `${base.replace(/\/$/, '')}${processedOptions.url}` : processedOptions.url;
 
+  const shouldDebugLog =
+    process.env.NODE_ENV !== 'production' &&
+    process.env.TARO_ENV === 'weapp' &&
+    /\/api\/public\/hotels/.test(processedOptions.url);
+
+  const normalizeSuccessData = (data: any, url: string): any => {
+    let normalized = data;
+
+    if (typeof normalized === 'string') {
+      const trimmed = normalized.trim();
+      if (!trimmed) return normalized;
+
+      // 小程序端偶发把 JSON 当作字符串返回；这里兜底解析，避免“成功但列表为空”
+      const looksLikeJson = trimmed.startsWith('{') || trimmed.startsWith('[');
+      if (!looksLikeJson) {
+        const snippet = trimmed.slice(0, 120).replace(/\s+/g, ' ');
+        throw new Error(`接口返回非 JSON，请检查小程序请求地址/代理配置（请求：${url}，响应片段：${snippet}）`);
+      }
+
+      try {
+        normalized = JSON.parse(trimmed);
+      } catch {
+        const snippet = trimmed.slice(0, 120).replace(/\s+/g, ' ');
+        throw new Error(`接口 JSON 解析失败，请检查后端返回格式（请求：${url}，响应片段：${snippet}）`);
+      }
+    }
+
+    // 某些代理/网关可能把错误包成 200；这里识别常见错误结构并转为异常
+    if (normalized && typeof normalized === 'object') {
+      const maybeStatusCode = (normalized as any).statusCode;
+      if (typeof maybeStatusCode === 'number' && maybeStatusCode >= 400) {
+        const message = Array.isArray((normalized as any).message)
+          ? (normalized as any).message.join('; ')
+          : (normalized as any).message;
+        const err: any = new Error(message || `HTTP ${maybeStatusCode}`);
+        err.statusCode = maybeStatusCode;
+        err.data = normalized;
+        throw err;
+      }
+
+      const errcode = (normalized as any).errcode;
+      const errmsg = (normalized as any).errmsg;
+      if (typeof errcode === 'number' && errcode !== 0) {
+        const err: any = new Error(errmsg || `errcode ${errcode}`);
+        err.code = errcode;
+        err.data = normalized;
+        throw err;
+      }
+    }
+
+    return normalized;
+  };
+
   const doRequest = async (url: string): Promise<T> => {
+    if (shouldDebugLog) {
+      // eslint-disable-next-line no-console
+      console.log('[request] ->', { url, method: processedOptions.method || 'GET', data: processedOptions.data });
+    }
+
     const res = await Taro.request({
       url,
       method: processedOptions.method || 'GET',
       data: processedOptions.data,
       header: {
         'Content-Type': 'application/json',
+        Accept: 'application/json',
         ...processedOptions.header,
       },
+      dataType: 'json',
       timeout: processedOptions.timeout || REQUEST_TIMEOUT,
     });
 
     if (res.statusCode >= 200 && res.statusCode < 300) {
       // 执行响应拦截器
-      let result = res.data as T;
+      let result = normalizeSuccessData(res.data, url) as T;
+
+      if (shouldDebugLog) {
+        const summary =
+          result && typeof result === 'object' ? { keys: Object.keys(result as any).slice(0, 20) } : { type: typeof result };
+        // eslint-disable-next-line no-console
+        console.log('[request] <-', { url, statusCode: res.statusCode, summary });
+      }
+
       for (const interceptor of interceptors) {
         if (interceptor.onResponse) {
           result = await interceptor.onResponse(result, processedOptions);
