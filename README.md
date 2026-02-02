@@ -118,6 +118,25 @@ npm run build:rn -- --platform android
 - **日历组件**：`src/components/Calendar`，用于入住/离店日期选择，多端共用。
 - **请求**：`src/services/request.ts` 基于 `Taro.request`，`src/services/api.ts` 与原有 `publicHotelApi` 接口对齐。
 
+## 最新重构 (2026-02-02)
+
+### 架构升级
+- **TanStack Query v5.62.0**：服务端状态管理，支持无限滚动、缓存、自动重试
+- **Zustand v5.0.0**：客户端状态管理，使用选择器模式避免无限循环
+- **自定义 UI 组件**：Button/Popup/Loading/Skeleton/HotelCard，移除 NutUI 依赖
+
+### 核心修复
+- 修复价格筛选逻辑，正确传递 minPrice/maxPrice 参数
+- 修复 Zustand 选择器使用方式，避免 useEffect 无限循环
+- 修复小程序 Popup 组件的 `document.body` 兼容性问题
+- 修复小程序 API 连接配置，确保正确设置 TARO_APP_API_BASE
+- 优化 GPS 定位功能，H5 环境检测与友好错误提示
+
+### 页面优化
+- 返回页面后自动重置滚动位置到顶部
+- 优化页面布局，减少不必要的空隙
+- 修复 scroll-view padding 警告（小程序 webview 渲染模式不支持）
+
 ## 关于本仓库
 
 本仓库为 **易宿酒店** 用户端 Taro 多端版，独立于 [lwayne7/hotel-mobile](https://github.com/lwayne7/hotel-mobile)（Vite 单 H5 版）。同一套业务逻辑与后端 API，产出 H5 + 微信小程序 + React Native APP。
