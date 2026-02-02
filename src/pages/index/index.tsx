@@ -8,7 +8,7 @@
  */
 import { useState, useCallback } from 'react';
 import { View, Text, ScrollView } from '@tarojs/components';
-import { useDidShow } from '@tarojs/taro';
+import Taro, { useDidShow } from '@tarojs/taro';
 import { useSearch } from '../../hooks/useSearch';
 import { useHotelList } from '../../hooks/useHotels';
 import { SearchCard, HotCities, RecommendSection, RecentlyViewed } from './components';
@@ -58,7 +58,16 @@ export default function Index() {
         <View className="ctrip-search">
           {/* H5端显示标题，小程序端使用导航栏 */}
           {process.env.TARO_ENV === 'h5' && (
-            <View className="ctrip-header-title">易宿·酒店预订</View>
+            <View className="ctrip-header-row">
+              <View className="ctrip-header-title">易宿·酒店预订</View>
+              <View
+                className="ctrip-header-fav"
+                onClick={() => Taro.navigateTo({ url: '/pages/favorites/index' })}
+              >
+                <Text className="fav-icon">💝</Text>
+                <Text className="fav-text">收藏</Text>
+              </View>
+            </View>
           )}
 
           <View className="ctrip-img-card">

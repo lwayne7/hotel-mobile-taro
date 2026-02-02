@@ -12,13 +12,18 @@
 }
 
 /* H5 端头部优化 */
-.ctrip-header-title {
+.ctrip-header-row {
   background: linear-gradient(135deg, #4facfe 0%, #00f2fe 100%);
   color: #fff;
   font-size: 20px;
   padding: 20px 16px 16px;
   border-radius: 0 0 20px 20px;
   text-shadow: 0 1px 2px rgba(0, 0, 0, 0.1);
+}
+
+.ctrip-header-title {
+  background: transparent;
+  padding: 0;
 }
 
 /* H5 端卡片增强阴影 */

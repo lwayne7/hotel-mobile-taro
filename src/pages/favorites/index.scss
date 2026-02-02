@@ -1,0 +1,204 @@
+@use '../../styles/tokens' as *;
+
+.favorites-page {
+    height: 100vh;
+    background: $ctrip-bg-page;
+    display: flex;
+    flex-direction: column;
+}
+
+/* Header */
+.favorites-header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 16px;
+    background: linear-gradient(135deg, #4facfe 0%, #00f2fe 100%);
+    color: #fff;
+}
+
+.back-btn {
+    width: 32px;
+    height: 32px;
+    background: rgba(255, 255, 255, 0.2);
+    border-radius: 16px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.back-arrow {
+    font-size: 24px;
+    color: #fff;
+    line-height: 24px;
+}
+
+.header-title {
+    font-size: 18px;
+    font-weight: 600;
+}
+
+.header-right {
+    min-width: 50px;
+    text-align: right;
+}
+
+.count {
+    font-size: 13px;
+    opacity: 0.9;
+}
+
+/* Scroll Content */
+.favorites-scroll {
+    flex: 1;
+    /* 注意：小程序 scroll-view 不支持 padding，使用内部容器 */
+}
+
+.favorites-content {
+    padding: 12px;
+}
+
+/* Empty State */
+.empty-state {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    padding: 80px 40px;
+    text-align: center;
+}
+
+.empty-icon {
+    font-size: 60px;
+    margin-bottom: 20px;
+}
+
+.empty-title {
+    font-size: 18px;
+    font-weight: 600;
+    color: $ctrip-text;
+    margin-bottom: 8px;
+}
+
+.empty-desc {
+    font-size: 13px;
+    color: $ctrip-text-secondary;
+    margin-bottom: 24px;
+}
+
+.empty-action {
+    background: linear-gradient(90deg, $ctrip-blue 0%, #29a1f7 100%);
+    padding: 12px 36px;
+    border-radius: 24px;
+    box-shadow: 0 4px 12px rgba(0, 134, 246, 0.3);
+}
+
+.action-text {
+    color: #fff;
+    font-size: 15px;
+    font-weight: 500;
+}
+
+/* Favorites List */
+.favorites-list {
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+}
+
+.favorite-item {
+    position: relative;
+}
+
+.favorite-actions {
+    display: flex;
+    justify-content: flex-end;
+    padding: 8px 12px;
+    background: #fff;
+    border-radius: 0 0 12px 12px;
+    margin-top: -8px;
+    border-top: 1px solid #f5f5f5;
+}
+
+.action-btn {
+    font-size: 13px;
+    padding: 6px 16px;
+    border-radius: 16px;
+
+    &.remove {
+        color: $ctrip-price;
+        background: #fff5f5;
+    }
+}
+
+/* Skeleton Loading */
+.favorite-item-skeleton {
+    display: flex;
+    background: #fff;
+    border-radius: 12px;
+    padding: 12px;
+    gap: 12px;
+}
+
+.skeleton-image {
+    width: 110px;
+    height: 140px;
+    background: linear-gradient(90deg, #f0f0f0 25%, #e0e0e0 50%, #f0f0f0 75%);
+    background-size: 200% 100%;
+    animation: shimmer 1.5s infinite;
+    border-radius: 8px;
+}
+
+.skeleton-content {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+    padding: 8px 0;
+}
+
+.skeleton-line {
+    height: 14px;
+    background: linear-gradient(90deg, #f0f0f0 25%, #e0e0e0 50%, #f0f0f0 75%);
+    background-size: 200% 100%;
+    animation: shimmer 1.5s infinite;
+    border-radius: 4px;
+
+    &.short {
+        width: 60%;
+    }
+}
+
+@keyframes shimmer {
+    0% {
+        background-position: 200% 0;
+    }
+
+    100% {
+        background-position: -200% 0;
+    }
+}
+
+/* Error State */
+.favorite-item-error {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    background: #fff;
+    border-radius: 12px;
+    padding: 20px 16px;
+}
+
+.error-text {
+    color: $ctrip-text-secondary;
+    font-size: 14px;
+}
+
+.remove-btn {
+    color: $ctrip-price;
+    font-size: 13px;
+}
+
+.bottom-spacer {
+    height: 24px;
+}

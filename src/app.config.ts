@@ -3,6 +3,7 @@ export default defineAppConfig({
     'pages/index/index',
     'pages/hotel-list/index',
     'pages/hotel-detail/index',
+    'pages/favorites/index',
   ],
   window: {
     backgroundTextStyle: 'light',
