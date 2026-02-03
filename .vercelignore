@@ -1,0 +1,10 @@
+node_modules
+.taro
+.swc
+.DS_Store
+*.log
+test
+*.test.ts
+*.test.tsx
+vitest.config.mts
+vitest.setup.tsx

@@ -3,11 +3,12 @@ module.exports = {
     NODE_ENV: '"production"',
   },
   defineConstants: {
-    'process.env.TARO_APP_API_BASE': JSON.stringify(process.env.TARO_APP_API_BASE || ''),
+    'process.env.TARO_APP_API_BASE': JSON.stringify('https://backend-production-fad1.up.railway.app'),
   },
   mini: {},
   rn: {},
   h5: {
+    publicPath: '/',
     /**
      * WebpackChain 插件配置
      * @docs https://github.com/neutrinojs/webpack-chain
