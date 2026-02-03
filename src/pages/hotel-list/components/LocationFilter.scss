@@ -1,0 +1,158 @@
+@use '../../../styles/tokens' as *;
+
+.location-filter {
+  display: flex;
+  flex-direction: column;
+  height: 60vh;
+  background: #fff;
+}
+
+.filter-body {
+  flex: 1;
+  display: flex;
+  flex-direction: row;
+  overflow: hidden;
+}
+
+.category-list {
+  width: 100px;
+  background: #f5f5f5;
+  height: 100%;
+}
+
+.category-item {
+  padding: 16px 12px;
+  font-size: 14px;
+  color: $ctrip-text-secondary;
+  border-left: 3px solid transparent;
+  background: #f5f5f5;
+}
+
+.category-item.active {
+  color: $ctrip-blue;
+  font-weight: 600;
+  background: #fff;
+  border-left-color: $ctrip-blue;
+}
+
+.content-area {
+  flex: 1;
+  padding: 12px;
+  height: 100%;
+}
+
+.distance-options {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+.distance-option {
+  padding: 14px 16px;
+  background: #f8f8f8;
+  border-radius: 8px;
+  font-size: 14px;
+  color: $ctrip-text;
+}
+
+.distance-option.active {
+  background: $ctrip-blue-light;
+  color: $ctrip-blue;
+  font-weight: 500;
+}
+
+.location-list {
+  display: flex;
+  flex-direction: column;
+}
+
+.location-map-entry {
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+  justify-content: space-between;
+  padding: 14px 16px;
+  background: linear-gradient(135deg, #e8f4fd 0%, #d4ecfa 100%);
+  border-radius: 8px;
+  margin-bottom: 8px;
+}
+
+.map-text {
+  font-size: 14px;
+  color: $ctrip-blue;
+  font-weight: 500;
+}
+
+.map-go {
+  font-size: 12px;
+  color: #fff;
+  background: $ctrip-blue;
+  padding: 4px 10px;
+  border-radius: 12px;
+}
+
+.location-item {
+  padding: 14px 0;
+  border-bottom: 1px solid #f0f0f0;
+}
+
+.location-item.active {
+  .location-name {
+    color: $ctrip-blue;
+    font-weight: 600;
+  }
+  .location-percent {
+    color: $ctrip-blue;
+  }
+}
+
+.location-info {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+
+.location-name {
+  font-size: 15px;
+  color: $ctrip-text;
+}
+
+.location-percent {
+  font-size: 12px;
+  color: $ctrip-blue;
+}
+
+.empty-hint {
+  padding: 40px 20px;
+  text-align: center;
+  color: $ctrip-text-placeholder;
+  font-size: 14px;
+}
+
+.filter-footer {
+  display: flex;
+  flex-direction: row;
+  padding: 12px 16px;
+  gap: 12px;
+  border-top: 1px solid #f0f0f0;
+  background: #fff;
+}
+
+.footer-btn {
+  flex: 1;
+  padding: 14px;
+  border-radius: 8px;
+  text-align: center;
+  font-size: 16px;
+}
+
+.clear-btn {
+  background: #f5f5f5;
+  color: $ctrip-text;
+}
+
+.confirm-btn {
+  background: $ctrip-blue;
+  color: #fff;
+  font-weight: 500;
+}

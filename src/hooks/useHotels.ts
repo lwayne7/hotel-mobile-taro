@@ -19,6 +19,12 @@ export interface HotelSearchParams {
   starRating?: number;
   minPrice?: number;
   maxPrice?: number;
+  sortBy?: string;
+  // 综合筛选参数
+  facilities?: string;
+  brands?: string;
+  hotelFeatures?: string;
+  roomFeatures?: string;
   pageSize?: number;
 }
 

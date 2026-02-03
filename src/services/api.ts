@@ -25,6 +25,12 @@ export const publicHotelApi = {
     starRating?: number;
     minPrice?: number;
     maxPrice?: number;
+    sortBy?: string;
+    // 综合筛选参数
+    facilities?: string;
+    brands?: string;
+    hotelFeatures?: string;
+    roomFeatures?: string;
   }): Promise<HotelListResponse> => {
     const data: Record<string, any> = {};
     if (params?.page != null) data.page = params.page;
@@ -34,6 +40,12 @@ export const publicHotelApi = {
     if (params?.starRating != null && params.starRating > 0) data.starRating = params.starRating;
     if (params?.minPrice != null) data.minPrice = params.minPrice;
     if (params?.maxPrice != null) data.maxPrice = params.maxPrice;
+    if (params?.sortBy) data.sortBy = params.sortBy;
+    // 综合筛选参数
+    if (params?.facilities) data.facilities = params.facilities;
+    if (params?.brands) data.brands = params.brands;
+    if (params?.hotelFeatures) data.hotelFeatures = params.hotelFeatures;
+    if (params?.roomFeatures) data.roomFeatures = params.roomFeatures;
 
     return request<any>({ url: '/api/public/hotels', data }).then((res) => {
       assertHotelListResponse(res);

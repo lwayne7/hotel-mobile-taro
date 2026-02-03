@@ -1,0 +1,198 @@
+@use '../../../styles/tokens' as *;
+
+.price-filter {
+  display: flex;
+  flex-direction: column;
+  height: 60vh;
+  background: #fff;
+}
+
+.filter-body {
+  flex: 1;
+  display: flex;
+  flex-direction: row;
+  overflow: hidden;
+}
+
+.category-list {
+  width: 100px;
+  background: #f5f5f5;
+  height: 100%;
+}
+
+.category-item {
+  padding: 16px 12px;
+  font-size: 14px;
+  color: $ctrip-text-secondary;
+  border-left: 3px solid transparent;
+  background: #f5f5f5;
+  text-align: center;
+}
+
+.category-item.active {
+  color: $ctrip-blue;
+  font-weight: 600;
+  background: #fff;
+  border-left-color: $ctrip-blue;
+}
+
+.content-area {
+  flex: 1;
+  height: 100%;
+  background: #fff;
+}
+
+// 价格内容
+.price-content {
+  padding: 16px;
+}
+
+.price-slider-section {
+  padding: 16px 0 24px;
+}
+
+.price-inputs {
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+  gap: 12px;
+  margin-bottom: 20px;
+}
+
+.price-input-box {
+  flex: 1;
+  padding: 12px 16px;
+  background: #f8f8f8;
+  border-radius: 8px;
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+
+.price-label {
+  font-size: 12px;
+  color: $ctrip-text-secondary;
+}
+
+.price-value {
+  font-size: 16px;
+  color: $ctrip-text;
+  font-weight: 500;
+}
+
+.price-separator {
+  font-size: 16px;
+  color: $ctrip-text-placeholder;
+}
+
+.price-quick-options {
+  display: flex;
+  flex-direction: row;
+  flex-wrap: wrap;
+  gap: 10px;
+}
+
+.price-option {
+  padding: 10px 14px;
+  background: #f5f5f5;
+  border-radius: 20px;
+  font-size: 13px;
+  color: $ctrip-text;
+  border: 1px solid transparent;
+}
+
+.price-option.active {
+  background: $ctrip-blue-light;
+  color: $ctrip-blue;
+  font-weight: 500;
+  border-color: $ctrip-blue;
+}
+
+// 星级内容
+.star-content {
+  padding: 16px;
+}
+
+.star-header {
+  margin-bottom: 16px;
+}
+
+.star-hint {
+  font-size: 12px;
+  color: $ctrip-blue;
+}
+
+.star-options {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+.star-option {
+  padding: 14px 16px;
+  background: #f5f5f5;
+  border-radius: 8px;
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+  justify-content: space-between;
+  border: 1px solid transparent;
+}
+
+.star-option.active {
+  background: $ctrip-blue-light;
+  border-color: $ctrip-blue;
+  
+  .star-label,
+  .star-sub {
+    color: $ctrip-blue;
+  }
+}
+
+.star-label {
+  font-size: 15px;
+  color: $ctrip-text;
+  font-weight: 500;
+}
+
+.star-sub {
+  font-size: 12px;
+  color: $ctrip-text-secondary;
+}
+
+.star-note {
+  margin-top: 20px;
+  font-size: 12px;
+  color: $ctrip-text-placeholder;
+  line-height: 1.6;
+  display: block;
+}
+
+// 底部按钮
+.filter-footer {
+  display: flex;
+  flex-direction: row;
+  padding: 12px 16px;
+  gap: 12px;
+  border-top: 1px solid #f0f0f0;
+  background: #fff;
+}
+
+.footer-btn {
+  flex: 1;
+  padding: 14px;
+  border-radius: 8px;
+  text-align: center;
+  font-size: 16px;
+}
+
+.clear-btn {
+  background: #f5f5f5;
+  color: $ctrip-text;
+}
+
+.confirm-btn {
+  background: $ctrip-blue;
+  color: #fff;
+  font-weight: 500;
+}

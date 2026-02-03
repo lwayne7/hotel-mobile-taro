@@ -95,13 +95,42 @@
   flex-direction: column;
   align-items: center;
   margin-left: 10px;
+  cursor: pointer;
+  
+  &:active {
+    opacity: 0.7;
+  }
 }
 
 .map-icon {
+  font-size: 16px;
   margin-bottom: 2px;
 }
 
 .map-text {
+  font-size: 10px;
+  color: $ctrip-text;
+}
+
+.ctrip-list-more-btn {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  margin-left: 8px;
+  cursor: pointer;
+  
+  &:active {
+    opacity: 0.7;
+  }
+}
+
+.more-icon {
+  font-size: 14px;
+  color: $ctrip-text;
+  margin-bottom: 2px;
+}
+
+.more-text {
   font-size: 10px;
   color: $ctrip-text;
 }
@@ -143,10 +172,25 @@
   color: #c9c9c9;
   margin-left: 3px;
   transition: transform 0.2s;
+  
+  &.up {
+    transform: rotate(180deg);
+  }
 }
 
 .ctrip-filter-item.active .filter-arrow {
   color: $ctrip-blue;
+}
+
+.filter-count {
+  background: $ctrip-blue;
+  color: #fff;
+  font-size: 10px;
+  padding: 1px 5px;
+  border-radius: 8px;
+  margin-left: 4px;
+  min-width: 16px;
+  text-align: center;
 }
 
 .filter-row-quick {
@@ -408,6 +452,27 @@
   text-align: center;
   padding: 30px;
   color: $ctrip-text-placeholder;
+}
+
+.ctrip-list-total {
+  color: #999;
+  font-size: 12px;
+  margin-bottom: 8px;
+  display: block;
+}
+
+.ctrip-list-loading {
+  padding: 20px;
+  text-align: center;
+  color: $ctrip-text-placeholder;
+  font-size: 12px;
+}
+
+.ctrip-list-end {
+  padding: 20px;
+  text-align: center;
+  color: $ctrip-text-placeholder;
+  font-size: 12px;
 }
 
 .ctrip-empty-msg {

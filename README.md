@@ -17,10 +17,15 @@
 │   ├── app.tsx       # 应用入口
 │   ├── app.config.ts # 路由与全局配置
 │   ├── app.scss      # 全局样式
-│   ├── components/   # 公共组件（如 Calendar）
-│   ├── pages/        # 页面：index(查询)、hotel-list、hotel-detail
+│   ├── components/   # 公共组件（Button/Calendar/HotelCard/Popup等）
+│   ├── constants/    # 常量配置（城市列表等）
+│   ├── hooks/        # 自定义Hooks（useHotels/useSearch）
+│   ├── pages/        # 页面：index、hotel-list、hotel-detail、favorites
 │   ├── services/     # 请求封装、API
-│   └── types/        # 类型定义
+│   ├── store/        # Zustand状态管理
+│   ├── styles/       # 全局样式变量
+│   ├── types/        # 类型定义
+│   └── utils/        # 工具函数
 ├── types/            # 全局类型声明
 ├── project.config.json  # 微信小程序项目配置
 └── package.json
@@ -118,7 +123,7 @@ npm run build:rn -- --platform android
 
 ## 数据支持
 
-本项目后端支持 **10000+ 家酒店**，覆盖：
+本项目后端支持 **10000 家酒店**，覆盖：
 - **50 个城市**：北京、上海、广州、深圳、杭州、成都、三亚、厦门等
 - **5 个筛选标签**：亲子、豪华、免费停车场、含早餐、健身房（各 20%）
 - **5 个星级**：1-5 星均匀分布（各 20%）
