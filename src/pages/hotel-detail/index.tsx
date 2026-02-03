@@ -4,14 +4,16 @@
  * 修复内容：
  * 1. 修复 Zustand useEffect 无限循环
  * 2. 类名与 SCSS 保持一致（ctrip- 前缀）
+ * 3. 支持调整入住/离店日期
  */
 import { useState, useCallback, useEffect, useRef } from 'react';
 import { View, Text, Swiper, SwiperItem, Image, ScrollView } from '@tarojs/components';
 import Taro, { useRouter } from '@tarojs/taro';
 import { useHotelDetail } from '../../hooks/useHotels';
 import { useHotelStore } from '../../store/useHotelStore';
-import { Button, Skeleton } from '../../components/ui';
-import dayjs from 'dayjs';
+import { Button, Skeleton, Popup } from '../../components/ui';
+import Calendar from '../../components/Calendar';
+import dayjs, { Dayjs } from 'dayjs';
 import './index.scss';
 
 const ROOM_FILTER_TAGS = ['含早餐', '立即确认', '大床房', '双床房', '免费取消', '筛选'];
@@ -32,11 +34,17 @@ export default function HotelDetail() {
   // 本地 UI 状态
   const [roomFilter, setRoomFilter] = useState<string | null>(null);
   const [scrollToId, setScrollToId] = useState('');
+  const [showDatePicker, setShowDatePicker] = useState<'checkIn' | 'checkOut' | null>(null);
 
-  // 日期
-  const checkIn = params.checkIn ? dayjs(params.checkIn) : dayjs();
-  const checkOut = params.checkOut ? dayjs(params.checkOut) : dayjs().add(1, 'day');
-  const nights = Math.max(1, checkOut.diff(checkIn, 'day'));
+  // 日期 - 使用本地状态以支持调整
+  const [localCheckIn, setLocalCheckIn] = useState(
+    params.checkIn ? dayjs(params.checkIn) : dayjs()
+  );
+  const [localCheckOut, setLocalCheckOut] = useState(
+    params.checkOut ? dayjs(params.checkOut) : dayjs().add(1, 'day')
+  );
+  const nights = Math.max(1, localCheckOut.diff(localCheckIn, 'day'));
+  const today = dayjs().startOf('day');
 
   // 添加到最近浏览 - 使用 ref 防止重复添加
   const addedRef = useRef(false);
@@ -67,6 +75,25 @@ export default function HotelDetail() {
       });
     }
   }, [id, isFavorite, toggleFavorite]);
+
+  // 日期选择处理
+  const onCalendarSelect = useCallback((date: Dayjs) => {
+    if (showDatePicker === 'checkIn') {
+      setLocalCheckIn(date);
+      // 如果入住日期 >= 离店日期，自动调整离店日期
+      if (date.isAfter(localCheckOut, 'day') || date.isSame(localCheckOut, 'day')) {
+        setLocalCheckOut(date.add(1, 'day'));
+      }
+    } else if (showDatePicker === 'checkOut') {
+      // 离店日期必须在入住日期之后
+      if (date.isAfter(localCheckIn, 'day')) {
+        setLocalCheckOut(date);
+      } else {
+        setLocalCheckOut(localCheckIn.add(1, 'day'));
+      }
+    }
+    setShowDatePicker(null);
+  }, [showDatePicker, localCheckIn, localCheckOut]);
 
   // 加载中
   if (isLoading) {
@@ -257,19 +284,24 @@ export default function HotelDetail() {
             )}
         </View>
 
-        {/* Date Card */}
+        {/* Date Card - 可点击调整日期 */}
         <View className="ctrip-detail-dates-card">
           <View className="dates-row">
-            <Text className="date-val">{checkIn.format('MM-DD')}</Text>
-            <Text className="date-label">入住</Text>
-            <Text className="date-nights">{nights}晚</Text>
-            <Text className="date-val">{checkOut.format('MM-DD')}</Text>
-            <Text className="date-label">离店</Text>
-            <Text className="dates-arrow">&gt;</Text>
+            <View className="date-section date-section-clickable" onClick={() => setShowDatePicker('checkIn')}>
+              <Text className="date-val">{localCheckIn.format('MM-DD')}</Text>
+              <Text className="date-label">入住 ›</Text>
+            </View>
+            <View className="date-nights-wrap">
+              <Text className="date-nights">{nights}晚</Text>
+            </View>
+            <View className="date-section date-section-right date-section-clickable" onClick={() => setShowDatePicker('checkOut')}>
+              <Text className="date-val">{localCheckOut.format('MM-DD')}</Text>
+              <Text className="date-label">› 离店</Text>
+            </View>
           </View>
           <View className="dates-tip">
             <Text>14:00后入住</Text>
-            <Text>·</Text>
+            <Text className="dates-tip-dot">·</Text>
             <Text>12:00前离店</Text>
           </View>
         </View>
@@ -345,6 +377,22 @@ export default function HotelDetail() {
         </View>
         <Text className="ctrip-detail-bottom-btn" onClick={scrollToRooms}>查看房型</Text>
       </View>
+
+      {/* Calendar Popup */}
+      <Popup
+        visible={!!showDatePicker}
+        position="bottom"
+        onClose={() => setShowDatePicker(null)}
+      >
+        <View className="calendar-popup-content">
+          <Calendar
+            value={showDatePicker === 'checkIn' ? localCheckIn : localCheckOut}
+            minDate={showDatePicker === 'checkIn' ? today : localCheckIn.add(1, 'day')}
+            onChange={onCalendarSelect}
+            title={showDatePicker === 'checkIn' ? '选择入住日期' : '选择离店日期'}
+          />
+        </View>
+      </Popup>
     </View>
   );
 }

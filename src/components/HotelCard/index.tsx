@@ -12,7 +12,6 @@ export interface HotelCardProps {
   hotel: Hotel;
   checkIn?: string;
   checkOut?: string;
-  nights?: number;
   onClick?: (hotel: Hotel) => void;
   className?: string;
   style?: React.CSSProperties;
@@ -20,7 +19,6 @@ export interface HotelCardProps {
 
 export function HotelCard({
   hotel,
-  nights = 1,
   onClick,
   className = '',
   style,
@@ -130,11 +128,12 @@ export function HotelCard({
             </Text>
           </View>
           <View className="hotel-card-price">
-            {originalPrice > minPrice && (
-              <Text className="hotel-card-original-price">¥{originalPrice}</Text>
-            )}
-            <Text className="hotel-card-current-price">¥{minPrice}</Text>
-            <Text className="hotel-card-price-unit">起/{nights}晚</Text>
+            <View className="hotel-card-price-row">
+              {originalPrice > minPrice && (
+                <Text className="hotel-card-original-price">¥{originalPrice}</Text>
+              )}
+              <Text className="hotel-card-current-price">¥{minPrice}</Text>
+            </View>
           </View>
         </View>
       </View>

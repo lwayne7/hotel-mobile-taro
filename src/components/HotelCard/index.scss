@@ -1,59 +1,78 @@
-@use '../../styles/tokens' as *;
-
 .hotel-card {
   display: flex;
   flex-direction: row;
-  background-color: $ctrip-card;
-  border-radius: $radius-md;
-  margin-bottom: $spacing-sm;
-  overflow: hidden;
-  box-shadow: $shadow-sm;
-  padding: 10px;
+  background-color: #fff;
+  border-radius: 12px;
+  margin-bottom: 12px;
+  padding-top: 12px;
+  padding-bottom: 12px;
+  padding-left: 12px;
+  padding-right: 12px;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.06);
 }
 
 .hotel-card-image-wrap {
-  width: 110px;
-  height: 140px;
-  flex-shrink: 0;
-  border-radius: 8px;
-  overflow: hidden;
+  width: 120px;
+  height: 160px;
+  border-radius: 10px;
   margin-right: 12px;
   position: relative;
+  overflow: hidden;
 }
 
+.hotel-card-image {
+  width: 120px;
+  height: 160px;
+  border-radius: 10px;
+}
+
+.hotel-card-image-placeholder {
+  width: 120px;
+  height: 160px;
+  background-color: #f0f0f0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 10px;
+}
+
+/* 折扣角标 */
 .hotel-card-discount-badge {
   position: absolute;
   top: 0;
   left: 0;
-  background: linear-gradient(135deg, #ff6b00 0%, #ff8c3d 100%);
-  padding: 2px 8px;
-  border-bottom-right-radius: 8px;
+  background: linear-gradient(135deg, #ff6b00 0%, #ff9500 100%);
+  padding: 3px 8px;
+  border-radius: 10px 0 8px 0;
 }
 
 .hotel-card-discount-text {
-  color: #fff;
   font-size: 10px;
+  color: #fff;
   font-weight: 600;
 }
 
-.hotel-card-image {
-  width: 100%;
-  height: 100%;
-  object-fit: cover;
+/* 图片角标 */
+.hotel-card-image-count {
+  position: absolute;
+  bottom: 6px;
+  right: 6px;
+  background: rgba(0, 0, 0, 0.5);
+  padding: 2px 6px;
+  border-radius: 10px;
+  display: flex;
+  flex-direction: row;
+  align-items: center;
 }
 
-.hotel-card-image-placeholder {
-  width: 100%;
-  height: 100%;
-  background-color: $ctrip-bg;
-  display: flex;
-  align-items: center;
-  justify-content: center;
+.hotel-card-image-count-text {
+  font-size: 10px;
+  color: #fff;
 }
 
 .hotel-card-image-placeholder-text {
   font-size: 12px;
-  color: $ctrip-text-placeholder;
+  color: #999;
 }
 
 .hotel-card-info {
@@ -61,111 +80,162 @@
   display: flex;
   flex-direction: column;
   justify-content: space-between;
-  min-width: 0; // 防止文字溢出
 }
 
 .hotel-card-header {
   display: flex;
   flex-direction: row;
   align-items: flex-start;
-  gap: 6px;
 }
 
 .hotel-card-name {
   font-size: 15px;
   font-weight: 600;
-  color: $ctrip-text;
+  color: #333;
   flex: 1;
-  overflow: hidden;
-  text-overflow: ellipsis;
-  white-space: nowrap;
-  line-height: 1.3;
 }
 
 .hotel-card-star {
   font-size: 10px;
-  color: $ctrip-primary;
-  flex-shrink: 0;
-  line-height: 1.3;
+  color: #ff6b00;
+  margin-left: 6px;
 }
 
 .hotel-card-address {
   font-size: 11px;
-  color: $ctrip-text-secondary;
+  color: #666;
   margin-top: 4px;
-  overflow: hidden;
-  text-overflow: ellipsis;
-  white-space: nowrap;
-  line-height: 1.4;
 }
 
 .hotel-card-tags {
   display: flex;
   flex-direction: row;
   flex-wrap: wrap;
-  gap: 6px;
   margin-top: 8px;
 }
 
 .hotel-card-tag {
   font-size: 10px;
-  color: $ctrip-blue;
-  background-color: $ctrip-blue-light;
+  color: #0086f6;
+  background-color: #e6f4ff;
+  padding-top: 3px;
+  padding-bottom: 3px;
+  padding-left: 8px;
+  padding-right: 8px;
+  border-radius: 4px;
+  margin-right: 6px;
+  margin-bottom: 4px;
+}
+
+/* 评分区域 */
+.hotel-card-rating {
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+}
+
+.hotel-card-score {
+  font-size: 13px;
+  font-weight: 700;
+  color: #fff;
+  background-color: #0086f6;
   padding: 2px 6px;
-  border-radius: 3px;
-  line-height: 1.4;
+  border-radius: 4px;
+  margin-right: 4px;
+}
+
+.hotel-card-score-label {
+  font-size: 11px;
+  color: #0086f6;
+  font-weight: 600;
+  margin-right: 4px;
+}
+
+.hotel-card-reviews {
+  font-size: 10px;
+  color: #999;
 }
 
 .hotel-card-footer {
   display: flex;
   flex-direction: row;
-  align-items: flex-end;
+  align-items: center; // 上下居中对齐
   justify-content: space-between;
-  margin-top: 8px;
+  margin-top: auto;
+  padding-top: 10px;
 }
 
-.hotel-card-rating {
+/* 榜单标签 */
+.hotel-card-rank {
   display: flex;
   flex-direction: row;
-  align-items: baseline;
-  gap: 4px;
+  align-items: center;
+  background: #e8f4fd;
+  padding: 3px 8px;
+  border-radius: 4px;
+  margin-bottom: 6px;
 }
 
-.hotel-card-score {
-  font-size: 16px;
-  font-weight: 700;
-  color: $ctrip-primary;
-  line-height: 1;
+.hotel-card-rank-icon {
+  font-size: 12px;
+  margin-right: 4px;
 }
 
-.hotel-card-score-label {
-  font-size: 11px;
-  color: $ctrip-text-secondary;
+.hotel-card-rank-text {
+  font-size: 10px;
+  color: #0086f6;
+  font-weight: 500;
 }
 
 .hotel-card-price {
   display: flex;
-  flex-direction: row;
-  align-items: baseline;
-  text-align: right;
+  flex-direction: row; // 改为横向布局
+  align-items: baseline; // 基线对齐
 }
 
 .hotel-card-original-price {
-  font-size: 11px;
-  color: $ctrip-text-placeholder;
-  text-decoration: line-through;
+  font-size: 12px;
+  color: #b0b0b0;
+  text-decoration-line: line-through;
   margin-right: 4px;
 }
 
+.hotel-card-price-row {
+  display: flex;
+  flex-direction: row;
+  align-items: baseline;
+}
+
 .hotel-card-current-price {
-  font-size: 18px;
+  font-size: 20px;
   font-weight: 700;
-  color: $ctrip-price;
-  line-height: 1;
+  color: #ff6b00;
 }
 
 .hotel-card-price-unit {
   font-size: 10px;
-  color: $ctrip-text-secondary;
+  color: #666;
   margin-left: 2px;
+}
+
+/* VIP 价格标签 */
+.hotel-card-vip-price {
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+  margin-top: 4px;
+}
+
+.hotel-card-vip-tag {
+  font-size: 9px;
+  color: #946c35;
+  background: #fdf5e6;
+  padding: 1px 4px;
+  border-radius: 2px;
+  margin-right: 4px;
+}
+
+.hotel-card-vip-text {
+  font-size: 10px;
+  color: #ff4d6a;
 }

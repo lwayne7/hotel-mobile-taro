@@ -1,11 +1,9 @@
 @use '../../styles/tokens' as *;
 
 .ctrip-detail {
-  width: 100%;
-  height: 100vh;
+  flex: 1;
   background: $ctrip-bg-page;
   position: relative;
-  overflow-x: hidden;
   display: flex;
   flex-direction: column;
 }
@@ -14,7 +12,7 @@
   display: flex;
   justify-content: center;
   align-items: center;
-  height: 100vh;
+  flex: 1;
   color: $ctrip-text-placeholder;
 }
 
@@ -29,8 +27,8 @@
   left: 0;
   width: 100%;
   z-index: 50;
-  padding: 16px;
-  /* Status bar spacing simulation removed for H5 */
+  padding: 44px 16px 12px;
+  /* Status bar spacing simulation */
   display: flex;
   justify-content: space-between;
   align-items: center;
@@ -54,7 +52,6 @@
 
 .ctrip-detail-header-actions {
   display: flex;
-  gap: 12px;
 }
 
 .ctrip-detail-action {
@@ -67,6 +64,7 @@
   align-items: center;
   justify-content: center;
   color: $ctrip-text;
+  margin-left: 12px;
 }
 
 /* Gallery */
@@ -96,16 +94,16 @@
   bottom: 40px;
   left: 16px;
   display: flex;
-  gap: 6px;
   z-index: 10;
 }
 
 .ctrip-detail-gallery-tag {
-  background: rgba(0, 0, 0, 0.6);
+  background: rgba(0, 0, 0, 0.65);
   color: #fff;
   font-size: 11px;
-  padding: 2px 8px;
-  border-radius: 10px;
+  padding: 4px 10px;
+  border-radius: 12px;
+  margin-right: 8px;
 }
 
 /* Info Content */
@@ -122,7 +120,6 @@
 .ctrip-detail-name-row {
   display: flex;
   align-items: center;
-  gap: 6px;
 }
 
 .ctrip-detail-name {
@@ -134,101 +131,121 @@
 .ctrip-detail-rate {
   font-size: 12px;
   color: #ffa000;
+  margin-left: 6px;
 }
 
+/* English hotel name */
 .ctrip-detail-name-en {
-  font-size: 13px;
+  font-size: 12px;
   color: $ctrip-text-secondary;
   margin-top: 4px;
   display: block;
 }
 
+/* Nearby attractions & Transportation sections */
 .ctrip-detail-nearby {
-  margin-top: 16px;
-  padding-top: 16px;
-  border-top: 1px solid #f0f0f0;
+  margin: 12px;
+  background: #fff;
+  border-radius: 12px;
+  padding: 16px;
 }
 
 .nearby-section {
-  margin-bottom: 12px;
+  margin-bottom: 16px;
+}
 
-  &:last-child {
-    margin-bottom: 0;
-  }
+.nearby-section:last-child {
+  margin-bottom: 0;
 }
 
 .nearby-title {
-  font-size: 14px;
+  font-size: 15px;
   font-weight: 600;
   color: $ctrip-text;
-  margin-bottom: 8px;
+  margin-bottom: 10px;
   display: block;
 }
 
 .nearby-tags {
   display: flex;
   flex-wrap: wrap;
-  gap: 8px;
 }
 
 .nearby-tag {
-  background: #f5f7fa;
-  color: $ctrip-text-secondary;
   font-size: 12px;
-  padding: 4px 10px;
-  border-radius: 12px;
+  color: $ctrip-text-secondary;
+  background: #f5f7fa;
+  padding: 6px 12px;
+  border-radius: 6px;
+  margin-right: 8px;
+  margin-bottom: 8px;
 }
 
 .ctrip-detail-badges {
-  margin-top: 8px;
+  margin-top: 10px;
   display: flex;
-  gap: 8px;
+  flex-wrap: wrap;
 }
 
 .ctrip-detail-badge-link {
-  color: #946c35;
-  background: #fdf5e6;
-  padding: 2px 8px;
-  border-radius: 4px;
+  color: #0086f6;
+  background: #e8f4fd;
+  padding: 4px 10px;
+  border-radius: 6px;
   font-size: 12px;
+  margin-right: 8px;
+  margin-bottom: 6px;
+  display: flex;
+  align-items: center;
+}
+
+.ctrip-detail-badge-icon {
+  font-size: 12px;
+  margin-right: 4px;
 }
 
 /* Features grid */
 .ctrip-detail-features-row {
   display: flex;
   flex-wrap: wrap;
-  gap: 12px;
-  margin-top: 16px;
+  margin-top: 20px;
+  padding-top: 16px;
+  border-top: 1px solid #f5f5f5;
 }
 
 .feature-item {
   display: flex;
   flex-direction: column;
   align-items: center;
-  gap: 4px;
+  width: 60px;
+  margin-right: 8px;
+  margin-bottom: 12px;
 }
 
 .feature-icon {
-  font-size: 20px;
+  font-size: 22px;
   color: $ctrip-text-secondary;
-  background: $ctrip-bg-page;
-  width: 32px;
-  height: 32px;
-  border-radius: 8px;
+  background: linear-gradient(135deg, #f0f4f8 0%, #e8ecf0 100%);
+  width: 44px;
+  height: 44px;
+  border-radius: 22px;
   display: flex;
   align-items: center;
   justify-content: center;
+  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.04);
 }
 
 .feature-text {
-  font-size: 11px;
+  font-size: 10px;
   color: $ctrip-text-secondary;
+  margin-top: 6px;
+  text-align: center;
 }
 
 .ctrip-detail-feature-link {
   margin-left: auto;
   font-size: 11px;
-  color: $ctrip-text-placeholder;
+  color: $ctrip-blue;
   align-self: center;
 }
 
@@ -249,7 +266,6 @@
 .ctrip-detail-score-pill {
   display: flex;
   align-items: center;
-  gap: 4px;
   margin-bottom: 4px;
 }
 
@@ -263,6 +279,7 @@
   font-size: 14px;
   font-weight: 600;
   color: $ctrip-blue;
+  margin-left: 4px;
 }
 
 .ctrip-detail-score-reviews {
@@ -293,7 +310,6 @@
 .ctrip-detail-map-link {
   font-size: 12px;
   color: $ctrip-blue;
-  white-space: nowrap;
 
   display: flex;
   flex-direction: column;
@@ -305,69 +321,113 @@
   margin: 12px;
   background: #fff;
   border-radius: 12px;
-  padding: 12px;
+  padding: 16px;
 }
 
 .dates-row {
   display: flex;
-  align-items: baseline;
+  align-items: center;
+  justify-content: space-between;
   padding-bottom: 12px;
   border-bottom: 1px solid #f5f5f5;
 }
 
+.date-section {
+  display: flex;
+  align-items: baseline;
+}
+
+.date-section-right {
+  justify-content: flex-end;
+}
+
 .date-val {
-  font-size: 18px;
-  font-weight: 600;
-  color: $ctrip-text;
-  margin-right: 4px;
+  font-size: 22px;
+  font-weight: 700;
+  color: #333;
 }
 
 .date-label {
-  font-size: 12px;
-  color: $ctrip-text-secondary;
-  margin-right: 12px;
+  font-size: 13px;
+  color: #999;
+  margin-left: 6px;
+}
+
+.date-nights-wrap {
+  display: flex;
+  align-items: center;
+  justify-content: center;
 }
 
 .date-nights {
-  border: 1px solid #eee;
-  border-radius: 10px;
-  padding: 1px 6px;
-  font-size: 10px;
-  color: #333;
-  margin-right: 12px;
-}
-
-.dates-arrow {
-  margin-left: auto;
-  color: #ccc;
+  border: 1px solid #e0e0e0;
+  border-radius: 12px;
+  padding: 4px 12px;
+  font-size: 12px;
+  color: #666;
+  background: #fafafa;
 }
 
 .dates-tip {
-  margin-top: 8px;
+  margin-top: 10px;
   display: flex;
-  gap: 6px;
+  justify-content: center;
+  font-size: 12px;
+  color: #999;
+}
+
+.dates-tip-dot {
+  margin: 0 8px;
+}
+
+.dates-tip-edit {
+  margin-left: auto;
+  color: $ctrip-blue;
   font-size: 11px;
-  color: $ctrip-text-placeholder;
+}
+
+.date-section-clickable {
+  cursor: pointer;
+  padding: 4px 8px;
+  margin: -4px -8px;
+  border-radius: 8px;
+  transition: background 0.2s;
+
+  &:active {
+    background: rgba(0, 134, 246, 0.08);
+  }
+}
+
+.calendar-popup-content {
+  padding: 16px;
+  background: #fff;
+  border-radius: 16px 16px 0 0;
 }
 
 /* Room Filters */
 .ctrip-detail-room-filters {
   margin: 0 12px;
   display: flex;
-  gap: 8px;
+  flex-wrap: wrap;
+  padding: 8px 0;
 }
 
 .ctrip-detail-room-filter-tag {
-  padding: 6px 12px;
+  padding: 8px 16px;
   background: #fff;
-  border-radius: 4px;
-  font-size: 12px;
-  color: #333;
+  border-radius: 18px;
+  font-size: 13px;
+  color: $ctrip-text;
+  margin-right: 10px;
+  margin-bottom: 8px;
+  border: 1px solid #e8e8e8;
 }
 
 .ctrip-detail-room-filter-tag.active {
   color: $ctrip-blue;
-  font-weight: 500;
+  font-weight: 600;
+  background: $ctrip-blue-light;
+  border-color: $ctrip-blue;
 }
 
 /* Room List */
@@ -375,7 +435,6 @@
   margin: 12px;
   display: flex;
   flex-direction: column;
-  gap: 12px;
 }
 
 .ctrip-detail-room {
@@ -383,7 +442,7 @@
   border-radius: 12px;
   padding: 12px;
   display: flex;
-  gap: 12px;
+  margin-bottom: 12px;
 }
 
 .ctrip-detail-room-thumb {
@@ -392,13 +451,7 @@
   border-radius: 8px;
   overflow: hidden;
   background: #eee;
-  flex-shrink: 0;
-}
-
-.ctrip-detail-room-thumb-img {
-  width: 100%;
-  height: 100%;
-  object-fit: cover;
+  margin-right: 12px;
 }
 
 .ctrip-detail-room-info {
@@ -406,16 +459,6 @@
   display: flex;
   flex-direction: column;
   justify-content: space-between;
-}
-
-.room-thumb-placeholder {
-  width: 100%;
-  height: 100%;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  background: linear-gradient(135deg, #e8f4ff 0%, #f0f8ff 100%);
-  font-size: 32px;
 }
 
 .ctrip-detail-room-name {
@@ -458,19 +501,14 @@
 }
 
 .view-room-btn {
-  background: linear-gradient(90deg, $ctrip-blue, #29a1f7);
+  background: $ctrip-blue;
   color: #fff;
   font-size: 13px;
   padding: 0 16px;
   height: 32px;
   line-height: 32px;
   border-radius: 18px;
-  margin: 0;
-  border: none;
-}
-
-.view-room-btn::after {
-  border: none;
+  border-width: 0;
 }
 
 .ctrip-detail-bottom-spacer {
@@ -479,18 +517,17 @@
 
 /* Bottom Fixed Bar */
 .ctrip-detail-bottom {
-  position: fixed;
+  position: absolute;
   bottom: 0;
   left: 0;
   right: 0;
-  width: 100%;
   background: #fff;
   padding: 10px 16px;
   display: flex;
   align-items: center;
-  gap: 16px;
-  box-shadow: 0 -2px 12px rgba(0, 0, 0, 0.08);
   z-index: 100;
+  border-top-width: 1px;
+  border-top-color: #f0f0f0;
 }
 
 .ctrip-detail-bottom-left {
@@ -499,6 +536,7 @@
   align-items: center;
   font-size: 11px;
   color: $ctrip-text-secondary;
+  margin-right: 16px;
 }
 
 .ctrip-detail-ask-icon {
@@ -526,17 +564,14 @@
 }
 
 .ctrip-detail-bottom-btn {
-  background: linear-gradient(90deg, $ctrip-primary-light 0%, $ctrip-primary 100%);
+  background: linear-gradient(90deg, #ff6b00 0%, #ff9500 100%);
   color: #fff;
   font-size: 16px;
   font-weight: 600;
-  padding: 12px 28px;
+  padding: 14px 32px;
   border-radius: 24px;
-  border: none;
+  border-width: 0;
   line-height: 1.2;
+  margin-left: 16px;
   box-shadow: 0 4px 12px rgba(255, 107, 0, 0.3);
-}
-
-.ctrip-detail-bottom-btn::after {
-  border: none;
 }
