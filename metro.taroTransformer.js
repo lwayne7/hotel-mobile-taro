@@ -1,6 +1,6 @@
 const { merge } = require('lodash');
 const path = require('path');
-const metroTransformer = require('metro-react-native-babel-transformer');
+const metroTransformer = require('@react-native/metro-babel-transformer');
 
 const { getBabelConfig } = require('@tarojs/rn-supporter/dist/babel');
 const defaults = require('@tarojs/rn-supporter/dist/defaults');
