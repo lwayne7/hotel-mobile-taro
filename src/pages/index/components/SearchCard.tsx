@@ -162,13 +162,6 @@ export function SearchCard({ onSearch, onQuickTagSearch }: SearchCardProps) {
         }
     }, [showDatePicker, checkIn, checkOut, setCheckIn, setCheckOut]);
 
-    const getFilterSummary = useCallback(() => {
-        const parts: string[] = [];
-        const starLabel = STAR_OPTIONS.find((s) => s.value === starRating)?.label;
-        if (starRating > 0 && starLabel) parts.push(starLabel);
-        if (priceRange !== '不限') parts.push(priceRange);
-        return parts.length > 0 ? parts.join('/') : '低价/高档';
-    }, [starRating, priceRange]);
 
     // 快捷标签点击即查询
     const handleQuickTagClick = useCallback((tag: string) => {
@@ -202,8 +195,11 @@ export function SearchCard({ onSearch, onQuickTagSearch }: SearchCardProps) {
                     {/* City & Keyword */}
                     <View className="search-row border-bottom">
                         <View className="city-selector" onClick={() => setShowCityModal(true)}>
-                            <Text className="city-text">{city || '选择城市'}</Text>
-                            <Text className="city-arrow">▼</Text>
+                            <View className="city-text-row">
+                                <Text className="city-text">{city || '选择城市'}</Text>
+                                <Text className="city-arrow">▼</Text>
+                            </View>
+                            <Text className="city-sub-label">当前定位</Text>
                         </View>
                         <View className="divider-vertical" />
                         <Input
@@ -217,29 +213,23 @@ export function SearchCard({ onSearch, onQuickTagSearch }: SearchCardProps) {
                             className={`gps-icon ${gpsLoading ? 'loading' : ''}`}
                             onClick={handleGpsLocation}
                         >
-                            <Text className="gps-text">{gpsLoading ? '定位中...' : '我的位置'}</Text>
-                            <Text className="gps-symbol">{gpsLoading ? '...' : '⌖'}</Text>
+                            <Text className="gps-symbol">{gpsLoading ? '...' : '◎'}</Text>
                         </View>
                     </View>
 
-                    {/* Dates */}
+                    {/* Dates - 水平一行布局 */}
                     <View className="search-row date-row border-bottom">
-                        <View className="date-col" onClick={() => openCalendar('checkIn')}>
-                            <View className="date-header">
-                                <Text className="date-label">入住</Text>
-                                <Text className="date-big">{checkIn.format('MM月DD日')}</Text>
-                                <Text className="date-small">{checkInDateLabel}</Text>
-                            </View>
+                        <View className="date-item" onClick={() => openCalendar('checkIn')}>
+                            <Text className="date-value">{checkIn.format('MM月DD日')}</Text>
+                            <Text className="date-label-inline">{checkInDateLabel || ''}</Text>
                         </View>
-                        <View className="date-duration">
-                            <Text className="duration-text">{nights}晚</Text>
+                        <Text className="date-separator">-</Text>
+                        <View className="date-item" onClick={() => openCalendar('checkOut')}>
+                            <Text className="date-value">{checkOut.format('MM月DD日')}</Text>
+                            <Text className="date-label-inline">{checkOutDateLabel || ''}</Text>
                         </View>
-                        <View className="date-col" onClick={() => openCalendar('checkOut')}>
-                            <View className="date-header">
-                                <Text className="date-label">离店</Text>
-                                <Text className="date-big">{checkOut.format('MM月DD日')}</Text>
-                                <Text className="date-small">{checkOutDateLabel}</Text>
-                            </View>
+                        <View className="date-nights">
+                            <Text className="nights-text">共{nights}晚</Text>
                         </View>
                     </View>
 
@@ -249,23 +239,22 @@ export function SearchCard({ onSearch, onQuickTagSearch }: SearchCardProps) {
                         <Text className="tip-text">当前已过0点，如需今天凌晨6点前入住，请选择"今天凌晨"</Text>
                     </View>
 
-                    {/* Price/Star & Tags */}
-                    <View className="search-row price-row">
-                        <View className="price-star-selector" onClick={() => setShowFilterModal(true)}>
-                            <Text className="price-val">价格/星级</Text>
-                            <Text className="price-sub">{getFilterSummary()}</Text>
-                        </View>
-                        <View className="quick-tags-clean">
-                            {QUICK_TAGS.slice(0, 3).map((t) => (
-                                <View
-                                    key={t}
-                                    className="quick-tag-item"
-                                    onClick={() => handleQuickTagClick(t)}
-                                >
-                                    <Text>{t}</Text>
-                                </View>
-                            ))}
-                        </View>
+                    {/* Price/Star */}
+                    <View className="search-row price-row" onClick={() => setShowFilterModal(true)}>
+                        <Text className="price-val">价格/星级</Text>
+                    </View>
+
+                    {/* Quick Tags - 独立一行 */}
+                    <View className="quick-tags-row">
+                        {QUICK_TAGS.slice(0, 3).map((t) => (
+                            <View
+                                key={t}
+                                className="quick-tag-chip"
+                                onClick={() => handleQuickTagClick(t)}
+                            >
+                                <Text>{t}</Text>
+                            </View>
+                        ))}
                     </View>
 
                     {/* Button */}

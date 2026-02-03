@@ -72,16 +72,20 @@
 }
 
 /* H5 日期选择器优化 */
+.date-row {
+  padding: 18px 0;
+}
+
 .date-col:hover {
   cursor: pointer;
   background: rgba(0, 134, 246, 0.03);
   border-radius: 8px;
-  margin: -4px;
-  padding: 4px;
+  margin: -8px;
+  padding: 8px;
 }
 
 .date-big {
-  font-size: 20px;
+  font-size: 24px;
 }
 
 /* H5 城市标签优化 */

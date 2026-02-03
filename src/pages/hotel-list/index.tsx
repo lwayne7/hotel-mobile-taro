@@ -174,6 +174,28 @@ export default function HotelList() {
             </View>
           ))}
         </View>
+        <View className="filter-row-quick">
+          <View className="filter-row-quick-inner">
+            {['外滩', '双床房', '含早餐', '免费兑早餐', '可订'].map((tag) => (
+              <Text
+                key={tag}
+                className={`ctrip-quick-filter-tag ${localKeyword === tag ? 'active' : ''}`}
+                onClick={() => {
+                  if (localKeyword === tag) {
+                    setLocalKeyword('');
+                    setKeyword('');
+                  } else {
+                    setLocalKeyword(tag);
+                    setKeyword(tag);
+                  }
+                  refetch();
+                }}
+              >
+                {tag}
+              </Text>
+            ))}
+          </View>
+        </View>
       </View>
 
       {/* Content */}

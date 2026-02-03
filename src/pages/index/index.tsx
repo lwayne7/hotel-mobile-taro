@@ -6,18 +6,30 @@
  * 2. 使用 Zustand 选择器避免不必要的重渲染
  * 3. 页面显示时重置滚动位置
  */
-import { useState, useCallback } from 'react';
+import { useCallback } from 'react';
 import { View, Text, ScrollView } from '@tarojs/components';
-import Taro, { useDidShow } from '@tarojs/taro';
+import Taro from '@tarojs/taro';
 import { useSearch } from '../../hooks/useSearch';
 import { useHotelList } from '../../hooks/useHotels';
+import { useSearchStore } from '../../store/useSearchStore';
 import { SearchCard, HotCities, RecommendSection, RecentlyViewed } from './components';
 import './index.scss';
 
 export default function Index() {
   const { navigateToList, navigateToListWithKeyword, navigateToDetail } = useSearch();
 
-  // TanStack Query - 推荐酒店
+  // 获取当前选择的城市
+  const city = useSearchStore((s) => s.city);
+
+  // TanStack Query - 获取当前城市的酒店用于广告Banner
+  const { data: cityHotelData } = useHotelList({
+    city: city || undefined,
+    page: 1,
+    pageSize: 1,
+  });
+  const bannerHotel = cityHotelData?.data?.[0];
+
+  // TanStack Query - 推荐酒店（不限城市）
   const {
     data: bannerData,
     isLoading: bannersLoading,
@@ -30,15 +42,6 @@ export default function Index() {
   });
   const bannerHotels = bannerData?.data || [];
 
-  // 滚动位置状态
-  const [scrollTop, setScrollTop] = useState(0);
-
-  // 页面显示时重置滚动位置到顶部
-  useDidShow(() => {
-    setScrollTop(0);
-    setTimeout(() => setScrollTop(0), 50);
-  });
-
   const handleSearch = useCallback(() => {
     navigateToList();
   }, [navigateToList]);
@@ -48,18 +51,17 @@ export default function Index() {
   }, [navigateToDetail]);
 
   return (
-    <View className="page-search" style={{ maxWidth: '500px', margin: '0 auto' }}>
+    <View className="page-search">
       <ScrollView
         scrollY
         className="ctrip-search-scroll"
-        scrollTop={scrollTop}
         scrollWithAnimation={false}
       >
         <View className="ctrip-search">
           {/* H5端显示标题，小程序端使用导航栏 */}
           {process.env.TARO_ENV === 'h5' && (
             <View className="ctrip-header-row">
-              <View className="ctrip-header-title">易宿·酒店预订</View>
+              <Text className="ctrip-header-title">易宿·酒店预订</Text>
               <View
                 className="ctrip-header-fav"
                 onClick={() => Taro.navigateTo({ url: '/pages/favorites/index' })}
@@ -70,22 +72,27 @@ export default function Index() {
             </View>
           )}
 
-          <View className="ctrip-img-card">
-            <View
-              className="ctrip-img-banner"
-              onClick={() => bannerHotels[0] && navigateToDetail(bannerHotels[0].id)}
-              style={{ cursor: bannerHotels[0] ? 'pointer' : 'default' }}
-            >
-              <View className="banner-title-row">
-                <Text className="banner-big-text">酒店7折起</Text>
-                <Text className="banner-sub">大促</Text>
-                <View className="banner-tags">
-                  <Text className="banner-tag trans">官方补贴</Text>
-                  <Text className="banner-tag trans">资质说明</Text>
-                </View>
+          {/* 酒店广告Banner - 点击跳转当前城市酒店 */}
+          <View
+            className="hotel-ad-banner"
+            onClick={() => bannerHotel && handleHotelClick(bannerHotel.id)}
+          >
+            <View className="ad-banner-left">
+              <Text className="ad-banner-tag">资质说明</Text>
+              <View className="ad-banner-headline">
+                <Text className="ad-banner-text-hotel">酒店</Text>
+                <Text className="ad-banner-text-discount">7折</Text>
+                <Text className="ad-banner-text-suffix">起</Text>
               </View>
             </View>
+            <View className="ad-banner-right">
+              <Text className="ad-banner-label">宠物友好酒店</Text>
+              <Text className="ad-banner-mascot">🐕</Text>
+            </View>
+          </View>
 
+          {/* 搜索卡片 */}
+          <View className="ctrip-search-card-wrapper">
             <SearchCard onSearch={handleSearch} onQuickTagSearch={navigateToListWithKeyword} />
           </View>
 
