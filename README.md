@@ -112,31 +112,34 @@ npm run build:rn -- --platform android
 | 页面       | 路径                    | 说明                         |
 |------------|-------------------------|------------------------------|
 | 酒店查询页 | `/pages/index/index`    | Banner、城市/关键字/入住离店、日历、星级、快捷标签、查询跳列表 |
-| 酒店列表页 | `/pages/hotel-list/index` | 筛选头、搜索、列表、上滑加载更多 |
-| 酒店详情页 | `/pages/hotel-detail/index` | 导航头、大图轮播、基础信息、日历+间夜、房型价格列表（按价格从低到高） |
+| 酒店列表页 | `/pages/hotel-list/index` | 筛选头、搜索、GPS定位、列表、上滑加载更多 |
+| 酒店详情页 | `/pages/hotel-detail/index` | 大图轮播（手动滑动+图片预览）、基础信息、日历+间夜、房型列表 |
+| 收藏夹 | `/pages/favorites/index` | 收藏的酒店列表，支持离线持久化 |
 
-- **日历组件**：`src/components/Calendar`，用于入住/离店日期选择，多端共用。
-- **请求**：`src/services/request.ts` 基于 `Taro.request`，`src/services/api.ts` 与原有 `publicHotelApi` 接口对齐。
+## 数据支持
 
-## 最新重构 (2026-02-02)
+本项目后端支持 **10000+ 家酒店**，覆盖：
+- **50 个城市**：北京、上海、广州、深圳、杭州、成都、三亚、厦门等
+- **5 个筛选标签**：亲子、豪华、免费停车场、含早餐、健身房（各 20%）
+- **5 个星级**：1-5 星均匀分布（各 20%）
+- **150+ 张高质量酒店图片**：确保每家酒店图片唯一
+
+## 最新更新 (2026-02-03)
+
+### UI/UX 优化
+- ✨ **点击反馈样式**：快捷标签、城市选择、搜索按钮添加触摸反馈
+- 📍 **GPS 定位**：酒店列表页支持一键定位当前城市
+- 🖼️ **图片预览**：酒店详情页轮播图支持手动滑动、索引显示、点击放大预览
+- 💾 **数据持久化**：收藏夹和最近浏览数据自动保存
 
 ### 架构升级
 - **TanStack Query v5.62.0**：服务端状态管理，支持无限滚动、缓存、自动重试
-- **Zustand v5.0.0**：客户端状态管理，使用选择器模式避免无限循环
+- **Zustand v5.0.0**：客户端状态管理，使用 persist 中间件持久化
 - **自定义 UI 组件**：Button/Popup/Loading/Skeleton/HotelCard，移除 NutUI 依赖
 
 ### 核心修复
+- 统一城市配置 (`src/constants/cities.ts`)
 - 修复价格筛选逻辑，正确传递 minPrice/maxPrice 参数
 - 修复 Zustand 选择器使用方式，避免 useEffect 无限循环
 - 修复小程序 Popup 组件的 `document.body` 兼容性问题
-- 修复小程序 API 连接配置，确保正确设置 TARO_APP_API_BASE
 - 优化 GPS 定位功能，H5 环境检测与友好错误提示
-
-### 页面优化
-- 返回页面后自动重置滚动位置到顶部
-- 优化页面布局，减少不必要的空隙
-- 修复 scroll-view padding 警告（小程序 webview 渲染模式不支持）
-
-## 关于本仓库
-
-本仓库为 **易宿酒店** 用户端 Taro 多端版，独立于 [lwayne7/hotel-mobile](https://github.com/lwayne7/hotel-mobile)（Vite 单 H5 版）。同一套业务逻辑与后端 API，产出 H5 + 微信小程序 + React Native APP。
