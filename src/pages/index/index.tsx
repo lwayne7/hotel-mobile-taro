@@ -13,6 +13,7 @@ import { useSearch } from '../../hooks/useSearch';
 import { useHotelList } from '../../hooks/useHotels';
 import { useSearchStore } from '../../store/useSearchStore';
 import { SearchCard, HotCities, RecommendSection, RecentlyViewed } from './components';
+import { platform } from '../../styles/rn-utils';
 import './index.scss';
 
 export default function Index() {
@@ -59,7 +60,7 @@ export default function Index() {
       >
         <View className="ctrip-search">
           {/* H5端显示标题，小程序端使用导航栏 */}
-          {process.env.TARO_ENV === 'h5' && (
+          {platform.isH5 && (
             <View className="ctrip-header-row">
               <Text className="ctrip-header-title">易宿·酒店预订</Text>
               <View

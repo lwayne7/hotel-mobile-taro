@@ -10,6 +10,7 @@ import { Button, Popup } from '../../../components/ui';
 import Calendar from '../../../components/Calendar';
 import { POPULAR_CITIES } from '../../../constants/cities';
 import dayjs, { Dayjs } from 'dayjs';
+import { useLocation } from '../../../hooks/useLocation';
 
 const TABS = [
     { key: 'domestic', label: '国内' },
@@ -64,7 +65,6 @@ export function SearchCard({ onSearch, onQuickTagSearch }: SearchCardProps) {
     const [showDatePicker, setShowDatePicker] = useState<'checkIn' | 'checkOut' | null>(null);
     const [showCityModal, setShowCityModal] = useState(false);
     const [showFilterModal, setShowFilterModal] = useState(false);
-    const [gpsLoading, setGpsLoading] = useState(false);
 
     // 日期计算
     const checkIn = storeCheckIn ? dayjs(storeCheckIn) : dayjs();
@@ -76,65 +76,17 @@ export function SearchCard({ onSearch, onQuickTagSearch }: SearchCardProps) {
     const checkInDateLabel = checkIn.isSame(today, 'day') ? '今天' : checkIn.isSame(today.add(1, 'day'), 'day') ? '明天' : '';
     const checkOutDateLabel = checkOut.isSame(today, 'day') ? '今天' : checkOut.isSame(today.add(1, 'day'), 'day') ? '明天' : '';
 
-    // GPS定位功能
-    const handleGpsLocation = useCallback(() => {
-        const isH5 = process.env.TARO_ENV === 'h5';
-        setGpsLoading(true);
-
-        if (isH5 && typeof window !== 'undefined') {
-            const protocol = window.location.protocol;
-            const hostname = window.location.hostname;
-            const isSecure = protocol === 'https:' || hostname === 'localhost' || hostname === '127.0.0.1';
-
-            if (!isSecure) {
-                setGpsLoading(false);
-                Taro.showToast({
-                    title: 'H5定位需要HTTPS，请手动选择城市',
-                    icon: 'none',
-                    duration: 2500
-                });
-                setShowCityModal(true);
-                return;
-            }
-        }
-
-        Taro.getLocation({
-            type: 'wgs84',
-            success: (res) => {
-                setGpsLoading(false);
-                const { longitude } = res;
-
-                let detectedCity = '上海';
-                if (longitude < 105) detectedCity = '成都';
-                else if (longitude < 113) detectedCity = '武汉';
-                else if (longitude < 114) detectedCity = '广州';
-                else if (longitude < 115) detectedCity = '深圳';
-                else if (longitude < 117) detectedCity = '杭州';
-                else if (longitude < 120) detectedCity = '南京';
-                else if (longitude < 122) detectedCity = '上海';
-                else detectedCity = '北京';
-
-                setCity(detectedCity);
-                Taro.showToast({ title: `已定位到: ${detectedCity}`, icon: 'none' });
-            },
-            fail: (err) => {
-                setGpsLoading(false);
-                const errMsg = err?.errMsg || '';
-                let toastMsg = '定位失败，请手动选择城市';
-
-                if (isH5 && errMsg.includes('permission')) {
-                    toastMsg = '请允许浏览器定位权限';
-                } else if (isH5 && errMsg.includes('timeout')) {
-                    toastMsg = '定位超时，请手动选择城市';
-                } else if (errMsg.includes('auth deny')) {
-                    toastMsg = '请在设置中开启定位权限';
-                }
-
-                Taro.showToast({ title: toastMsg, icon: 'none', duration: 2000 });
-                setShowCityModal(true);
-            },
-        });
-    }, [setCity]);
+    const { gpsLoading, handleGpsLocation } = useLocation({
+        onCityDetected: (cityName) => {
+            setCity(cityName);
+        },
+        onUnsupported: () => {
+            setShowCityModal(true);
+        },
+        onError: () => {
+            setShowCityModal(true);
+        },
+    });
 
     const openCalendar = useCallback((type: 'checkIn' | 'checkOut') => {
         setShowDatePicker(type);
@@ -254,7 +206,7 @@ export function SearchCard({ onSearch, onQuickTagSearch }: SearchCardProps) {
                     </View>
 
                     {/* Button */}
-                    <Button type="primary" block onClick={onSearch}>
+                    <Button type="primary" block className="search-submit-btn" onClick={onSearch}>
                         查询
                     </Button>
                 </View>

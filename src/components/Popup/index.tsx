@@ -5,6 +5,7 @@
 import React, { useEffect, useState } from 'react';
 import { View } from '@tarojs/components';
 import Taro from '@tarojs/taro';
+import { platform } from '../../styles/rn-utils';
 import './index.scss';
 
 export interface PopupProps {
@@ -27,7 +28,7 @@ export interface PopupProps {
   style?: React.CSSProperties;
 }
 
-const isH5 = process.env.TARO_ENV === 'h5';
+const isH5 = platform.isH5;
 
 export function Popup({
   visible = false,

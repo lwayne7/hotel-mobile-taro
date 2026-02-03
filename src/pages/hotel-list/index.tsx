@@ -14,12 +14,16 @@ import Taro, { useRouter } from '@tarojs/taro';
 
 const HISTORY_TAGS_STORAGE_KEY = 'hotel_filter_history_tags';
 import { useInfiniteHotelList, flattenHotelPages, getTotalFromPages } from '../../hooks/useHotels';
+import { useLocation } from '../../hooks/useLocation';
+import { platform } from '../../styles/rn-utils';
 import { useSearchStore } from '../../store/useSearchStore';
 import { useHotelStore } from '../../store/useHotelStore';
 import { HotelCard, Skeleton, Popup } from '../../components/ui';
 import Calendar from '../../components/Calendar';
 import { POPULAR_CITIES } from '../../constants/cities';
 import { LocationFilter, PriceFilter, GeneralFilter } from './components';
+import { FilterTabs } from './components/FilterTabs';
+import { HotelListContent } from './components/HotelListContent';
 import type { Hotel, HotelListResponse } from '../../types/hotel';
 import { toQueryString } from '../../utils/queryString';
 import { getApiBaseCacheKey } from '../../services/request';
@@ -27,14 +31,6 @@ import dayjs, { Dayjs } from 'dayjs';
 import './index.scss';
 
 const PAGE_SIZE = 50;
-
-// 排序选项配置
-const FILTER_TABS = [
-  { key: 'smart', label: '智能排序' },
-  { key: 'distance', label: '位置距离' },
-  { key: 'price', label: '价格/星级' },
-  { key: 'filter', label: '筛选' },
-];
 
 function decodeParam(value: string | undefined): string {
   if (!value || typeof value !== 'string') return '';
@@ -45,28 +41,11 @@ function decodeParam(value: string | undefined): string {
   }
 }
 
-// 检测是否支持定位
-function checkLocationSupport(): { supported: boolean; reason?: string } {
-  if (process.env.TARO_ENV === 'h5') {
-    // H5环境下检查是否是HTTPS
-    if (typeof window !== 'undefined' && window.location) {
-      const isSecure = window.location.protocol === 'https:' || window.location.hostname === 'localhost';
-      if (!isSecure) {
-        return { supported: false, reason: 'H5定位需要HTTPS环境，当前为HTTP' };
-      }
-      if (!navigator.geolocation) {
-        return { supported: false, reason: '浏览器不支持定位功能' };
-      }
-    }
-  }
-  return { supported: true };
-}
-
 export default function HotelList() {
   const router = useRouter();
   const rawParams = router.params || {};
   const isWeappDevtools = useMemo(() => {
-    if (process.env.TARO_ENV !== 'weapp') return false;
+    if (!platform.isWeapp) return false;
     try {
       return Taro.getSystemInfoSync().platform === 'devtools';
     } catch {
@@ -149,7 +128,14 @@ export default function HotelList() {
   const [rooms, setRooms] = useState(1);
   const [adults, setAdults] = useState(2);
   const [children, setChildren] = useState(0);
-  const [gpsLoading, setGpsLoading] = useState(false);
+
+  // ========== 定位 Hook ==========
+  const { gpsLoading, handleGpsLocation } = useLocation({
+    onCityDetected: (cityName) => {
+      setLocalCity(cityName);
+      setShowCityPicker(false);
+    },
+  });
 
   // ========== 计算筛选条件数量 ==========
   // 位置筛选条件数
@@ -328,75 +314,6 @@ export default function HotelList() {
     return arr.includes(item) ? arr.filter(i => i !== item) : [...arr, item];
   }, []);
 
-  // GPS定位处理
-  const handleGpsLocation = useCallback(() => {
-    if (gpsLoading) return;
-    
-    const locationCheck = checkLocationSupport();
-    if (!locationCheck.supported) {
-      Taro.showToast({ title: locationCheck.reason || '定位不可用', icon: 'none', duration: 2500 });
-      return;
-    }
-    
-    setGpsLoading(true);
-    
-    if (process.env.TARO_ENV === 'h5') {
-      // H5环境使用原生API
-      navigator.geolocation.getCurrentPosition(
-        (position) => {
-          setGpsLoading(false);
-          const { longitude } = position.coords;
-          let detectedCity = '上海';
-          if (longitude < 105) detectedCity = '成都';
-          else if (longitude < 113) detectedCity = '武汉';
-          else if (longitude < 114) detectedCity = '广州';
-          else if (longitude < 115) detectedCity = '深圳';
-          else if (longitude < 117) detectedCity = '杭州';
-          else if (longitude < 120) detectedCity = '南京';
-          else if (longitude < 122) detectedCity = '上海';
-          else detectedCity = '北京';
-          setLocalCity(detectedCity);
-          setShowCityPicker(false);
-          Taro.showToast({ title: `已定位到: ${detectedCity}`, icon: 'none' });
-        },
-        (err) => {
-          setGpsLoading(false);
-          let msg = '定位失败';
-          if (err.code === 1) msg = '定位权限被拒绝';
-          else if (err.code === 2) msg = '无法获取位置信息';
-          else if (err.code === 3) msg = '定位超时';
-          Taro.showToast({ title: msg + '，请手动选择', icon: 'none' });
-        },
-        { timeout: 10000, enableHighAccuracy: false }
-      );
-    } else {
-      // 小程序环境
-      Taro.getLocation({
-        type: 'wgs84',
-        success: (res) => {
-          setGpsLoading(false);
-          const { longitude } = res;
-          let detectedCity = '上海';
-          if (longitude < 105) detectedCity = '成都';
-          else if (longitude < 113) detectedCity = '武汉';
-          else if (longitude < 114) detectedCity = '广州';
-          else if (longitude < 115) detectedCity = '深圳';
-          else if (longitude < 117) detectedCity = '杭州';
-          else if (longitude < 120) detectedCity = '南京';
-          else if (longitude < 122) detectedCity = '上海';
-          else detectedCity = '北京';
-          setLocalCity(detectedCity);
-          setShowCityPicker(false);
-          Taro.showToast({ title: `已定位到: ${detectedCity}`, icon: 'none' });
-        },
-        fail: () => {
-          setGpsLoading(false);
-          Taro.showToast({ title: '定位失败，请手动选择', icon: 'none' });
-        },
-      });
-    }
-  }, [gpsLoading]);
-
   // ========== 快速筛选标签 ==========
   const quickTags = useMemo(() => {
     // 根据城市显示不同的快速标签
@@ -409,6 +326,8 @@ export default function HotelList() {
     };
     return cityTags[localCity] || ['双床房', '含早餐', '免费停车', '游泳池', '近地铁'];
   }, [localCity]);
+
+  const apiBaseDebugText = isWeappDevtools ? `Debug: API_BASE=${getApiBaseCacheKey()}` : '';
 
   return (
     <View className="ctrip-list">
@@ -453,92 +372,33 @@ export default function HotelList() {
       </View>
 
       {/* Filters */}
-      <View className="ctrip-list-filters">
-        <View className="filter-row-main">
-          {FILTER_TABS.map((tab) => {
-            // 计算每个tab的筛选数量
-            let tabCount = 0;
-            if (tab.key === 'distance') tabCount = locationFilterCount;
-            else if (tab.key === 'price') tabCount = priceFilterCount;
-            else if (tab.key === 'filter') tabCount = generalFilterCount;
-            
-            return (
-              <View
-                key={tab.key}
-                className={`ctrip-filter-item ${sortBy === tab.key || activeFilter === tab.key ? 'active' : ''}`}
-                onClick={() => handleFilterTabClick(tab.key)}
-              >
-                <Text>{tab.label}</Text>
-                {tabCount > 0 && (
-                  <Text className="filter-count">{tabCount}</Text>
-                )}
-                <Text className={`filter-arrow ${activeFilter === tab.key ? 'up' : ''}`}>▼</Text>
-              </View>
-            );
-          })}
-        </View>
-        <View className="filter-row-quick">
-          <ScrollView scrollX className="filter-row-quick-inner" showScrollbar={false}>
-            {quickTags.map((tag) => (
-              <Text
-                key={tag}
-                className={`ctrip-quick-filter-tag ${localKeyword === tag ? 'active' : ''}`}
-                onClick={() => handleQuickTagClick(tag)}
-              >
-                {tag}
-              </Text>
-            ))}
-          </ScrollView>
-        </View>
-      </View>
+      <FilterTabs
+        activeFilter={activeFilter}
+        sortBy={sortBy}
+        locationFilterCount={locationFilterCount}
+        priceFilterCount={priceFilterCount}
+        generalFilterCount={generalFilterCount}
+        quickTags={quickTags}
+        localKeyword={localKeyword}
+        onTabClick={handleFilterTabClick}
+        onQuickTagClick={handleQuickTagClick}
+      />
 
       {/* Content */}
-      <ScrollView
-        scrollY
-        className="ctrip-list-scroll"
+      <HotelListContent
+        hotels={hotels}
+        total={total}
+        isLoading={isLoading}
+        isError={isError}
+        errorMessage={error?.message}
+        hasNextPage={hasNextPage}
+        isFetchingNextPage={isFetchingNextPage}
+        isWeappDevtools={isWeappDevtools}
+        apiBaseDebugText={apiBaseDebugText}
         onScrollToLower={handleScrollToLower}
-        lowerThreshold={100}
-      >
-        {isLoading ? (
-          <View className="ctrip-list-content">
-            {[1, 2, 3].map((i) => (
-              <Skeleton key={i} loading rows={3} avatar />
-            ))}
-          </View>
-        ) : isError ? (
-          <View className="ctrip-empty">
-            <Text className="ctrip-empty-msg">{error?.message || '加载失败'}</Text>
-            <View className="ctrip-empty-actions">
-              <Text className="ctrip-empty-retry" onClick={() => refetch()}>重试</Text>
-            </View>
-          </View>
-        ) : hotels.length === 0 ? (
-          <View className="ctrip-empty">
-            <Text className="ctrip-empty-msg">暂无符合条件的酒店</Text>
-            <Text className="ctrip-empty-hint">试试调整搜索条件？</Text>
-            {isWeappDevtools && (
-              <Text className="ctrip-empty-debug">Debug: API_BASE={getApiBaseCacheKey()}</Text>
-            )}
-          </View>
-        ) : (
-          <View className="ctrip-list-content">
-            <Text className="ctrip-list-total">共 {total} 家酒店</Text>
-            {hotels.map((hotel) => (
-              <HotelCard key={hotel.id} hotel={hotel} onClick={handleCardClick} />
-            ))}
-            {isFetchingNextPage && (
-              <View className="ctrip-list-loading">
-                <Text>加载中...</Text>
-              </View>
-            )}
-            {!hasNextPage && hotels.length > 0 && (
-              <View className="ctrip-list-end">
-                <Text>已加载全部</Text>
-              </View>
-            )}
-          </View>
-        )}
-      </ScrollView>
+        onRetry={() => refetch()}
+        onCardClick={handleCardClick}
+      />
 
       {/* ========== 筛选弹窗 ========== */}
       

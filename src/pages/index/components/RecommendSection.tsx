@@ -6,6 +6,7 @@ import { View, Text, ScrollView, Image } from '@tarojs/components';
 import { Skeleton } from '../../../components/ui';
 import type { Hotel } from '../../../types/hotel';
 import { getApiBaseCacheKey } from '../../../services/request';
+import { platform } from '../../../styles/rn-utils';
 
 export interface RecommendSectionProps {
     hotels: Hotel[];
@@ -24,15 +25,6 @@ export function RecommendSection({
     onRetry,
     onHotelClick,
 }: RecommendSectionProps) {
-    const isWeappDevtools = (): boolean => {
-        if (process.env.TARO_ENV !== 'weapp') return false;
-        try {
-            return Taro.getSystemInfoSync().platform === 'devtools';
-        } catch {
-            return false;
-        }
-    };
-
     if (isLoading) {
         return (
             <View className="banner-skeleton">
@@ -68,7 +60,13 @@ export function RecommendSection({
             <View className="empty-container">
                 <Text className="empty-icon">🏨</Text>
                 <Text className="empty-message">暂无推荐酒店</Text>
-                {isWeappDevtools() && (
+                {platform.isWeapp && (() => {
+                    try {
+                        return Taro.getSystemInfoSync().platform === 'devtools';
+                    } catch {
+                        return false;
+                    }
+                })() && (
                     <Text className="empty-debug">Debug: API_BASE={getApiBaseCacheKey()}</Text>
                 )}
             </View>

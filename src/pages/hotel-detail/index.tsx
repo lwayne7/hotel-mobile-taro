@@ -13,6 +13,8 @@ import { useHotelDetail } from '../../hooks/useHotels';
 import { useHotelStore } from '../../store/useHotelStore';
 import { Button, Skeleton, Popup } from '../../components/ui';
 import Calendar from '../../components/Calendar';
+import { getMinPrice, getDisplayTags, getSimulatedScore } from '../../utils/hotel';
+import { SafeArea } from '../../components/SafeArea';
 import dayjs, { Dayjs } from 'dayjs';
 import './index.scss';
 
@@ -164,13 +166,13 @@ export default function HotelDetail() {
     }
   });
 
-  const minPrice = allRoomTypes.length
-    ? Math.min(...allRoomTypes.map((r: any) => Number(r?.price)).filter((n: number) => !isNaN(n)))
-    : 0;
-
-  const score = 4.8;
+  const minPrice = getMinPrice(hotel);
+  const score = getSimulatedScore(hotel);
   const openYear = hotel.openingDate ? dayjs(hotel.openingDate).year() : '2020';
-  const features = hotel.facilities?.length ? hotel.facilities.slice(0, 4) : ['免费WiFi', '停车场', '新中式风', '24h前台'];
+  const features =
+    hotel.facilities?.length && hotel.facilities.length > 0
+      ? getDisplayTags(hotel, 4)
+      : ['免费WiFi', '停车场', '新中式风', '24h前台'];
 
   return (
     <View className="ctrip-detail">
@@ -393,17 +395,19 @@ export default function HotelDetail() {
       </ScrollView>
 
       {/* Bottom Bar */}
-      <View className="ctrip-detail-bottom">
-        <View className="ctrip-detail-bottom-left">
-          <Text className="ctrip-detail-ask-icon">💬</Text>
-          <Text>咨询</Text>
+      <SafeArea edges={['bottom']}>
+        <View className="ctrip-detail-bottom">
+          <View className="ctrip-detail-bottom-left">
+            <Text className="ctrip-detail-ask-icon">💬</Text>
+            <Text>咨询</Text>
+          </View>
+          <View className="ctrip-detail-bottom-price">
+            <Text className="ctrip-detail-bottom-label">¥{minPrice}</Text>
+            <Text className="ctrip-detail-bottom-suffix">起</Text>
+          </View>
+          <Text className="ctrip-detail-bottom-btn" onClick={scrollToRooms}>查看房型</Text>
         </View>
-        <View className="ctrip-detail-bottom-price">
-          <Text className="ctrip-detail-bottom-label">¥{minPrice}</Text>
-          <Text className="ctrip-detail-bottom-suffix">起</Text>
-        </View>
-        <Text className="ctrip-detail-bottom-btn" onClick={scrollToRooms}>查看房型</Text>
-      </View>
+      </SafeArea>
 
       {/* Calendar Popup */}
       <Popup
