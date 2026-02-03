@@ -5,6 +5,7 @@
  * 1. 类名与 SCSS 保持一致（ctrip- 前缀）
  * 2. 使用正确的 Zustand 选择器
  * 3. 支持点击修改城市/日期/房间数
+ * 4. GPS定位支持
  */
 import React, { useMemo, useCallback, useState } from 'react';
 import { View, Text, Input, ScrollView } from '@tarojs/components';
@@ -14,6 +15,7 @@ import { useSearchStore } from '../../store/useSearchStore';
 import { useHotelStore } from '../../store/useHotelStore';
 import { HotelCard, Skeleton, Popup } from '../../components/ui';
 import Calendar from '../../components/Calendar';
+import { POPULAR_CITIES } from '../../constants/cities';
 import type { Hotel, HotelListResponse } from '../../types/hotel';
 import { toQueryString } from '../../utils/queryString';
 import { getApiBaseCacheKey } from '../../services/request';
@@ -27,9 +29,6 @@ const SORT_OPTIONS = [
   { key: 'price', label: '价格/星级' },
   { key: 'filter', label: '筛选' },
 ];
-
-// 城市列表
-const CITY_LIST = ['上海', '北京', '广州', '深圳', '成都', '杭州', '南京', '武汉', '重庆', '西安', '苏州', '天津'];
 
 function decodeParam(value: string | undefined): string {
   if (!value || typeof value !== 'string') return '';
@@ -85,17 +84,19 @@ export default function HotelList() {
   const [rooms, setRooms] = useState(1);
   const [adults, setAdults] = useState(2);
   const [children, setChildren] = useState(0);
-  // 搜索参数
+  const [gpsLoading, setGpsLoading] = useState(false);
+  
+  // 搜索参数 - 使用本地状态，确保用户修改城市后生效
   const searchParams = useMemo(
     () => ({
-      city: decodeParam(rawParams.city) || city || '上海',
+      city: localCity || '上海',
       keyword: localKeyword.trim() || undefined,
       starRating: Number(rawParams.starRating) || starRating || undefined,
       minPrice: minPrice,
       maxPrice: maxPrice,
       pageSize: PAGE_SIZE,
     }),
-    [rawParams.city, rawParams.starRating, city, localKeyword, starRating, minPrice, maxPrice]
+    [localCity, rawParams.starRating, localKeyword, starRating, minPrice, maxPrice]
   );
 
   // 使用 TanStack Query 的无限滚动 hook
@@ -158,12 +159,12 @@ export default function HotelList() {
         </View>
         <View className="ctrip-list-search-box">
           <View className="search-box-row">
-            <Text className="search-city" onClick={() => setShowCityPicker(true)}>{localCity} ▼</Text>
-            <Text className="search-dates" onClick={() => setShowDatePicker('checkIn')}>
-              {localCheckIn.format('MM-DD')} - {localCheckOut.format('MM-DD')}
+            <Text className="search-city clickable-hint" onClick={() => setShowCityPicker(true)}>{localCity} <Text className="hint-arrow">▼</Text></Text>
+            <Text className="search-dates clickable-hint" onClick={() => setShowDatePicker('checkIn')}>
+              {localCheckIn.format('MM-DD')} - {localCheckOut.format('MM-DD')} <Text className="hint-arrow">▼</Text>
             </Text>
             <Text className="search-nights">{nights}晚</Text>
-            <Text className="search-rooms" onClick={() => setShowRoomPicker(true)}>{rooms}间{adults}人</Text>
+            <Text className="search-rooms clickable-hint" onClick={() => setShowRoomPicker(true)}>{rooms}间{adults}人 <Text className="hint-arrow">▼</Text></Text>
           </View>
           <View className="search-box-input">
             <Text className="search-icon">🔍</Text>
@@ -288,10 +289,44 @@ export default function HotelList() {
         <View className="ctrip-picker-popup">
           <View className="picker-header">
             <Text className="picker-title">选择城市</Text>
+            <View
+              className={`picker-gps-btn ${gpsLoading ? 'loading' : ''}`}
+              onClick={() => {
+                if (gpsLoading) return;
+                setGpsLoading(true);
+                Taro.getLocation({
+                  type: 'wgs84',
+                  success: (res) => {
+                    setGpsLoading(false);
+                    const { longitude } = res;
+                    let detectedCity = '上海';
+                    if (longitude < 105) detectedCity = '成都';
+                    else if (longitude < 113) detectedCity = '武汉';
+                    else if (longitude < 114) detectedCity = '广州';
+                    else if (longitude < 115) detectedCity = '深圳';
+                    else if (longitude < 117) detectedCity = '杭州';
+                    else if (longitude < 120) detectedCity = '南京';
+                    else if (longitude < 122) detectedCity = '上海';
+                    else detectedCity = '北京';
+                    setLocalCity(detectedCity);
+                    setShowCityPicker(false);
+                    Taro.showToast({ title: `已定位到: ${detectedCity}`, icon: 'none' });
+                    refetch();
+                  },
+                  fail: () => {
+                    setGpsLoading(false);
+                    Taro.showToast({ title: '定位失败，请手动选择', icon: 'none' });
+                  },
+                });
+              }}
+            >
+              <Text className="gps-icon-text">{gpsLoading ? '...' : '◎'}</Text>
+              <Text className="gps-label">定位</Text>
+            </View>
             <Text className="picker-close" onClick={() => setShowCityPicker(false)}>×</Text>
           </View>
           <View className="picker-city-list">
-            {CITY_LIST.map((c) => (
+            {POPULAR_CITIES.map((c) => (
               <Text
                 key={c}
                 className={`picker-city-item ${localCity === c ? 'active' : ''}`}

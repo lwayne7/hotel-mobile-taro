@@ -42,6 +42,11 @@
   display: flex;
   align-items: center;
   justify-content: center;
+  
+  &:active {
+    background: rgba(255, 255, 255, 0.95);
+    transform: scale(0.95);
+  }
 }
 
 .back-arrow {
@@ -65,6 +70,11 @@
   justify-content: center;
   color: $ctrip-text;
   margin-left: 12px;
+  
+  &:active {
+    background: rgba(255, 255, 255, 0.95);
+    transform: scale(0.95);
+  }
 }
 
 /* Gallery */
@@ -81,12 +91,40 @@
 .ctrip-detail-slide-img {
   width: 100%;
   height: 100%;
+  cursor: pointer;
 }
 
 .ctrip-detail-slide-placeholder {
   width: 100%;
   height: 100%;
   background: #eee;
+}
+
+/* 自定义图片指示器 */
+.ctrip-detail-gallery-indicator {
+  position: absolute;
+  bottom: 16px;
+  right: 16px;
+  display: flex;
+  flex-direction: column;
+  align-items: flex-end;
+  z-index: 10;
+}
+
+.indicator-text {
+  background: rgba(0, 0, 0, 0.6);
+  color: #fff;
+  font-size: 12px;
+  padding: 4px 10px;
+  border-radius: 12px;
+  font-weight: 500;
+}
+
+.swipe-hint {
+  font-size: 10px;
+  color: rgba(255, 255, 255, 0.9);
+  margin-top: 4px;
+  text-shadow: 0 1px 2px rgba(0, 0, 0, 0.5);
 }
 
 .ctrip-detail-gallery-tags {
@@ -421,6 +459,13 @@
   margin-right: 10px;
   margin-bottom: 8px;
   border: 1px solid #e8e8e8;
+  cursor: pointer;
+  transition: all 0.2s;
+  
+  &:active {
+    transform: scale(0.95);
+    opacity: 0.8;
+  }
 }
 
 .ctrip-detail-room-filter-tag.active {
@@ -509,6 +554,13 @@
   line-height: 32px;
   border-radius: 18px;
   border-width: 0;
+  cursor: pointer;
+  transition: all 0.2s;
+  
+  &:active {
+    opacity: 0.9;
+    transform: scale(0.98);
+  }
 }
 
 .ctrip-detail-bottom-spacer {
@@ -574,4 +626,12 @@
   line-height: 1.2;
   margin-left: 16px;
   box-shadow: 0 4px 12px rgba(255, 107, 0, 0.3);
+  cursor: pointer;
+  transition: all 0.2s;
+  
+  &:active {
+    opacity: 0.9;
+    transform: scale(0.98);
+    box-shadow: 0 2px 8px rgba(255, 107, 0, 0.25);
+  }
 }

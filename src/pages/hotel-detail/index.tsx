@@ -35,6 +35,7 @@ export default function HotelDetail() {
   const [roomFilter, setRoomFilter] = useState<string | null>(null);
   const [scrollToId, setScrollToId] = useState('');
   const [showDatePicker, setShowDatePicker] = useState<'checkIn' | 'checkOut' | null>(null);
+  const [currentImageIndex, setCurrentImageIndex] = useState(0);
 
   // 日期 - 使用本地状态以支持调整
   const [localCheckIn, setLocalCheckIn] = useState(
@@ -192,28 +193,45 @@ export default function HotelDetail() {
       </View>
 
       <ScrollView scrollY className="ctrip-detail-scroll" scrollIntoView={scrollToId}>
-        {/* Gallery */}
+        {/* Gallery - 支持手动滑动 */}
         <View className="ctrip-detail-gallery">
           <Swiper
             className="ctrip-detail-swiper"
-            autoplay
-            circular
-            indicatorDots
-            indicatorActiveColor="#0086f6"
-            indicatorColor="rgba(255,255,255,0.5)"
+            autoplay={images.length > 1}
+            circular={images.length > 1}
+            indicatorDots={false}
             interval={4000}
             duration={500}
+            onChange={(e) => setCurrentImageIndex(e.detail.current)}
           >
             {images.map((img: any, index: number) => (
               <SwiperItem key={img.id ?? index}>
                 {img.imageUrl ? (
-                  <Image src={img.imageUrl} mode="aspectFill" className="ctrip-detail-slide-img" />
+                  <Image 
+                    src={img.imageUrl} 
+                    mode="aspectFill" 
+                    className="ctrip-detail-slide-img"
+                    onClick={() => {
+                      // 预览大图
+                      if (img.imageUrl) {
+                        Taro.previewImage({
+                          current: img.imageUrl,
+                          urls: images.filter((i: any) => i.imageUrl).map((i: any) => i.imageUrl),
+                        });
+                      }
+                    }}
+                  />
                 ) : (
                   <View className="ctrip-detail-slide-placeholder" />
                 )}
               </SwiperItem>
             ))}
           </Swiper>
+          {/* 自定义指示器 + 滑动提示 */}
+          <View className="ctrip-detail-gallery-indicator">
+            <Text className="indicator-text">{currentImageIndex + 1}/{images.length}</Text>
+            {images.length > 1 && <Text className="swipe-hint">← 滑动查看 →</Text>}
+          </View>
           <View className="ctrip-detail-gallery-tags">
             <Text className="ctrip-detail-gallery-tag">实景</Text>
             <Text className="ctrip-detail-gallery-tag">{images.length}张</Text>

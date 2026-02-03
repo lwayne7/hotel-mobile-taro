@@ -448,7 +448,7 @@
   font-size: 12px;
 }
 
-// Header clickable elements
+// Header clickable elements - 方案A: 虚线下划线 + 箭头提示
 .search-city,
 .search-dates,
 .search-rooms {
@@ -459,6 +459,27 @@
   }
 }
 
+// 可点击区域视觉提示样式
+.clickable-hint {
+  border-bottom: 1px dashed rgba(0, 134, 246, 0.4);
+  padding-bottom: 2px;
+  display: inline-flex;
+  align-items: center;
+  gap: 2px;
+  
+  &:active {
+    background: rgba(0, 134, 246, 0.06);
+    border-radius: 4px;
+  }
+}
+
+.hint-arrow {
+  font-size: 8px;
+  color: $ctrip-blue;
+  opacity: 0.6;
+  margin-left: 2px;
+}
+
 .search-rooms {
   color: $ctrip-text-secondary;
   font-size: 12px;
@@ -466,6 +487,39 @@
   padding: 2px 6px;
   background: $ctrip-bg-page;
   border-radius: 4px;
+}
+
+// GPS 定位按钮样式
+.picker-gps-btn {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  padding: 6px 12px;
+  background: rgba(0, 134, 246, 0.1);
+  border-radius: 8px;
+  cursor: pointer;
+  margin-left: auto;
+  margin-right: 12px;
+  
+  &:active {
+    background: rgba(0, 134, 246, 0.2);
+  }
+  
+  &.loading {
+    opacity: 0.6;
+    pointer-events: none;
+  }
+}
+
+.gps-icon-text {
+  font-size: 18px;
+  color: $ctrip-blue;
+}
+
+.gps-label {
+  font-size: 10px;
+  color: $ctrip-blue;
+  margin-top: 2px;
 }
 
 // Picker Popup Styles

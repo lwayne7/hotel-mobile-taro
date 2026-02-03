@@ -8,6 +8,7 @@ import Taro from '@tarojs/taro';
 import { useSearchStore } from '../../../store/useSearchStore';
 import { Button, Popup } from '../../../components/ui';
 import Calendar from '../../../components/Calendar';
+import { POPULAR_CITIES } from '../../../constants/cities';
 import dayjs, { Dayjs } from 'dayjs';
 
 const TABS = [
@@ -32,11 +33,6 @@ const PRICE_OPTIONS = [
     { label: '¥300-450', min: 300, max: 450 },
     { label: '¥450-600', min: 450, max: 600 },
     { label: '¥600以上', min: 600, max: undefined },
-];
-
-const POPULAR_CITIES = [
-    '北京', '上海', '广州', '深圳', '杭州', '成都', '西安', '三亚',
-    '南京', '武汉', '厦门', '青岛', '重庆', '苏州', '长沙', '昆明',
 ];
 
 const QUICK_TAGS = ['亲子', '豪华', '免费停车场', '含早餐', '健身房'];

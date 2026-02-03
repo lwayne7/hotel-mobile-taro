@@ -1,5 +1,33 @@
 import { create } from 'zustand';
+import { persist, createJSONStorage } from 'zustand/middleware';
+import Taro from '@tarojs/taro';
 import type { Hotel } from '../types/hotel';
+
+// Taro 存储适配器
+const taroStorage = {
+  getItem: (name: string) => {
+    try {
+      const value = Taro.getStorageSync(name);
+      return value || null;
+    } catch {
+      return null;
+    }
+  },
+  setItem: (name: string, value: string) => {
+    try {
+      Taro.setStorageSync(name, value);
+    } catch {
+      console.warn('Storage setItem failed:', name);
+    }
+  },
+  removeItem: (name: string) => {
+    try {
+      Taro.removeStorageSync(name);
+    } catch {
+      console.warn('Storage removeItem failed:', name);
+    }
+  },
+};
 
 // ============ 类型定义 ============
 export interface HotelState {
@@ -21,33 +49,45 @@ export interface HotelState {
 }
 
 // ============ Store ============
-export const useHotelStore = create<HotelState>()((set, get) => ({
-  currentHotel: null,
-  favoriteIds: [],
-  recentlyViewed: [],
+export const useHotelStore = create<HotelState>()(
+  persist(
+    (set, get) => ({
+      currentHotel: null,
+      favoriteIds: [],
+      recentlyViewed: [],
 
-  setCurrentHotel: (hotel) => set({ currentHotel: hotel }),
+      setCurrentHotel: (hotel) => set({ currentHotel: hotel }),
 
-  toggleFavorite: (hotelId) =>
-    set((state) => {
-      const isFav = state.favoriteIds.includes(hotelId);
-      return {
-        favoriteIds: isFav
-          ? state.favoriteIds.filter((id) => id !== hotelId)
-          : [...state.favoriteIds, hotelId],
-      };
+      toggleFavorite: (hotelId) =>
+        set((state) => {
+          const isFav = state.favoriteIds.includes(hotelId);
+          return {
+            favoriteIds: isFav
+              ? state.favoriteIds.filter((id) => id !== hotelId)
+              : [...state.favoriteIds, hotelId],
+          };
+        }),
+
+      isFavorite: (hotelId) => get().favoriteIds.includes(hotelId),
+
+      addToRecentlyViewed: (hotel) =>
+        set((state) => {
+          // 去重，最多保留 20 条
+          const filtered = state.recentlyViewed.filter((h) => h.id !== hotel.id);
+          return {
+            recentlyViewed: [hotel, ...filtered].slice(0, 20),
+          };
+        }),
+
+      clearRecentlyViewed: () => set({ recentlyViewed: [] }),
     }),
-
-  isFavorite: (hotelId) => get().favoriteIds.includes(hotelId),
-
-  addToRecentlyViewed: (hotel) =>
-    set((state) => {
-      // 去重，最多保留 20 条
-      const filtered = state.recentlyViewed.filter((h) => h.id !== hotel.id);
-      return {
-        recentlyViewed: [hotel, ...filtered].slice(0, 20),
-      };
-    }),
-
-  clearRecentlyViewed: () => set({ recentlyViewed: [] }),
-}));
+    {
+      name: 'hotel-store',
+      storage: createJSONStorage(() => taroStorage),
+      partialize: (state) => ({
+        favoriteIds: state.favoriteIds,
+        recentlyViewed: state.recentlyViewed,
+      }),
+    }
+  )
+);

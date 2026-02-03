@@ -8,8 +8,6 @@ import { useState, useCallback } from 'react';
 import { useHotelStore } from '../../store/useHotelStore';
 import { useHotelDetail } from '../../hooks/useHotels';
 import { HotelCard } from '../../components/ui';
-import { useSearchStore } from '../../store/useSearchStore';
-import dayjs from 'dayjs';
 import type { Hotel } from '../../types/hotel';
 import './index.scss';
 
@@ -20,9 +18,6 @@ function FavoriteItem({ hotelId, onRemove, onView }: {
     onView: (hotel: Hotel) => void;
 }) {
     const { data: hotel, isLoading, isError } = useHotelDetail(hotelId);
-    const checkIn = useSearchStore((s) => s.checkIn);
-    const checkOut = useSearchStore((s) => s.checkOut);
-    const nights = dayjs(checkOut).diff(dayjs(checkIn), 'day') || 1;
 
     if (isLoading) {
         return (
@@ -49,7 +44,6 @@ function FavoriteItem({ hotelId, onRemove, onView }: {
         <View className="favorite-item">
             <HotelCard
                 hotel={hotel}
-                nights={nights}
                 onClick={() => onView(hotel)}
             />
             <View className="favorite-actions">
