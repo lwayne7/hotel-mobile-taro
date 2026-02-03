@@ -44,18 +44,23 @@
   flex-direction: row;
   align-items: center;
   font-size: 12px;
+  flex-wrap: nowrap;
+  overflow: hidden;
 }
 
 .search-city {
   color: $ctrip-text;
   font-weight: 600;
   margin-right: 8px;
+  flex-shrink: 0;
+  white-space: nowrap;
 }
 
 .search-dates {
   color: $ctrip-text-secondary;
-  flex: 1;
+  flex-shrink: 0;
   margin-right: 8px;
+  white-space: nowrap;
 }
 
 .search-nights {
@@ -65,6 +70,8 @@
   padding: 1px 6px;
   border-radius: 10px;
   font-size: 11px;
+  flex-shrink: 0;
+  white-space: nowrap;
 }
 
 .search-box-input {
