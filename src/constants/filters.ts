@@ -23,14 +23,8 @@ export const DISTANCE_OPTIONS = [
 // 位置分类（左侧菜单）
 export const LOCATION_CATEGORIES = [
   { key: 'distance', label: '直线距离' },
-  { key: 'hot', label: '热门' },
-  { key: 'scenic', label: '景点' },
-  { key: 'metro', label: '地铁线' },
-  { key: 'airport', label: '机场车站' },
+  { key: 'hot', label: '热门地点' },
   { key: 'district', label: '行政区' },
-  { key: 'business', label: '商业区' },
-  { key: 'university', label: '大学' },
-  { key: 'hospital', label: '医院' },
 ];
 
 // 热门地点（按城市配置）
@@ -88,6 +82,75 @@ export const DEFAULT_HOT_LOCATIONS = [
   { name: '景点区', percent: 12.0 },
 ];
 
+// 行政区配置（按城市）
+export const DISTRICT_LOCATIONS: Record<string, { name: string; percent: number }[]> = {
+  '上海': [
+    { name: '黄浦区', percent: 18.5 },
+    { name: '静安区', percent: 15.2 },
+    { name: '徐汇区', percent: 12.3 },
+    { name: '浦东新区', percent: 22.1 },
+    { name: '长宁区', percent: 8.7 },
+    { name: '虹口区', percent: 6.5 },
+    { name: '杨浦区', percent: 5.8 },
+    { name: '普陀区', percent: 4.9 },
+    { name: '闵行区', percent: 3.2 },
+    { name: '宝山区', percent: 2.8 },
+  ],
+  '北京': [
+    { name: '朝阳区', percent: 25.3 },
+    { name: '海淀区', percent: 18.7 },
+    { name: '东城区', percent: 15.2 },
+    { name: '西城区', percent: 12.8 },
+    { name: '丰台区', percent: 8.5 },
+    { name: '大兴区', percent: 6.3 },
+    { name: '顺义区', percent: 5.2 },
+    { name: '昌平区', percent: 4.1 },
+    { name: '通州区', percent: 3.9 },
+  ],
+  '广州': [
+    { name: '天河区', percent: 28.5 },
+    { name: '越秀区', percent: 18.2 },
+    { name: '海珠区', percent: 12.5 },
+    { name: '白云区', percent: 10.3 },
+    { name: '番禺区', percent: 9.8 },
+    { name: '荔湾区', percent: 7.2 },
+    { name: '黄埔区', percent: 6.5 },
+    { name: '花都区', percent: 4.1 },
+    { name: '南沙区', percent: 2.9 },
+  ],
+  '深圳': [
+    { name: '福田区', percent: 26.8 },
+    { name: '南山区', percent: 22.5 },
+    { name: '罗湖区', percent: 15.3 },
+    { name: '宝安区', percent: 12.7 },
+    { name: '龙岗区', percent: 8.9 },
+    { name: '龙华区', percent: 6.8 },
+    { name: '盐田区', percent: 4.2 },
+    { name: '光明区', percent: 2.8 },
+  ],
+  '杭州': [
+    { name: '西湖区', percent: 28.5 },
+    { name: '上城区', percent: 22.3 },
+    { name: '拱墅区', percent: 15.8 },
+    { name: '滨江区', percent: 12.5 },
+    { name: '余杭区', percent: 8.7 },
+    { name: '萧山区', percent: 6.5 },
+    { name: '临平区', percent: 3.2 },
+    { name: '钱塘区', percent: 2.5 },
+  ],
+};
+
+// 默认行政区
+export const DEFAULT_DISTRICT_LOCATIONS = [
+  { name: '市中心', percent: 30.0 },
+  { name: '开发区', percent: 20.0 },
+  { name: '老城区', percent: 15.0 },
+  { name: '新城区', percent: 12.0 },
+  { name: '高新区', percent: 10.0 },
+  { name: '工业区', percent: 8.0 },
+  { name: '郊区', percent: 5.0 },
+];
+
 // ============ 价格筛选 ============
 export const PRICE_RANGES = [
   { key: 'under200', label: '¥200以下', min: 0, max: 200 },
@@ -137,13 +200,14 @@ export const HOTEL_FEATURES = [
   { key: '含早餐', label: '含早餐' },
 ];
 
-// 客房特色 - key 使用中文以便后端搜索匹配
+// 客房特色 - key 使用中文以便后端搜索匹配（与数据库房型名称匹配）
 export const ROOM_FEATURES = [
   { key: '家庭房', label: '家庭房' },
   { key: '套房', label: '套房' },
   { key: '亲子', label: '亲子主题房' },
-  { key: '双床', label: '双床房' },
-  { key: '大床', label: '大床房' },
+  { key: '双床房', label: '双床房' },
+  { key: '大床房', label: '大床房' },
+  { key: '标准间', label: '标准间' },
 ];
 
 // 设施服务 - key 使用中文以便后端搜索匹配（使用数据库中有数据的选项）
@@ -166,18 +230,15 @@ export const HOTEL_BRANDS = [
 ];
 
 // ============ 筛选分类配置 ============
+// 只保留有实际功能的分类
 export const FILTER_CATEGORIES = [
   { key: 'history', label: '历史筛选' },
   { key: 'hot', label: '热门筛选' },
   { key: 'type', label: '住宿类型' },
   { key: 'theme', label: '主题特色' },
   { key: 'brand', label: '品牌' },
-  { key: 'facility', label: '设施' },
+  { key: 'facility', label: '设施服务' },
   { key: 'room', label: '床型餐食' },
-  { key: 'area', label: '房间面积' },
-  { key: 'rating', label: '点评' },
-  { key: 'promotion', label: '权益/促销' },
-  { key: 'policy', label: '政策服务' },
 ];
 
 // ============ 筛选状态类型 ============

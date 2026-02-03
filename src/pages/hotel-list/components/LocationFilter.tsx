@@ -7,6 +7,8 @@ import {
   DISTANCE_OPTIONS,
   HOT_LOCATIONS,
   DEFAULT_HOT_LOCATIONS,
+  DISTRICT_LOCATIONS,
+  DEFAULT_DISTRICT_LOCATIONS,
 } from '../../../constants/filters';
 import './LocationFilter.scss';
 
@@ -34,6 +36,7 @@ export default function LocationFilter({
   onClear,
 }: LocationFilterProps) {
   const hotLocations = HOT_LOCATIONS[city] || DEFAULT_HOT_LOCATIONS;
+  const districtLocations = DISTRICT_LOCATIONS[city] || DEFAULT_DISTRICT_LOCATIONS;
 
   const renderRightContent = () => {
     if (selectedCategory === 'distance') {
@@ -60,6 +63,25 @@ export default function LocationFilter({
             <Text className="map-go">GO{'>'}</Text>
           </View>
           {hotLocations.map((loc) => (
+            <View
+              key={loc.name}
+              className={`location-item ${selectedLocation === loc.name ? 'active' : ''}`}
+              onClick={() => onLocationChange(selectedLocation === loc.name ? '' : loc.name)}
+            >
+              <View className="location-info">
+                <Text className="location-name">{loc.name}</Text>
+                <Text className="location-percent">{loc.percent}% 用户选择</Text>
+              </View>
+            </View>
+          ))}
+        </View>
+      );
+    }
+
+    if (selectedCategory === 'district') {
+      return (
+        <View className="location-list">
+          {districtLocations.map((loc) => (
             <View
               key={loc.name}
               className={`location-item ${selectedLocation === loc.name ? 'active' : ''}`}

@@ -152,12 +152,25 @@ export default function HotelList() {
   const [gpsLoading, setGpsLoading] = useState(false);
 
   // ========== 计算筛选条件数量 ==========
-  const filterCount = useMemo(() => {
+  // 位置筛选条件数
+  const locationFilterCount = useMemo(() => {
     let count = 0;
     if (selectedLocation) count++;
     if (maxDistance) count++;
+    return count;
+  }, [selectedLocation, maxDistance]);
+
+  // 价格/星级筛选条件数
+  const priceFilterCount = useMemo(() => {
+    let count = 0;
     if (minPrice || maxPrice) count++;
     if (localStarRating) count++;
+    return count;
+  }, [minPrice, maxPrice, localStarRating]);
+
+  // 综合筛选条件数
+  const generalFilterCount = useMemo(() => {
+    let count = 0;
     if (hotTags.length) count += hotTags.length;
     if (accommodationType.length) count += accommodationType.length;
     if (hotelFeatures.length) count += hotelFeatures.length;
@@ -165,7 +178,7 @@ export default function HotelList() {
     if (facilities.length) count += facilities.length;
     if (brands.length) count += brands.length;
     return count;
-  }, [selectedLocation, maxDistance, minPrice, maxPrice, localStarRating, hotTags, accommodationType, hotelFeatures, roomFeatures, facilities, brands]);
+  }, [hotTags, accommodationType, hotelFeatures, roomFeatures, facilities, brands]);
 
   // ========== 构建搜索参数 ==========
   const searchParams = useMemo(
@@ -181,9 +194,11 @@ export default function HotelList() {
       brands: brands.length > 0 ? brands.join(',') : undefined,
       hotelFeatures: hotelFeatures.length > 0 ? hotelFeatures.join(',') : undefined,
       roomFeatures: roomFeatures.length > 0 ? roomFeatures.join(',') : undefined,
+      // hotTags 作为关键词搜索（如果没有其他关键词）
+      tags: hotTags.length > 0 ? hotTags.join(',') : undefined,
       pageSize: PAGE_SIZE,
     }),
-    [localCity, localKeyword, selectedLocation, localStarRating, minPrice, maxPrice, sortBy, facilities, brands, hotelFeatures, roomFeatures]
+    [localCity, localKeyword, selectedLocation, localStarRating, minPrice, maxPrice, sortBy, facilities, brands, hotelFeatures, roomFeatures, hotTags]
   );
 
   // 使用 TanStack Query 的无限滚动 hook
@@ -440,19 +455,27 @@ export default function HotelList() {
       {/* Filters */}
       <View className="ctrip-list-filters">
         <View className="filter-row-main">
-          {FILTER_TABS.map((tab) => (
-            <View
-              key={tab.key}
-              className={`ctrip-filter-item ${sortBy === tab.key || activeFilter === tab.key ? 'active' : ''}`}
-              onClick={() => handleFilterTabClick(tab.key)}
-            >
-              <Text>{tab.label}</Text>
-              {tab.key === 'filter' && filterCount > 0 && (
-                <Text className="filter-count">{filterCount}</Text>
-              )}
-              <Text className={`filter-arrow ${activeFilter === tab.key ? 'up' : ''}`}>▼</Text>
-            </View>
-          ))}
+          {FILTER_TABS.map((tab) => {
+            // 计算每个tab的筛选数量
+            let tabCount = 0;
+            if (tab.key === 'distance') tabCount = locationFilterCount;
+            else if (tab.key === 'price') tabCount = priceFilterCount;
+            else if (tab.key === 'filter') tabCount = generalFilterCount;
+            
+            return (
+              <View
+                key={tab.key}
+                className={`ctrip-filter-item ${sortBy === tab.key || activeFilter === tab.key ? 'active' : ''}`}
+                onClick={() => handleFilterTabClick(tab.key)}
+              >
+                <Text>{tab.label}</Text>
+                {tabCount > 0 && (
+                  <Text className="filter-count">{tabCount}</Text>
+                )}
+                <Text className={`filter-arrow ${activeFilter === tab.key ? 'up' : ''}`}>▼</Text>
+              </View>
+            );
+          })}
         </View>
         <View className="filter-row-quick">
           <ScrollView scrollX className="filter-row-quick-inner" showScrollbar={false}>

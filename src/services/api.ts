@@ -31,6 +31,7 @@ export const publicHotelApi = {
     brands?: string;
     hotelFeatures?: string;
     roomFeatures?: string;
+    tags?: string; // 热门标签
   }): Promise<HotelListResponse> => {
     const data: Record<string, any> = {};
     if (params?.page != null) data.page = params.page;
@@ -46,6 +47,7 @@ export const publicHotelApi = {
     if (params?.brands) data.brands = params.brands;
     if (params?.hotelFeatures) data.hotelFeatures = params.hotelFeatures;
     if (params?.roomFeatures) data.roomFeatures = params.roomFeatures;
+    if (params?.tags) data.tags = params.tags;
 
     return request<any>({ url: '/api/public/hotels', data }).then((res) => {
       assertHotelListResponse(res);

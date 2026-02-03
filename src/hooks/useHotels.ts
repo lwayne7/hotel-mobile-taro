@@ -25,6 +25,7 @@ export interface HotelSearchParams {
   brands?: string;
   hotelFeatures?: string;
   roomFeatures?: string;
+  tags?: string; // 热门标签
   pageSize?: number;
 }
 
