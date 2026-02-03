@@ -1,0 +1,67 @@
+@use './index.scss' as *;
+
+/* H5 端酒店卡片优化 */
+.hotel-card {
+    cursor: pointer;
+    transition: all 0.3s ease;
+}
+
+.hotel-card:hover {
+    transform: translateY(-4px);
+    box-shadow: 0 12px 32px rgba(0, 0, 0, 0.12);
+}
+
+/* H5 端图片悬停效果 */
+.hotel-card-image-wrap {
+    transition: transform 0.3s ease;
+}
+
+.hotel-card:hover .hotel-card-image-wrap {
+    transform: scale(1.02);
+}
+
+/* H5 端评分标签悬停 */
+.hotel-card-score {
+    transition: all 0.2s ease;
+}
+
+.hotel-card:hover .hotel-card-score {
+    background-color: #006ed3;
+}
+
+/* H5 端标签悬停效果 */
+.hotel-card-tag {
+    transition: all 0.2s ease;
+    cursor: default;
+}
+
+.hotel-card-tag:hover {
+    background-color: #d4edff;
+}
+
+/* H5 端榜单标签悬停 */
+.hotel-card-rank {
+    transition: all 0.2s ease;
+}
+
+.hotel-card:hover .hotel-card-rank {
+    background-color: #d4edff;
+}
+
+/* H5 端价格高亮 */
+.hotel-card-current-price {
+    transition: all 0.2s ease;
+}
+
+.hotel-card:hover .hotel-card-current-price {
+    color: #e05a00;
+}
+
+/* H5 端折扣角标动画 */
+.hotel-card-discount-badge {
+    transition: all 0.2s ease;
+}
+
+.hotel-card:hover .hotel-card-discount-badge {
+    transform: scale(1.05);
+}

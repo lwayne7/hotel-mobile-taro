@@ -7,6 +7,7 @@ $ctrip-blue: #0086f6;
 $ctrip-blue-dark: #006ed3;
 $ctrip-blue-light: #e6f4ff;
 $ctrip-blue-gradient: linear-gradient(90deg, #0086f6 0%, #29a1f7 100%);
+$ctrip-blue-gradient-btn: linear-gradient(90deg, #4facfe 0%, #00f2fe 100%);
 
 $ctrip-bg: #f5f5f5;
 $ctrip-bg-page: #f5f7fa;
@@ -29,6 +30,32 @@ $ctrip-danger: #ff3b30; // 危险色
 $ctrip-success: #34c759; // 成功色
 $ctrip-vip: #946c35; // VIP 棕色
 $ctrip-vip-bg: #fdf5e6; // VIP 背景
+
+// ============ 评分颜色 ============
+$ctrip-score-excellent: #0086f6; // 超棒 4.8+
+$ctrip-score-great: #00b578; // 很棒 4.5+
+$ctrip-score-good: #ff9500; // 不错 4.0+
+$ctrip-score-bg: #0086f6;
+$ctrip-score-label: #fff;
+
+// ============ 榜单/标签颜色 ============
+$ctrip-rank-blue: #e8f4fd;
+$ctrip-rank-blue-text: #0086f6;
+$ctrip-tag-pink: #fff0f0;
+$ctrip-tag-pink-text: #ff4d6a;
+$ctrip-tag-green: #e8f8f0;
+$ctrip-tag-green-text: #00b578;
+$ctrip-tag-orange: #fff7e6;
+$ctrip-tag-orange-text: #ff9500;
+
+// ============ Banner 渐变 ============
+$ctrip-banner-gradient: linear-gradient(135deg, #ffe4b5 0%, #ffd89b 50%, #ffcc80 100%);
+$ctrip-banner-blue: linear-gradient(135deg, #4facfe 0%, #00f2fe 100%);
+
+// ============ VIP 会员颜色 ============
+$ctrip-diamond: #8b6914;
+$ctrip-diamond-bg: linear-gradient(90deg, #f5e6c8 0%, #d4af37 100%);
+$ctrip-member-price: #ff4d6a;
 
 // ============ 间距变量 ============
 $spacing-xs: 8px;
