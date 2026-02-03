@@ -200,8 +200,9 @@
 .filter-row-quick-inner {
   display: flex;
   flex-direction: row;
-  flex-wrap: wrap;
+  flex-wrap: nowrap;
   align-items: center;
+  white-space: nowrap;
 }
 
 .ctrip-quick-filter-tag {
@@ -211,8 +212,10 @@
   font-size: 12px;
   color: $ctrip-text-secondary;
   margin-right: 8px;
-  margin-bottom: 8px;
+  margin-bottom: 0;
   border: 1px solid #e8e8e8;
+  flex-shrink: 0;
+  white-space: nowrap;
 }
 
 .ctrip-quick-filter-tag.active {
