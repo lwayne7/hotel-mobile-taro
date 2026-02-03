@@ -9,3 +9,4 @@ project.private.config.json
 *.log
 .env.local
 .env.*.local
+.vercel
