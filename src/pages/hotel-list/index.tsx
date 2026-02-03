@@ -4,18 +4,20 @@
  * 修复内容：
  * 1. 类名与 SCSS 保持一致（ctrip- 前缀）
  * 2. 使用正确的 Zustand 选择器
+ * 3. 支持点击修改城市/日期/房间数
  */
-import React, { useMemo, useCallback } from 'react';
+import React, { useMemo, useCallback, useState } from 'react';
 import { View, Text, Input, ScrollView } from '@tarojs/components';
 import Taro, { useRouter } from '@tarojs/taro';
 import { useInfiniteHotelList, flattenHotelPages, getTotalFromPages } from '../../hooks/useHotels';
 import { useSearchStore } from '../../store/useSearchStore';
 import { useHotelStore } from '../../store/useHotelStore';
-import { HotelCard, Skeleton } from '../../components/ui';
+import { HotelCard, Skeleton, Popup } from '../../components/ui';
+import Calendar from '../../components/Calendar';
 import type { Hotel, HotelListResponse } from '../../types/hotel';
 import { toQueryString } from '../../utils/queryString';
 import { getApiBaseCacheKey } from '../../services/request';
-import dayjs from 'dayjs';
+import dayjs, { Dayjs } from 'dayjs';
 import './index.scss';
 
 const PAGE_SIZE = 10;
@@ -25,6 +27,9 @@ const SORT_OPTIONS = [
   { key: 'price', label: '价格/星级' },
   { key: 'filter', label: '筛选' },
 ];
+
+// 城市列表
+const CITY_LIST = ['上海', '北京', '广州', '深圳', '成都', '杭州', '南京', '武汉', '重庆', '西安', '苏州', '天津'];
 
 function decodeParam(value: string | undefined): string {
   if (!value || typeof value !== 'string') return '';
@@ -64,6 +69,22 @@ export default function HotelList() {
     decodeParam(rawParams.keyword) || keyword
   );
 
+  // 筛选弹窗状态
+  const [showCityPicker, setShowCityPicker] = useState(false);
+  const [showDatePicker, setShowDatePicker] = useState<'checkIn' | 'checkOut' | null>(null);
+  const [showRoomPicker, setShowRoomPicker] = useState(false);
+
+  // 本地筛选参数
+  const [localCity, setLocalCity] = useState(decodeParam(rawParams.city) || city || '上海');
+  const [localCheckIn, setLocalCheckIn] = useState(
+    rawParams.checkIn ? dayjs(rawParams.checkIn) : dayjs(storeCheckIn)
+  );
+  const [localCheckOut, setLocalCheckOut] = useState(
+    rawParams.checkOut ? dayjs(rawParams.checkOut) : dayjs(storeCheckOut)
+  );
+  const [rooms, setRooms] = useState(1);
+  const [adults, setAdults] = useState(2);
+  const [children, setChildren] = useState(0);
   // 搜索参数
   const searchParams = useMemo(
     () => ({
@@ -137,11 +158,12 @@ export default function HotelList() {
         </View>
         <View className="ctrip-list-search-box">
           <View className="search-box-row">
-            <Text className="search-city">{searchParams.city}</Text>
-            <Text className="search-dates">
-              {checkIn.format('MM-DD')} - {checkOut.format('MM-DD')}
+            <Text className="search-city" onClick={() => setShowCityPicker(true)}>{localCity} ▼</Text>
+            <Text className="search-dates" onClick={() => setShowDatePicker('checkIn')}>
+              {localCheckIn.format('MM-DD')} - {localCheckOut.format('MM-DD')}
             </Text>
             <Text className="search-nights">{nights}晚</Text>
+            <Text className="search-rooms" onClick={() => setShowRoomPicker(true)}>{rooms}间{adults}人</Text>
           </View>
           <View className="search-box-input">
             <Text className="search-icon">🔍</Text>
@@ -239,7 +261,6 @@ export default function HotelList() {
               <HotelCard
                 key={hotel.id}
                 hotel={hotel}
-                nights={nights}
                 onClick={handleCardClick}
               />
             ))}
@@ -256,6 +277,123 @@ export default function HotelList() {
           </View>
         )}
       </ScrollView>
+
+      {/* 城市选择弹窗 */}
+      <Popup
+        visible={showCityPicker}
+        onClose={() => setShowCityPicker(false)}
+        position="bottom"
+        round
+      >
+        <View className="ctrip-picker-popup">
+          <View className="picker-header">
+            <Text className="picker-title">选择城市</Text>
+            <Text className="picker-close" onClick={() => setShowCityPicker(false)}>×</Text>
+          </View>
+          <View className="picker-city-list">
+            {CITY_LIST.map((c) => (
+              <Text
+                key={c}
+                className={`picker-city-item ${localCity === c ? 'active' : ''}`}
+                onClick={() => {
+                  setLocalCity(c);
+                  setShowCityPicker(false);
+                  refetch();
+                }}
+              >
+                {c}
+              </Text>
+            ))}
+          </View>
+        </View>
+      </Popup>
+
+      {/* 日期选择弹窗 */}
+      <Popup
+        visible={!!showDatePicker}
+        onClose={() => setShowDatePicker(null)}
+        position="bottom"
+        round
+      >
+        <View className="ctrip-picker-popup ctrip-date-picker-popup">
+          <View className="picker-header">
+            <Text className="picker-title">选择{showDatePicker === 'checkIn' ? '入住' : '离店'}日期</Text>
+            <Text className="picker-close" onClick={() => setShowDatePicker(null)}>×</Text>
+          </View>
+          <Calendar
+            value={showDatePicker === 'checkIn' ? localCheckIn : localCheckOut}
+            minDate={showDatePicker === 'checkIn' ? dayjs() : localCheckIn}
+            onChange={(date: Dayjs) => {
+              if (showDatePicker === 'checkIn') {
+                setLocalCheckIn(date);
+                // 如果离店日期早于入住日期，自动调整
+                if (date.isAfter(localCheckOut) || date.isSame(localCheckOut, 'day')) {
+                  setLocalCheckOut(date.add(1, 'day'));
+                }
+                setShowDatePicker('checkOut');
+              } else {
+                setLocalCheckOut(date);
+                setShowDatePicker(null);
+                refetch();
+              }
+            }}
+          />
+        </View>
+      </Popup>
+
+      {/* 房间人数选择弹窗 */}
+      <Popup
+        visible={showRoomPicker}
+        onClose={() => setShowRoomPicker(false)}
+        position="bottom"
+        round
+      >
+        <View className="ctrip-picker-popup ctrip-room-picker-popup">
+          <View className="picker-header">
+            <Text className="picker-title">选择房间与人数</Text>
+            <Text className="picker-close" onClick={() => setShowRoomPicker(false)}>×</Text>
+          </View>
+
+          <View className="picker-room-row">
+            <Text className="picker-room-label">房间</Text>
+            <View className="picker-stepper">
+              <Text className="stepper-btn" onClick={() => setRooms(Math.max(1, rooms - 1))}>-</Text>
+              <Text className="stepper-value">{rooms}</Text>
+              <Text className="stepper-btn" onClick={() => setRooms(Math.min(10, rooms + 1))}>+</Text>
+            </View>
+          </View>
+
+          <View className="picker-room-row">
+            <Text className="picker-room-label">成人</Text>
+            <View className="picker-stepper">
+              <Text className="stepper-btn" onClick={() => setAdults(Math.max(1, adults - 1))}>-</Text>
+              <Text className="stepper-value">{adults}</Text>
+              <Text className="stepper-btn" onClick={() => setAdults(Math.min(20, adults + 1))}>+</Text>
+            </View>
+          </View>
+
+          <View className="picker-room-row">
+            <Text className="picker-room-label">儿童</Text>
+            <View className="picker-stepper">
+              <Text className="stepper-btn" onClick={() => setChildren(Math.max(0, children - 1))}>-</Text>
+              <Text className="stepper-value">{children}</Text>
+              <Text className="stepper-btn" onClick={() => setChildren(Math.min(10, children + 1))}>+</Text>
+            </View>
+          </View>
+
+          <View className="picker-room-confirm">
+            <Text
+              className="picker-confirm-btn"
+              onClick={() => {
+                setShowRoomPicker(false);
+                refetch();
+              }}
+            >
+              确定
+            </Text>
+          </View>
+        </View>
+      </Popup>
     </View>
   );
 }

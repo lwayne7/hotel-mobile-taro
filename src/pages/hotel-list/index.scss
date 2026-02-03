@@ -447,3 +447,153 @@
   color: $ctrip-text-placeholder;
   font-size: 12px;
 }
+
+// Header clickable elements
+.search-city,
+.search-dates,
+.search-rooms {
+  cursor: pointer;
+
+  &:active {
+    opacity: 0.7;
+  }
+}
+
+.search-rooms {
+  color: $ctrip-text-secondary;
+  font-size: 12px;
+  margin-left: 8px;
+  padding: 2px 6px;
+  background: $ctrip-bg-page;
+  border-radius: 4px;
+}
+
+// Picker Popup Styles
+.ctrip-picker-popup {
+  background: #fff;
+  padding: 16px;
+  max-height: 70vh;
+  overflow-y: auto;
+}
+
+.picker-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding-bottom: 12px;
+  border-bottom: 1px solid #eee;
+  margin-bottom: 12px;
+}
+
+.picker-title {
+  font-size: 16px;
+  font-weight: 600;
+  color: $ctrip-text;
+}
+
+.picker-close {
+  font-size: 24px;
+  color: $ctrip-text-secondary;
+  padding: 4px 8px;
+  cursor: pointer;
+}
+
+// City Picker
+.picker-city-list {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 10px;
+}
+
+.picker-city-item {
+  padding: 10px 16px;
+  background: $ctrip-bg-page;
+  border-radius: 8px;
+  font-size: 14px;
+  color: $ctrip-text;
+  cursor: pointer;
+
+  &:active {
+    opacity: 0.7;
+  }
+
+  &.active {
+    background: $ctrip-blue;
+    color: #fff;
+  }
+}
+
+// Date Picker
+.ctrip-date-picker-popup {
+  padding-bottom: 20px;
+}
+
+// Room Picker
+.ctrip-room-picker-popup {
+  padding-bottom: 24px;
+}
+
+.picker-room-row {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 16px 0;
+  border-bottom: 1px solid #f5f5f5;
+}
+
+.picker-room-label {
+  font-size: 16px;
+  color: $ctrip-text;
+}
+
+.picker-stepper {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+}
+
+.stepper-btn {
+  width: 32px;
+  height: 32px;
+  border-radius: 50%;
+  background: $ctrip-blue;
+  color: #fff;
+  font-size: 20px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+
+  &:active {
+    opacity: 0.7;
+  }
+}
+
+.stepper-value {
+  font-size: 18px;
+  font-weight: 600;
+  color: $ctrip-text;
+  min-width: 24px;
+  text-align: center;
+}
+
+.picker-room-confirm {
+  margin-top: 20px;
+}
+
+.picker-confirm-btn {
+  display: block;
+  width: 100%;
+  padding: 14px;
+  background: $ctrip-blue;
+  color: #fff;
+  font-size: 16px;
+  font-weight: 600;
+  text-align: center;
+  border-radius: 8px;
+  cursor: pointer;
+
+  &:active {
+    opacity: 0.9;
+  }
+}

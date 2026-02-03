@@ -194,7 +194,16 @@ export default function HotelDetail() {
       <ScrollView scrollY className="ctrip-detail-scroll" scrollIntoView={scrollToId}>
         {/* Gallery */}
         <View className="ctrip-detail-gallery">
-          <Swiper className="ctrip-detail-swiper" autoplay circular indicatorDots>
+          <Swiper
+            className="ctrip-detail-swiper"
+            autoplay
+            circular
+            indicatorDots
+            indicatorActiveColor="#0086f6"
+            indicatorColor="rgba(255,255,255,0.5)"
+            interval={4000}
+            duration={500}
+          >
             {images.map((img: any, index: number) => (
               <SwiperItem key={img.id ?? index}>
                 {img.imageUrl ? (
