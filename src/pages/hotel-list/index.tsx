@@ -10,7 +10,8 @@ import { useSearchStore } from '../../store/useSearchStore';
 import { useHotelStore } from '../../store/useHotelStore';
 import { Popup } from '../../components/ui';
 import Calendar from '../../components/Calendar';
-import { POPULAR_CITIES, ALL_CITIES } from '../../constants/cities';
+import { CityPicker } from '../../components/CityPicker';
+import { RoomPicker } from '../../components/RoomPicker';
 import { LocationFilter, PriceFilter, GeneralFilter } from './components';
 import { FilterTabs } from './components/FilterTabs';
 import { HotelListContent } from './components/HotelListContent';
@@ -54,18 +55,18 @@ export default function HotelList() {
   const [activeFilter, setActiveFilter] = useState<string | null>(null);
   const [sortBy, setSortBy] = useState('smart');
   const [localKeyword, setLocalKeyword] = useState(decodeParam(rawParams.keyword) || keyword);
-  
+
   // 位置筛选
   const [locationCategory, setLocationCategory] = useState('hot');
   const [selectedLocation, setSelectedLocation] = useState('');
   const [maxDistance, setMaxDistance] = useState<number | null>(null);
-  
+
   // 价格/星级筛选
   const [minPrice, setMinPrice] = useState<number | null>(storeMinPrice ?? null);
   const [maxPrice, setMaxPrice] = useState<number | null>(storeMaxPrice ?? null);
   const [priceRange, setPriceRange] = useState<string | null>(null);
   const [localStarRating, setLocalStarRating] = useState<number | null>(starRating);
-  
+
   // 综合筛选
   const [hotTags, setHotTags] = useState<string[]>([]);
   const [accommodationType, setAccommodationType] = useState<string[]>([]);
@@ -424,9 +425,8 @@ export default function HotelList() {
   });
 
   const apiBaseDebugText = isWeappDevtools
-    ? `Debug: API_BASE=${getApiBaseCacheKey()} | mode=${isWeapp ? 'manual' : 'rq'} | status=${
-        isWeapp ? (weappLoading ? 'loading' : weappError ? 'error' : 'success') : queryStatus
-      } | fetchStatus=${isWeapp ? (weappLoading || weappFetchingNextPage ? 'fetching' : 'idle') : queryFetchStatus}`
+    ? `Debug: API_BASE=${getApiBaseCacheKey()} | mode=${isWeapp ? 'manual' : 'rq'} | status=${isWeapp ? (weappLoading ? 'loading' : weappError ? 'error' : 'success') : queryStatus
+    } | fetchStatus=${isWeapp ? (weappLoading || weappFetchingNextPage ? 'fetching' : 'idle') : queryFetchStatus}`
     : '';
 
   return (
@@ -501,7 +501,7 @@ export default function HotelList() {
       />
 
       {/* ========== 筛选弹窗 ========== */}
-      
+
       {/* 位置距离筛选 */}
       <Popup
         visible={activeFilter === 'distance'}
@@ -566,57 +566,18 @@ export default function HotelList() {
         />
       </Popup>
 
-      {/* 城市选择弹窗（与种子数据 50 城对齐） */}
-      <Popup
+      {/* 城市选择弹窗 */}
+      <CityPicker
         visible={showCityPicker}
+        currentCity={localCity}
+        gpsLoading={gpsLoading}
         onClose={() => setShowCityPicker(false)}
-        position="bottom"
-        round
-      >
-        <View className="ctrip-picker-popup">
-          <View className="picker-header">
-            <Text className="picker-title">选择城市</Text>
-            <View
-              className={`picker-gps-btn ${gpsLoading ? 'loading' : ''}`}
-              onClick={handleGpsLocation}
-            >
-              <Text className="gps-icon-text">{gpsLoading ? '...' : '◎'}</Text>
-              <Text className="gps-label">定位</Text>
-            </View>
-            <Text className="picker-close" onClick={() => setShowCityPicker(false)}>×</Text>
-          </View>
-          <View className="picker-city-list">
-            <Text className="picker-city-section-label">热门</Text>
-            {POPULAR_CITIES.map((c) => (
-              <Text
-                key={c}
-                className={`picker-city-item ${localCity === c ? 'active' : ''}`}
-                onClick={() => {
-                  setLocalCity(c);
-                  setCity(c);
-                  setShowCityPicker(false);
-                }}
-              >
-                {c}
-              </Text>
-            ))}
-            <Text className="picker-city-section-label">全部</Text>
-            {ALL_CITIES.filter((c) => !POPULAR_CITIES.includes(c)).map((c) => (
-              <Text
-                key={c}
-                className={`picker-city-item ${localCity === c ? 'active' : ''}`}
-                onClick={() => {
-                  setLocalCity(c);
-                  setCity(c);
-                  setShowCityPicker(false);
-                }}
-              >
-                {c}
-              </Text>
-            ))}
-          </View>
-        </View>
-      </Popup>
+        onSelect={(city) => {
+          setLocalCity(city);
+          setCity(city);
+        }}
+        onGpsClick={handleGpsLocation}
+      />
 
       {/* 日期选择弹窗 */}
       <Popup
@@ -650,52 +611,16 @@ export default function HotelList() {
       </Popup>
 
       {/* 房间人数选择弹窗 */}
-      <Popup
+      <RoomPicker
         visible={showRoomPicker}
+        rooms={rooms}
+        adults={adults}
+        children={children}
         onClose={() => setShowRoomPicker(false)}
-        position="bottom"
-        round
-      >
-        <View className="ctrip-picker-popup ctrip-room-picker-popup">
-          <View className="picker-header">
-            <Text className="picker-title">选择房间与人数</Text>
-            <Text className="picker-close" onClick={() => setShowRoomPicker(false)}>×</Text>
-          </View>
-
-          <View className="picker-room-row">
-            <Text className="picker-room-label">房间</Text>
-            <View className="picker-stepper">
-              <Text className="stepper-btn" onClick={() => setRooms(Math.max(1, rooms - 1))}>-</Text>
-              <Text className="stepper-value">{rooms}</Text>
-              <Text className="stepper-btn" onClick={() => setRooms(Math.min(10, rooms + 1))}>+</Text>
-            </View>
-          </View>
-
-          <View className="picker-room-row">
-            <Text className="picker-room-label">成人</Text>
-            <View className="picker-stepper">
-              <Text className="stepper-btn" onClick={() => setAdults(Math.max(1, adults - 1))}>-</Text>
-              <Text className="stepper-value">{adults}</Text>
-              <Text className="stepper-btn" onClick={() => setAdults(Math.min(20, adults + 1))}>+</Text>
-            </View>
-          </View>
-
-          <View className="picker-room-row">
-            <Text className="picker-room-label">儿童</Text>
-            <View className="picker-stepper">
-              <Text className="stepper-btn" onClick={() => setChildren(Math.max(0, children - 1))}>-</Text>
-              <Text className="stepper-value">{children}</Text>
-              <Text className="stepper-btn" onClick={() => setChildren(Math.min(10, children + 1))}>+</Text>
-            </View>
-          </View>
-
-          <View className="picker-room-confirm">
-            <Text className="picker-confirm-btn" onClick={() => setShowRoomPicker(false)}>
-              确定
-            </Text>
-          </View>
-        </View>
-      </Popup>
+        onRoomsChange={setRooms}
+        onAdultsChange={setAdults}
+        onChildrenChange={setChildren}
+      />
     </View>
   );
 }

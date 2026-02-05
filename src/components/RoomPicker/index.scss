@@ -1,0 +1,87 @@
+.room-picker {
+    background: #fff;
+    border-radius: 24px 24px 0 0;
+    padding-bottom: env(safe-area-inset-bottom, 0);
+}
+
+.room-picker-header {
+    display: flex;
+    align-items: center;
+    padding: 32px 32px 24px;
+    border-bottom: 1px solid #f0f0f0;
+}
+
+.room-picker-title {
+    font-size: 36px;
+    font-weight: 600;
+    color: #333;
+    flex: 1;
+}
+
+.room-picker-close {
+    font-size: 48px;
+    color: #999;
+    line-height: 1;
+    padding: 8px;
+}
+
+.room-picker-row {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 32px;
+    border-bottom: 1px solid #f5f5f5;
+}
+
+.room-picker-label {
+    font-size: 32px;
+    color: #333;
+}
+
+.room-picker-stepper {
+    display: flex;
+    align-items: center;
+    gap: 24px;
+}
+
+.stepper-btn {
+    width: 56px;
+    height: 56px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background: #f5f5f5;
+    border-radius: 50%;
+    font-size: 36px;
+    color: #333;
+    user-select: none;
+
+    &:active {
+        background: #e8e8e8;
+    }
+}
+
+.stepper-value {
+    min-width: 48px;
+    text-align: center;
+    font-size: 32px;
+    font-weight: 500;
+    color: #333;
+}
+
+.room-picker-confirm {
+    padding: 24px 32px 32px;
+}
+
+.room-picker-confirm-btn {
+    display: block;
+    width: 100%;
+    height: 88px;
+    line-height: 88px;
+    text-align: center;
+    background: linear-gradient(135deg, #0086f6, #00a8ff);
+    color: #fff;
+    font-size: 32px;
+    font-weight: 500;
+    border-radius: 44px;
+}
