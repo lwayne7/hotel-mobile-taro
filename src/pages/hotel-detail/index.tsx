@@ -7,7 +7,7 @@ import { publicHotelApi } from '../../services/api';
 import { useHotelStore } from '../../store/useHotelStore';
 import { Button, Skeleton, Popup } from '../../components/ui';
 import Calendar from '../../components/Calendar';
-import { getMinPrice, getDisplayTags, getSimulatedScore, getHotelGalleryImages, getHotelDisplayImage, DEFAULT_HOTEL_IMAGE_URL } from '../../utils/hotel';
+import { getMinPrice, getDisplayTags, getSimulatedScore, getHotelGalleryImages, getHotelDisplayImage } from '../../utils/hotel';
 import { SafeArea } from '../../components/SafeArea';
 import dayjs, { Dayjs } from 'dayjs';
 import type { Hotel, RoomType } from '../../types/hotel';
@@ -68,7 +68,7 @@ function RoomImage({ src, fallbackSrc }: { src?: string; fallbackSrc?: string })
   );
 }
 
-/** Gallery 图片组件 - 加载失败时用默认酒店图，不显示灰色占位块 */
+/** Gallery 图片组件 - 无图/加载失败显示占位 */
 function GalleryImage({ 
   src, 
   onClick 
@@ -76,17 +76,24 @@ function GalleryImage({
   src?: string; 
   onClick?: () => void;
 }) {
-  const [primaryFailed, setPrimaryFailed] = useState(false);
-  const onPrimaryError = useCallback(() => setPrimaryFailed(true), []);
+  const [failed, setFailed] = useState(false);
+  const normalizedSrc = src?.trim?.();
+  const showPlaceholder = !normalizedSrc || failed;
 
-  const effectiveSrc = (src?.trim() && !primaryFailed) ? src : DEFAULT_HOTEL_IMAGE_URL;
+  if (showPlaceholder) {
+    return (
+      <View className="ctrip-detail-slide-placeholder">
+        <Text className="ctrip-detail-slide-placeholder-text">暂无图片</Text>
+      </View>
+    );
+  }
 
   return (
     <Image
-      src={effectiveSrc}
+      src={normalizedSrc!}
       mode="aspectFill"
       className="ctrip-detail-slide-img"
-      onError={primaryFailed ? undefined : onPrimaryError}
+      onError={() => setFailed(true)}
       onClick={onClick}
     />
   );
@@ -282,38 +289,46 @@ export default function HotelDetail() {
       <ScrollView scrollY className="ctrip-detail-scroll" scrollIntoView={scrollToId}>
         {/* Gallery - 支持手动滑动 */}
         <View className="ctrip-detail-gallery">
-          <Swiper
-            className="ctrip-detail-swiper"
-            autoplay={images.length > 1}
-            circular={images.length > 1}
-            indicatorDots={false}
-            interval={4000}
-            duration={500}
-            onChange={(e) => setCurrentImageIndex(e.detail.current)}
-          >
-            {images.map((img: { imageUrl: string; description?: string; id?: number }, index: number) => (
-              <SwiperItem key={img.id ?? index}>
-                <GalleryImage
-                  src={img.imageUrl}
-                  onClick={() => {
-                    if (img.imageUrl) {
-                      const urls = images.map((i) => i.imageUrl).filter(Boolean) as string[];
-                      Taro.previewImage({ current: img.imageUrl, urls });
-                    }
-                  }}
-                />
-              </SwiperItem>
-            ))}
-          </Swiper>
-          {/* 自定义指示器 + 滑动提示 */}
-          <View className="ctrip-detail-gallery-indicator">
-            <Text className="indicator-text">{currentImageIndex + 1}/{images.length}</Text>
-            {images.length > 1 && <Text className="swipe-hint">← 滑动查看 →</Text>}
-          </View>
-          <View className="ctrip-detail-gallery-tags">
-            <Text className="ctrip-detail-gallery-tag">实景</Text>
-            <Text className="ctrip-detail-gallery-tag">{images.length}张</Text>
-          </View>
+          {images.length > 0 ? (
+            <>
+              <Swiper
+                className="ctrip-detail-swiper"
+                autoplay={images.length > 1}
+                circular={images.length > 1}
+                indicatorDots={false}
+                interval={4000}
+                duration={500}
+                onChange={(e) => setCurrentImageIndex(e.detail.current)}
+              >
+                {images.map((img: { imageUrl: string; description?: string; id?: number }, index: number) => (
+                  <SwiperItem key={img.id ?? index}>
+                    <GalleryImage
+                      src={img.imageUrl}
+                      onClick={() => {
+                        if (img.imageUrl) {
+                          const urls = images.map((i) => i.imageUrl).filter(Boolean) as string[];
+                          Taro.previewImage({ current: img.imageUrl, urls });
+                        }
+                      }}
+                    />
+                  </SwiperItem>
+                ))}
+              </Swiper>
+              {/* 自定义指示器 + 滑动提示 */}
+              <View className="ctrip-detail-gallery-indicator">
+                <Text className="indicator-text">{currentImageIndex + 1}/{images.length}</Text>
+                {images.length > 1 && <Text className="swipe-hint">← 滑动查看 →</Text>}
+              </View>
+              <View className="ctrip-detail-gallery-tags">
+                <Text className="ctrip-detail-gallery-tag">实景</Text>
+                <Text className="ctrip-detail-gallery-tag">{images.length}张</Text>
+              </View>
+            </>
+          ) : (
+            <View className="ctrip-detail-slide-placeholder">
+              <Text className="ctrip-detail-slide-placeholder-text">暂无图片</Text>
+            </View>
+          )}
         </View>
 
         {/* Info */}

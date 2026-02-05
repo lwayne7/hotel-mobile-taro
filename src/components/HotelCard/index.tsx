@@ -13,7 +13,6 @@ import {
   getDiscountLabel,
   getSimulatedScore,
   getHotelDisplayImage,
-  DEFAULT_HOTEL_IMAGE_URL,
 } from '../../utils/hotel';
 import './index.scss';
 
@@ -33,14 +32,12 @@ export function HotelCard({
   style,
 }: HotelCardProps) {
   const [imageError, setImageError] = useState(false);
-  const [fallbackError, setFallbackError] = useState(false);
   const handleClick = () => {
     if (onClick) {
       onClick(hotel);
     }
   };
   const onImageError = useCallback(() => setImageError(true), []);
-  const onFallbackError = useCallback(() => setFallbackError(true), []);
 
   const minPrice = getMinPrice(hotel);
   const originalPrice = getOriginalPrice(hotel);
@@ -48,11 +45,7 @@ export function HotelCard({
   const score = getSimulatedScore(hotel);
   const discountLabel = getDiscountLabel(hotel);
   const image = getHotelDisplayImage(hotel);
-  const fallbackUrl = DEFAULT_HOTEL_IMAGE_URL && image !== DEFAULT_HOTEL_IMAGE_URL ? DEFAULT_HOTEL_IMAGE_URL : '';
-  const useFallback = imageError && fallbackUrl;
-  const displaySrc = useFallback ? fallbackUrl : image;
-  const showPlaceholder =
-    !displaySrc || (imageError && (!fallbackUrl || fallbackError || image === DEFAULT_HOTEL_IMAGE_URL));
+  const showPlaceholder = !image || imageError;
 
   const cardStyle: React.CSSProperties = {
     ...style,
@@ -60,7 +53,7 @@ export function HotelCard({
   };
 
   return (
-    <View className={`hotel-card ${className}`} style={cardStyle} onClick={handleClick}>
+      <View className={`hotel-card ${className}`} style={cardStyle} onClick={handleClick}>
       <View className="hotel-card-image-wrap">
         {showPlaceholder ? (
           <View className="hotel-card-image-placeholder">
@@ -68,11 +61,11 @@ export function HotelCard({
           </View>
         ) : (
           <Image
-            src={displaySrc}
+            src={image}
             mode="aspectFill"
             lazyLoad
             className="hotel-card-image"
-            onError={useFallback ? onFallbackError : onImageError}
+            onError={onImageError}
           />
         )}
         {discountLabel && (
