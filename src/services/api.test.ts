@@ -17,7 +17,7 @@ describe('publicHotelApi', () => {
   describe('getList', () => {
     it('should call request with correct params', async () => {
       const mockResponse = {
-        data: [{ id: 1, nameCn: 'Test Hotel' }],
+        data: [{ id: 1, nameCn: 'Test Hotel', address: '上海市测试路 1 号', starRating: 5 }],
         page: 1,
         pageSize: 10,
         total: 1,
@@ -34,14 +34,14 @@ describe('publicHotelApi', () => {
       expect(result).toEqual(mockResponse);
       expect(mockRequest).toHaveBeenCalledWith(
         expect.objectContaining({
-          url: '/api/public/hotels',
-          data: expect.objectContaining({
-            page: 1,
-            pageSize: 10,
-            city: '上海',
-          }),
+          method: 'GET',
+          url: expect.stringMatching(/^\/api\/public\/hotels\?/),
         })
       );
+      const callUrl = mockRequest.mock.calls[0][0].url;
+      expect(callUrl).toContain('page=1');
+      expect(callUrl).toContain('pageSize=10');
+      expect(callUrl).toContain('city=');
     });
 
     it('should handle empty params', async () => {
@@ -56,14 +56,23 @@ describe('publicHotelApi', () => {
 
       await publicHotelApi.getList();
 
-      expect(mockRequest).toHaveBeenCalledWith({
-        url: '/api/public/hotels',
-        data: {},
-      });
+      expect(mockRequest).toHaveBeenCalledWith(
+        expect.objectContaining({
+          method: 'GET',
+          url: '/api/public/hotels',
+        })
+      );
     });
 
     it('should filter params with keyword', async () => {
-      mockRequest.mockResolvedValueOnce({ data: [] });
+      const mockResponse = {
+        data: [],
+        page: 1,
+        pageSize: 10,
+        total: 0,
+        totalPages: 0,
+      };
+      mockRequest.mockResolvedValueOnce(mockResponse);
 
       await publicHotelApi.getList({
         keyword: '外滩',
@@ -74,15 +83,15 @@ describe('publicHotelApi', () => {
 
       expect(mockRequest).toHaveBeenCalledWith(
         expect.objectContaining({
-          url: '/api/public/hotels',
-          data: expect.objectContaining({
-            keyword: '外滩',
-            starRating: 5,
-            minPrice: 500,
-            maxPrice: 1000,
-          }),
+          method: 'GET',
+          url: expect.stringMatching(/^\/api\/public\/hotels\?/),
         })
       );
+      const callUrl = mockRequest.mock.calls[0][0].url;
+      expect(callUrl).toContain('keyword=');
+      expect(callUrl).toContain('starRating=5');
+      expect(callUrl).toContain('minPrice=500');
+      expect(callUrl).toContain('maxPrice=1000');
     });
   });
 
@@ -99,9 +108,9 @@ describe('publicHotelApi', () => {
       const result = await publicHotelApi.getById(1);
 
       expect(result).toEqual(mockHotel);
-      expect(mockRequest).toHaveBeenCalledWith({
-        url: '/api/public/hotels/1',
-      });
+      expect(mockRequest).toHaveBeenCalledWith(
+        expect.objectContaining({ url: '/api/public/hotels/1', method: 'GET' })
+      );
     });
   });
 });

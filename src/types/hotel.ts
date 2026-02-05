@@ -1,6 +1,6 @@
 export interface HotelImage {
   id?: number;
-  imageUrl: string;
+  imageUrl?: string; // 可能为 null
   description?: string;
 }
 
@@ -13,7 +13,7 @@ export interface RoomType {
   discountValue?: number;
   discountDescription?: string;
   bedType?: string;
-  roomSize?: string;
+  roomSize?: number; // 后端定义为 int
   maxGuests?: number;
   floors?: string;
   imageUrl?: string;
@@ -34,6 +34,8 @@ export interface Hotel {
   status?: string;
   roomTypes?: RoomType[];
   images?: HotelImage[];
+  /** 后端列表/详情返回的显式主图 URL，优先使用避免 relation 序列化丢失 */
+  coverImageUrl?: string;
 }
 
 export interface HotelListResponse {

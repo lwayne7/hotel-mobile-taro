@@ -42,9 +42,10 @@ export function useHotelList(
 }
 
 // ============ 无限滚动酒店列表 Hook ============
-export function useInfiniteHotelList(params: HotelSearchParams) {
+export function useInfiniteHotelList(params: HotelSearchParams, options?: { enabled?: boolean }) {
   return useInfiniteQuery({
     queryKey: hotelKeys.list(params),
+    enabled: options?.enabled,
     queryFn: ({ pageParam }) =>
       publicHotelApi.getList({ ...params, page: pageParam as number, pageSize: params.pageSize || 10 }),
     initialPageParam: 1,
@@ -76,7 +77,14 @@ export function useHotelDetail(
  */
 export function flattenHotelPages(data: { pages: HotelListResponse[] } | undefined): Hotel[] {
   if (!data?.pages) return [];
-  return data.pages.flatMap((page) => page.data || []);
+  // 注意：部分小程序 / RN 运行时不支持 Array.prototype.flatMap，
+  // 这里使用兼容性的 reduce + concat 实现，避免在这些平台上列表永远为空。
+  return data.pages.reduce<Hotel[]>((acc, page) => {
+    if (page?.data?.length) {
+      acc = acc.concat(page.data);
+    }
+    return acc;
+  }, []);
 }
 
 /**

@@ -1,32 +1,7 @@
 import { create } from 'zustand';
 import { persist, createJSONStorage } from 'zustand/middleware';
-import Taro from '@tarojs/taro';
 import dayjs from 'dayjs';
-
-// ============ Taro Storage 适配器 ============
-const taroStorage = {
-  getItem: (name: string): string | null => {
-    try {
-      return Taro.getStorageSync(name) || null;
-    } catch {
-      return null;
-    }
-  },
-  setItem: (name: string, value: string): void => {
-    try {
-      Taro.setStorageSync(name, value);
-    } catch {
-      // 忽略存储失败
-    }
-  },
-  removeItem: (name: string): void => {
-    try {
-      Taro.removeStorageSync(name);
-    } catch {
-      // 忽略
-    }
-  },
-};
+import { taroStorage } from './storage';
 
 // ============ 类型定义 ============
 export interface SearchState {

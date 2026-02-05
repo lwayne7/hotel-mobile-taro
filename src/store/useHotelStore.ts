@@ -1,33 +1,7 @@
 import { create } from 'zustand';
 import { persist, createJSONStorage } from 'zustand/middleware';
-import Taro from '@tarojs/taro';
 import type { Hotel } from '../types/hotel';
-
-// Taro 存储适配器
-const taroStorage = {
-  getItem: (name: string) => {
-    try {
-      const value = Taro.getStorageSync(name);
-      return value || null;
-    } catch {
-      return null;
-    }
-  },
-  setItem: (name: string, value: string) => {
-    try {
-      Taro.setStorageSync(name, value);
-    } catch {
-      console.warn('Storage setItem failed:', name);
-    }
-  },
-  removeItem: (name: string) => {
-    try {
-      Taro.removeStorageSync(name);
-    } catch {
-      console.warn('Storage removeItem failed:', name);
-    }
-  },
-};
+import { taroStorage } from './storage';
 
 // ============ 类型定义 ============
 export interface HotelState {

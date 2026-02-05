@@ -1,5 +1,43 @@
 import type { Hotel } from '../types/hotel';
 
+/** 无图时使用的默认主图（与后端一致，避免列表/详情出现「暂无图片」） */
+export const DEFAULT_HOTEL_IMAGE_URL =
+  'https://images.unsplash.com/photo-1542314831-068cd1dbfeeb?w=800';
+
+/**
+ * 获取酒店展示用主图 URL（列表/卡片/推荐等）
+ * 优先用后端显式返回的 coverImageUrl / cover_image_url，再按相册、房型取图，最后默认图
+ */
+export function getHotelDisplayImage(hotel: Hotel): string {
+  const cover =
+    hotel.coverImageUrl?.trim?.() ||
+    (hotel as any).cover_image_url?.trim?.();
+  if (cover) return cover;
+  for (const img of hotel.images || []) {
+    const url = img?.imageUrl?.trim?.();
+    if (url) return url;
+  }
+  for (const room of hotel.roomTypes || []) {
+    const url = room?.imageUrl?.trim?.();
+    if (url) return url;
+  }
+  return DEFAULT_HOTEL_IMAGE_URL;
+}
+
+/**
+ * 获取酒店详情轮播用图片列表（过滤空 URL，无图时用首张房型图或默认图）
+ */
+export function getHotelGalleryImages(
+  hotel: Hotel
+): { imageUrl: string; description?: string; id?: number }[] {
+  const raw = (hotel.images || []).filter((img: any) => img?.imageUrl?.trim?.());
+  if (raw.length > 0) return raw;
+  const firstRoom = (hotel.roomTypes || []).find((r: any) => r?.imageUrl?.trim?.());
+  if (firstRoom?.imageUrl?.trim?.())
+    return [{ imageUrl: firstRoom.imageUrl!.trim(), description: '房型', id: 0 }];
+  return [{ imageUrl: DEFAULT_HOTEL_IMAGE_URL, description: '酒店外观', id: 0 }];
+}
+
 /**
  * 计算酒店最低价
  */
