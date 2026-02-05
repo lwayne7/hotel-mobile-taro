@@ -138,22 +138,16 @@ npm run build:rn -- --platform android
 - **5 个星级**：1-5 星均匀分布（各 20%）
 - **150+ 张高质量酒店图片**：确保每家酒店图片唯一
 
-## 最新更新 (2026-02-03)
+## 功能特性
 
-### UI/UX 优化
-- ✨ **点击反馈样式**：快捷标签、城市选择、搜索按钮添加触摸反馈
+### UI/UX
+- ✨ **触摸反馈**：快捷标签、城市选择、搜索按钮添加点击反馈样式
 - 📍 **GPS 定位**：酒店列表页支持一键定位当前城市
 - 🖼️ **图片预览**：酒店详情页轮播图支持手动滑动、索引显示、点击放大预览
 - 💾 **数据持久化**：收藏夹和最近浏览数据自动保存
 
-### 架构升级
-- **TanStack Query v5.62.0**：服务端状态管理，支持无限滚动、缓存、自动重试
-- **Zustand v5.0.0**：客户端状态管理，使用 persist 中间件持久化
-- **自定义 UI 组件**：Button/Popup/Loading/Skeleton/HotelCard，为主要交互提供统一样式（仍保留少量 NutUI 组件作为补充）
-
-### 核心修复
-- 统一城市配置 (`src/constants/cities.ts`)
-- 修复价格筛选逻辑，正确传递 minPrice/maxPrice 参数
-- 修复 Zustand 选择器使用方式，避免 useEffect 无限循环
-- 修复小程序 Popup 组件的 `document.body` 兼容性问题
-- 优化 GPS 定位功能，H5 环境检测与友好错误提示
+### 技术架构
+- **TanStack Query**：服务端状态管理，支持无限滚动、缓存、自动重试
+- **Zustand**：客户端状态管理，使用 persist 中间件持久化
+- **自定义 UI 组件**：Button / Popup / Loading / Skeleton / HotelCard / CityPicker / RoomPicker
+- **自定义 Hooks**：useHotels / useSearch / useLocation / useWeappFetch（小程序兼容层）
