@@ -1,11 +1,10 @@
-/**
- * 推荐酒店区块组件
- */
-import Taro from '@tarojs/taro';
+/** 推荐酒店区块：骨架/错误/空态/横向列表，图片失败显示占位 */
+import { useState, useCallback } from 'react';
 import { View, Text, ScrollView, Image } from '@tarojs/components';
 import { Skeleton } from '../../../components/ui';
 import type { Hotel } from '../../../types/hotel';
-import { getApiBaseCacheKey } from '../../../services/request';
+import { getHotelDisplayImage } from '../../../utils/hotel';
+import { getApiBaseCacheKey, isWeappDevtoolsRuntime } from '../../../services/request';
 import { platform } from '../../../styles/rn-utils';
 
 export interface RecommendSectionProps {
@@ -60,13 +59,7 @@ export function RecommendSection({
             <View className="empty-container">
                 <Text className="empty-icon">🏨</Text>
                 <Text className="empty-message">暂无推荐酒店</Text>
-                {platform.isWeapp && (() => {
-                    try {
-                        return Taro.getSystemInfoSync().platform === 'devtools';
-                    } catch {
-                        return false;
-                    }
-                })() && (
+                {platform.isWeapp && isWeappDevtoolsRuntime() && (
                     <Text className="empty-debug">Debug: API_BASE={getApiBaseCacheKey()}</Text>
                 )}
             </View>
@@ -76,24 +69,52 @@ export function RecommendSection({
     return (
         <ScrollView scrollX className="ctrip-banner-scroll">
             {hotels.map((h) => (
-                <View
+                <RecommendHotelCard
                     key={h.id}
-                    className="ctrip-banner-card"
-                    onClick={() => onHotelClick(h.id)}
-                >
-                    <View className="ctrip-banner-cover">
-                        {h.images?.[0]?.imageUrl ? (
-                            <Image src={h.images[0].imageUrl} mode="aspectFill" lazyLoad className="ctrip-banner-img" />
-                        ) : (
-                            <View className="ctrip-banner-placeholder" />
-                        )}
-                    </View>
-                    <View className="ctrip-banner-info">
-                        <Text className="ctrip-banner-name">{h.nameCn}</Text>
-                        <Text className="ctrip-banner-addr">{h.address}</Text>
-                    </View>
-                </View>
+                    hotel={h}
+                    onHotelClick={onHotelClick}
+                />
             ))}
         </ScrollView>
+    );
+}
+
+function RecommendHotelCard({
+    hotel: h,
+    onHotelClick,
+}: {
+    hotel: Hotel;
+    onHotelClick: (id: number) => void;
+}) {
+    const [imgFailed, setImgFailed] = useState(false);
+    const src = getHotelDisplayImage(h);
+    const showPlaceholder = !src || imgFailed;
+    const onError = useCallback(() => setImgFailed(true), []);
+
+    return (
+        <View
+            className="ctrip-banner-card"
+            onClick={() => onHotelClick(h.id)}
+        >
+            <View className="ctrip-banner-cover">
+                {showPlaceholder ? (
+                    <View className="ctrip-banner-placeholder">
+                        <Text className="ctrip-banner-placeholder-text">酒店</Text>
+                    </View>
+                ) : (
+                    <Image
+                        src={src}
+                        mode="aspectFill"
+                        lazyLoad
+                        className="ctrip-banner-img"
+                        onError={onError}
+                    />
+                )}
+            </View>
+            <View className="ctrip-banner-info">
+                <Text className="ctrip-banner-name">{h.nameCn}</Text>
+                <Text className="ctrip-banner-addr">{h.address}</Text>
+            </View>
+        </View>
     );
 }

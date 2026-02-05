@@ -230,11 +230,16 @@
   font-size: 16px;
 }
 
+/* 保证小程序端有足够触控区域，避免点击无反应 */
 .gps-icon {
   display: flex;
   flex-direction: column;
   align-items: center;
   justify-content: center;
+  min-width: 44px;
+  min-height: 44px;
+  padding: 4px;
+  box-sizing: border-box;
   color: $ctrip-blue;
   font-size: 10px;
 }
@@ -242,6 +247,10 @@
 .gps-text {
   font-size: 10px;
   white-space: nowrap;
+}
+
+.gps-icon-hover {
+  opacity: 0.7;
 }
 
 .gps-symbol {
@@ -575,6 +584,14 @@
   width: 100%;
   height: 100%;
   background: linear-gradient(135deg, #e0e0e0, #f5f5f5);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.ctrip-banner-placeholder-text {
+  font-size: 14px;
+  color: #999;
 }
 
 .ctrip-banner-info {
@@ -646,6 +663,19 @@
 .city-modal-list {
   display: flex;
   flex-wrap: wrap;
+  align-items: center;
+}
+
+.city-modal-section {
+  width: 100%;
+  font-size: 12px;
+  color: #999;
+  margin-top: 12px;
+  margin-bottom: 4px;
+
+  &:first-child {
+    margin-top: 0;
+  }
 }
 
 .city-modal-item {

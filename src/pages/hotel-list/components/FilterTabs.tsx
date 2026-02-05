@@ -35,11 +35,11 @@ export function FilterTabs({
     <View className="ctrip-list-filters">
       <View className="filter-row-main">
         {FILTER_TABS.map((tab) => {
-          let tabCount = 0;
-          if (tab.key === 'distance') tabCount = locationFilterCount;
-          else if (tab.key === 'price') tabCount = priceFilterCount;
-          else if (tab.key === 'filter') tabCount = generalFilterCount;
-
+          const tabCount =
+            tab.key === 'distance' ? locationFilterCount
+              : tab.key === 'price' ? priceFilterCount
+              : tab.key === 'filter' ? generalFilterCount
+              : 0;
           return (
             <View
               key={tab.key}

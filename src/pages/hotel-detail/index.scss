@@ -499,6 +499,22 @@
   margin-right: 12px;
 }
 
+.ctrip-detail-room-thumb-img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+.room-thumb-placeholder {
+  width: 100%;
+  height: 100%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: linear-gradient(135deg, #f5f7fa 0%, #e4e8eb 100%);
+  font-size: 32px;
+}
+
 .ctrip-detail-room-info {
   flex: 1;
   display: flex;

@@ -632,6 +632,19 @@
   display: flex;
   flex-wrap: wrap;
   gap: 10px;
+  align-items: center;
+}
+
+.picker-city-section-label {
+  width: 100%;
+  font-size: 12px;
+  color: $ctrip-text-secondary;
+  margin-top: 12px;
+  margin-bottom: 4px;
+
+  &:first-child {
+    margin-top: 0;
+  }
 }
 
 .picker-city-item {

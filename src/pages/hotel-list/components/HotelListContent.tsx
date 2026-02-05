@@ -58,6 +58,11 @@ export function HotelListContent({
         <View className="ctrip-empty">
           <Text className="ctrip-empty-msg">暂无符合条件的酒店</Text>
           <Text className="ctrip-empty-hint">试试调整搜索条件？</Text>
+          <View className="ctrip-empty-actions">
+            <Text className="ctrip-empty-retry" onClick={onRetry}>
+              刷新
+            </Text>
+          </View>
           {isWeappDevtools && apiBaseDebugText && (
             <Text className="ctrip-empty-debug">{apiBaseDebugText}</Text>
           )}
@@ -83,4 +88,3 @@ export function HotelListContent({
     </ScrollView>
   );
 }
-

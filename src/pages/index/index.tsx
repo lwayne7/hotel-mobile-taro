@@ -1,36 +1,77 @@
-/**
- * 首页 - 重构版本
- * 
- * 架构优化：
- * 1. 拆分为独立组件：SearchCard, HotCities, RecommendSection
- * 2. 使用 Zustand 选择器避免不必要的重渲染
- * 3. 页面显示时重置滚动位置
- */
-import { useCallback } from 'react';
+/** 首页：搜索卡片、热门城市、推荐酒店（按当前城市） */
+import { useCallback, useEffect, useState } from 'react';
 import { View, Text, ScrollView } from '@tarojs/components';
-import Taro from '@tarojs/taro';
+import Taro, { useDidShow } from '@tarojs/taro';
 import { useSearch } from '../../hooks/useSearch';
-import { useHotelList } from '../../hooks/useHotels';
+import { useHotelList, useIsWeapp } from '../../hooks';
 import { useSearchStore } from '../../store/useSearchStore';
 import { SearchCard, HotCities, RecommendSection, RecentlyViewed } from './components';
-import { platform } from '../../styles/rn-utils';
+import { publicHotelApi } from '../../services/api';
+import type { Hotel } from '../../types/hotel';
 import './index.scss';
 
 export default function Index() {
   const { navigateToList, navigateToListWithKeyword, navigateToDetail } = useSearch();
 
-  // 获取当前选择的城市
   const city = useSearchStore((s) => s.city);
+  const cityForRecommend = city?.trim() || '上海';
+  const isWeapp = useIsWeapp();
 
-  // TanStack Query - 获取当前城市的酒店用于广告Banner
-  const { data: cityHotelData } = useHotelList({
-    city: city || undefined,
+  const [weappBannerHotel, setWeappBannerHotel] = useState<Hotel | undefined>(undefined);
+  const [weappBannerHotels, setWeappBannerHotels] = useState<Hotel[]>([]);
+  const [weappLoading, setWeappLoading] = useState(false);
+  const [weappError, setWeappError] = useState<Error | null>(null);
+  const [weappRefreshKey, setWeappRefreshKey] = useState(0);
+
+  useEffect(() => {
+    if (!isWeapp) return;
+    let cancelled = false;
+    const currentCity = cityForRecommend;
+    
+    const fetchData = async () => {
+      setWeappLoading(true);
+      setWeappError(null);
+      try {
+        const [cityRes, recommendRes] = await Promise.all([
+          publicHotelApi.getList({ city: currentCity, page: 1, pageSize: 1 }),
+          publicHotelApi.getList({ city: currentCity, page: 1, pageSize: 5 }),
+        ]);
+        if (cancelled) return;
+        setWeappBannerHotel(cityRes.data?.[0]);
+        setWeappBannerHotels(recommendRes.data || []);
+      } catch (e: unknown) {
+        if (cancelled) return;
+        const err = e instanceof Error ? e : new Error(String((e as { message?: string })?.message ?? e));
+        setWeappError(err);
+        setWeappBannerHotel(undefined);
+        setWeappBannerHotels([]);
+      } finally {
+        if (!cancelled) {
+          setWeappLoading(false);
+        }
+      }
+    };
+    
+    fetchData();
+    
+    return () => {
+      cancelled = true;
+    };
+  }, [cityForRecommend, isWeapp, weappRefreshKey]);
+
+  const triggerWeappRefresh = useCallback(() => {
+    if (!isWeapp) return;
+    setWeappRefreshKey(k => k + 1);
+  }, [isWeapp]);
+
+  const { data: cityHotelData, refetch: refetchCityHotel } = useHotelList({
+    city: cityForRecommend,
     page: 1,
     pageSize: 1,
-  });
+  }, { enabled: !isWeapp });
   const bannerHotel = cityHotelData?.data?.[0];
+  const currentBannerHotel = isWeapp ? weappBannerHotel : bannerHotel;
 
-  // TanStack Query - 推荐酒店（不限城市）
   const {
     data: bannerData,
     isLoading: bannersLoading,
@@ -38,10 +79,27 @@ export default function Index() {
     error: bannerError,
     refetch: refetchBanners
   } = useHotelList({
+    city: cityForRecommend,
     page: 1,
     pageSize: 5,
-  });
+  }, { enabled: !isWeapp });
   const bannerHotels = bannerData?.data || [];
+
+  useDidShow(() => {
+    if (isWeapp) {
+      triggerWeappRefresh();
+      return;
+    }
+    refetchCityHotel();
+    refetchBanners();
+  });
+
+  useEffect(() => {
+    if (isWeapp) return;
+    refetchCityHotel();
+    refetchBanners();
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [cityForRecommend]);
 
   const handleSearch = useCallback(() => {
     navigateToList();
@@ -59,24 +117,22 @@ export default function Index() {
         scrollWithAnimation={false}
       >
         <View className="ctrip-search">
-          {/* H5端显示标题，小程序端使用导航栏 */}
-          {platform.isH5 && (
-            <View className="ctrip-header-row">
-              <Text className="ctrip-header-title">易宿·酒店预订</Text>
-              <View
-                className="ctrip-header-fav"
-                onClick={() => Taro.navigateTo({ url: '/pages/favorites/index' })}
-              >
-                <Text className="fav-icon">💝</Text>
-                <Text className="fav-text">收藏</Text>
-              </View>
+          {/* 顶部标题：默认在所有端显示，让小程序 / APP 视觉与 H5 更一致 */}
+          <View className="ctrip-header-row">
+            <Text className="ctrip-header-title">易宿·酒店预订</Text>
+            <View
+              className="ctrip-header-fav"
+              onClick={() => Taro.navigateTo({ url: '/pages/favorites/index' })}
+            >
+              <Text className="fav-icon">💝</Text>
+              <Text className="fav-text">收藏</Text>
             </View>
-          )}
+          </View>
 
           {/* 酒店广告Banner - 点击跳转当前城市酒店 */}
           <View
             className="hotel-ad-banner"
-            onClick={() => bannerHotel && handleHotelClick(bannerHotel.id)}
+            onClick={() => currentBannerHotel && handleHotelClick(currentBannerHotel.id)}
           >
             <View className="ad-banner-left">
               <Text className="ad-banner-tag">资质说明</Text>
@@ -107,11 +163,11 @@ export default function Index() {
           <View className="ctrip-section">
             <Text className="ctrip-section-title">推荐酒店</Text>
             <RecommendSection
-              hotels={bannerHotels}
-              isLoading={bannersLoading}
-              isError={bannersError}
-              error={bannerError}
-              onRetry={refetchBanners}
+              hotels={isWeapp ? weappBannerHotels : bannerHotels}
+              isLoading={isWeapp ? weappLoading : bannersLoading}
+              isError={isWeapp ? !!weappError : bannersError}
+              error={isWeapp ? weappError : bannerError}
+              onRetry={isWeapp ? triggerWeappRefresh : refetchBanners}
               onHotelClick={handleHotelClick}
             />
           </View>

@@ -1,32 +1,23 @@
-/**
- * 酒店列表页 - 完整筛选版本
- * 
- * 功能：
- * 1. 智能排序、位置距离、价格/星级、综合筛选四个筛选面板
- * 2. 快速筛选标签
- * 3. 城市、日期、房间选择
- * 4. GPS定位（支持HTTPS检测）
- * 5. 无限滚动加载
- */
+/** 酒店列表页：筛选、排序、无限滚动 */
 import { useMemo, useCallback, useState, useEffect } from 'react';
-import { View, Text, Input, ScrollView } from '@tarojs/components';
-import Taro, { useRouter } from '@tarojs/taro';
+import { View, Text, Input } from '@tarojs/components';
+import Taro, { useDidShow, useRouter } from '@tarojs/taro';
 
 const HISTORY_TAGS_STORAGE_KEY = 'hotel_filter_history_tags';
-import { useInfiniteHotelList, flattenHotelPages, getTotalFromPages } from '../../hooks/useHotels';
+import { useInfiniteHotelList, flattenHotelPages, getTotalFromPages, useIsWeapp } from '../../hooks';
 import { useLocation } from '../../hooks/useLocation';
-import { platform } from '../../styles/rn-utils';
 import { useSearchStore } from '../../store/useSearchStore';
 import { useHotelStore } from '../../store/useHotelStore';
-import { HotelCard, Skeleton, Popup } from '../../components/ui';
+import { Popup } from '../../components/ui';
 import Calendar from '../../components/Calendar';
-import { POPULAR_CITIES } from '../../constants/cities';
+import { POPULAR_CITIES, ALL_CITIES } from '../../constants/cities';
 import { LocationFilter, PriceFilter, GeneralFilter } from './components';
 import { FilterTabs } from './components/FilterTabs';
 import { HotelListContent } from './components/HotelListContent';
+import { publicHotelApi } from '../../services/api';
 import type { Hotel, HotelListResponse } from '../../types/hotel';
 import { toQueryString } from '../../utils/queryString';
-import { getApiBaseCacheKey } from '../../services/request';
+import { getApiBaseCacheKey, isWeappDevtoolsRuntime } from '../../services/request';
 import dayjs, { Dayjs } from 'dayjs';
 import './index.scss';
 
@@ -44,14 +35,8 @@ function decodeParam(value: string | undefined): string {
 export default function HotelList() {
   const router = useRouter();
   const rawParams = router.params || {};
-  const isWeappDevtools = useMemo(() => {
-    if (!platform.isWeapp) return false;
-    try {
-      return Taro.getSystemInfoSync().platform === 'devtools';
-    } catch {
-      return false;
-    }
-  }, []);
+  const isWeapp = useIsWeapp();
+  const isWeappDevtools = useMemo(() => isWeapp && isWeappDevtoolsRuntime(), [isWeapp]);
 
   // Zustand - 使用选择器
   const city = useSearchStore((s) => s.city);
@@ -62,6 +47,7 @@ export default function HotelList() {
   const storeCheckIn = useSearchStore((s) => s.checkIn);
   const storeCheckOut = useSearchStore((s) => s.checkOut);
   const setKeyword = useSearchStore((s) => s.setKeyword);
+  const setCity = useSearchStore((s) => s.setCity);
   const addToRecentlyViewed = useHotelStore((s) => s.addToRecentlyViewed);
 
   // ========== 筛选状态 ==========
@@ -117,8 +103,11 @@ export default function HotelList() {
   const [showDatePicker, setShowDatePicker] = useState<'checkIn' | 'checkOut' | null>(null);
   const [showRoomPicker, setShowRoomPicker] = useState(false);
 
-  // 本地筛选参数
+  // 本地筛选参数（与 store 同步：列表页选中的城市即“当前查询页城市”，回首页后推荐酒店按此城市）
   const [localCity, setLocalCity] = useState(decodeParam(rawParams.city) || city || '上海');
+  useEffect(() => {
+    setCity(localCity);
+  }, [localCity, setCity]);
   const [localCheckIn, setLocalCheckIn] = useState(
     rawParams.checkIn ? dayjs(rawParams.checkIn) : dayjs(storeCheckIn)
   );
@@ -133,38 +122,16 @@ export default function HotelList() {
   const { gpsLoading, handleGpsLocation } = useLocation({
     onCityDetected: (cityName) => {
       setLocalCity(cityName);
+      setCity(cityName);
       setShowCityPicker(false);
     },
   });
 
-  // ========== 计算筛选条件数量 ==========
-  // 位置筛选条件数
-  const locationFilterCount = useMemo(() => {
-    let count = 0;
-    if (selectedLocation) count++;
-    if (maxDistance) count++;
-    return count;
-  }, [selectedLocation, maxDistance]);
-
-  // 价格/星级筛选条件数
-  const priceFilterCount = useMemo(() => {
-    let count = 0;
-    if (minPrice || maxPrice) count++;
-    if (localStarRating) count++;
-    return count;
-  }, [minPrice, maxPrice, localStarRating]);
-
-  // 综合筛选条件数
-  const generalFilterCount = useMemo(() => {
-    let count = 0;
-    if (hotTags.length) count += hotTags.length;
-    if (accommodationType.length) count += accommodationType.length;
-    if (hotelFeatures.length) count += hotelFeatures.length;
-    if (roomFeatures.length) count += roomFeatures.length;
-    if (facilities.length) count += facilities.length;
-    if (brands.length) count += brands.length;
-    return count;
-  }, [hotTags, accommodationType, hotelFeatures, roomFeatures, facilities, brands]);
+  const locationFilterCount = (selectedLocation ? 1 : 0) + (maxDistance != null ? 1 : 0);
+  const priceFilterCount = (minPrice != null || maxPrice != null ? 1 : 0) + (localStarRating != null ? 1 : 0);
+  const generalFilterCount =
+    hotTags.length + accommodationType.length + hotelFeatures.length +
+    roomFeatures.length + facilities.length + brands.length;
 
   // ========== 构建搜索参数 ==========
   const searchParams = useMemo(
@@ -189,19 +156,116 @@ export default function HotelList() {
 
   // 使用 TanStack Query 的无限滚动 hook
   const {
-    data,
-    isLoading,
-    isError,
-    error,
-    fetchNextPage,
-    hasNextPage,
-    isFetchingNextPage,
-    refetch,
-  } = useInfiniteHotelList(searchParams);
+    data: queryData,
+    isLoading: queryIsLoading,
+    isError: queryIsError,
+    error: queryError,
+    status: queryStatus,
+    fetchStatus: queryFetchStatus,
+    fetchNextPage: queryFetchNextPage,
+    hasNextPage: queryHasNextPage,
+    isFetchingNextPage: queryIsFetchingNextPage,
+    refetch: queryRefetch,
+  } = useInfiniteHotelList(searchParams, { enabled: !isWeapp });
+
+  // weapp 最简兜底：不依赖 TanStack Query，避免小程序环境下 Query 不触发导致“不发请求、一直空列表”
+  const [weappHotels, setWeappHotels] = useState<Hotel[]>([]);
+  const [weappTotal, setWeappTotal] = useState(0);
+  const [weappPage, setWeappPage] = useState(1);
+  const [weappTotalPages, setWeappTotalPages] = useState(0);
+  const [weappLoading, setWeappLoading] = useState(false);
+  const [weappError, setWeappError] = useState<Error | null>(null);
+  const [weappFetchingNextPage, setWeappFetchingNextPage] = useState(false);
+  const [weappRefreshKey, setWeappRefreshKey] = useState(0);
+
+  const triggerWeappRefresh = useCallback(() => {
+    if (!isWeapp) return;
+    setWeappRefreshKey((k) => k + 1);
+  }, [isWeapp]);
+
+  const fetchWeappFirstPage = useCallback(async () => {
+    if (!isWeapp) return;
+    setWeappLoading(true);
+    setWeappError(null);
+    try {
+      const res = await publicHotelApi.getList({
+        ...searchParams,
+        page: 1,
+        pageSize: PAGE_SIZE,
+      });
+      setWeappHotels(res.data || []);
+      setWeappTotal(res.total || 0);
+      setWeappPage(res.page || 1);
+      setWeappTotalPages(res.totalPages || 0);
+    } catch (e: any) {
+      const err = e instanceof Error ? e : new Error(String(e?.message || e));
+      setWeappError(err);
+      setWeappHotels([]);
+      setWeappTotal(0);
+      setWeappPage(1);
+      setWeappTotalPages(0);
+    } finally {
+      setWeappLoading(false);
+    }
+  }, [isWeapp, searchParams]);
+
+  const fetchWeappNextPage = useCallback(async () => {
+    if (!isWeapp) return;
+    if (weappFetchingNextPage || weappLoading) return;
+    if (weappTotalPages && weappPage >= weappTotalPages) return;
+
+    const nextPage = weappPage + 1;
+    setWeappFetchingNextPage(true);
+    setWeappError(null);
+    try {
+      const res = await publicHotelApi.getList({
+        ...searchParams,
+        page: nextPage,
+        pageSize: PAGE_SIZE,
+      });
+      setWeappHotels((prev) => prev.concat(res.data || []));
+      setWeappTotal(res.total || weappTotal);
+      setWeappPage(res.page || nextPage);
+      setWeappTotalPages(res.totalPages || weappTotalPages);
+    } catch (e: any) {
+      const err = e instanceof Error ? e : new Error(String(e?.message || e));
+      setWeappError(err);
+      try {
+        Taro.showToast({ title: err.message || '加载失败', icon: 'none' });
+      } catch {
+        // ignore
+      }
+    } finally {
+      setWeappFetchingNextPage(false);
+    }
+  }, [
+    isWeapp,
+    searchParams,
+    weappFetchingNextPage,
+    weappLoading,
+    weappPage,
+    weappTotal,
+    weappTotalPages,
+  ]);
+
+  // weapp：显式触发刷新时拉取第一页
+  useEffect(() => {
+    if (!isWeapp) return;
+    if (weappRefreshKey === 0) return;
+    fetchWeappFirstPage();
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [isWeapp, weappRefreshKey]);
 
   // 扁平化分页数据
-  const hotels = flattenHotelPages(data as { pages: HotelListResponse[] } | undefined);
-  const total = getTotalFromPages(data as { pages: HotelListResponse[] } | undefined);
+  const queryHotels = flattenHotelPages(queryData as { pages: HotelListResponse[] } | undefined);
+  const queryTotal = getTotalFromPages(queryData as { pages: HotelListResponse[] } | undefined);
+  const hotels = isWeapp ? weappHotels : queryHotels;
+  const total = isWeapp ? weappTotal : queryTotal;
+  const isLoading = isWeapp ? weappLoading && hotels.length === 0 : queryIsLoading;
+  const isError = isWeapp ? !!weappError && hotels.length === 0 : queryIsError;
+  const errorMessage = isWeapp ? weappError?.message : queryError?.message;
+  const hasNextPage = isWeapp ? (weappTotalPages ? weappPage < weappTotalPages : false) : queryHasNextPage;
+  const isFetchingNextPage = isWeapp ? weappFetchingNextPage : queryIsFetchingNextPage;
 
   // 日期计算
   const nights = Math.max(1, localCheckOut.diff(localCheckIn, 'day'));
@@ -209,13 +273,22 @@ export default function HotelList() {
   // ========== 事件处理 ==========
   const handleSearch = useCallback(() => {
     setKeyword(localKeyword);
-  }, [localKeyword, setKeyword]);
+    // localKeyword 未变化时也允许手动刷新，避免缓存导致“明明后端有数据但列表一直空”
+    if (isWeapp) {
+      triggerWeappRefresh();
+      return;
+    }
+    queryRefetch();
+  }, [isWeapp, localKeyword, queryRefetch, setKeyword, triggerWeappRefresh]);
 
   const handleScrollToLower = useCallback(() => {
-    if (hasNextPage && !isFetchingNextPage) {
-      fetchNextPage();
+    if (!hasNextPage || isFetchingNextPage) return;
+    if (isWeapp) {
+      fetchWeappNextPage();
+      return;
     }
-  }, [hasNextPage, isFetchingNextPage, fetchNextPage]);
+    queryFetchNextPage();
+  }, [fetchWeappNextPage, hasNextPage, isFetchingNextPage, isWeapp, queryFetchNextPage]);
 
   const handleCardClick = useCallback((hotel: Hotel) => {
     addToRecentlyViewed(hotel);
@@ -238,19 +311,22 @@ export default function HotelList() {
     if (key === 'smart') {
       setSortBy('smart');
       setActiveFilter(null);
+      if (isWeapp) triggerWeappRefresh();
     } else {
       setActiveFilter(activeFilter === key ? null : key);
       if (key !== 'filter') {
         setSortBy(key);
+        if (isWeapp) triggerWeappRefresh();
       }
     }
-  }, [activeFilter]);
+  }, [activeFilter, isWeapp, triggerWeappRefresh]);
 
   // 快速标签点击
   const handleQuickTagClick = useCallback((tag: string) => {
     if (localKeyword === tag) {
       setLocalKeyword('');
       setKeyword('');
+      if (isWeapp) triggerWeappRefresh();
     } else {
       setLocalKeyword(tag);
       setKeyword(tag);
@@ -258,25 +334,29 @@ export default function HotelList() {
       if (!historyTags.includes(tag)) {
         setHistoryTags(prev => [tag, ...prev.slice(0, 4)]);
       }
+      if (isWeapp) triggerWeappRefresh();
     }
-  }, [localKeyword, setKeyword, historyTags]);
+  }, [historyTags, isWeapp, localKeyword, setKeyword, triggerWeappRefresh]);
 
   // 位置筛选确认
   const handleLocationConfirm = useCallback(() => {
     setActiveFilter(null);
-  }, []);
+    if (isWeapp) triggerWeappRefresh();
+  }, [isWeapp, triggerWeappRefresh]);
 
   // 位置筛选清空
   const handleLocationClear = useCallback(() => {
     setLocationCategory('hot');
     setSelectedLocation('');
     setMaxDistance(null);
-  }, []);
+    if (isWeapp) triggerWeappRefresh();
+  }, [isWeapp, triggerWeappRefresh]);
 
   // 价格筛选确认
   const handlePriceConfirm = useCallback(() => {
     setActiveFilter(null);
-  }, []);
+    if (isWeapp) triggerWeappRefresh();
+  }, [isWeapp, triggerWeappRefresh]);
 
   // 价格筛选清空
   const handlePriceClear = useCallback(() => {
@@ -284,7 +364,8 @@ export default function HotelList() {
     setMaxPrice(null);
     setPriceRange(null);
     setLocalStarRating(null);
-  }, []);
+    if (isWeapp) triggerWeappRefresh();
+  }, [isWeapp, triggerWeappRefresh]);
 
   // 综合筛选确认
   const handleGeneralConfirm = useCallback(() => {
@@ -297,7 +378,8 @@ export default function HotelList() {
       });
     }
     setActiveFilter(null);
-  }, [hotTags, brands]);
+    if (isWeapp) triggerWeappRefresh();
+  }, [brands, hotTags, isWeapp, triggerWeappRefresh]);
 
   // 综合筛选清空
   const handleGeneralClear = useCallback(() => {
@@ -307,27 +389,45 @@ export default function HotelList() {
     setRoomFeatures([]);
     setFacilities([]);
     setBrands([]);
-  }, []);
+    if (isWeapp) triggerWeappRefresh();
+  }, [isWeapp, triggerWeappRefresh]);
 
   // 数组切换辅助函数
   const toggleArrayItem = useCallback((arr: string[], item: string) => {
     return arr.includes(item) ? arr.filter(i => i !== item) : [...arr, item];
   }, []);
 
-  // ========== 快速筛选标签 ==========
+  // 快速筛选标签（与种子数据设施/房型匹配）
   const quickTags = useMemo(() => {
-    // 根据城市显示不同的快速标签
-    const cityTags: Record<string, string[]> = {
+    const byCity: Record<string, string[]> = {
       '上海': ['外滩', '迪士尼', '双床房', '含早餐', '近地铁'],
       '北京': ['天安门', '故宫', '双床房', '含早餐', '近地铁'],
       '广州': ['珠江新城', '天河', '双床房', '含早餐', '近地铁'],
       '深圳': ['福田', '南山', '双床房', '含早餐', '近地铁'],
       '杭州': ['西湖', '武林', '双床房', '含早餐', '近地铁'],
+      '成都': ['春熙路', '双床房', '含早餐', '近地铁'],
+      '重庆': ['解放碑', '双床房', '含早餐', '近地铁'],
+      '西安': ['大雁塔', '双床房', '含早餐', '近地铁'],
+      '三亚': ['亚龙湾', '海景', '双床房', '含早餐'],
+      '厦门': ['鼓浪屿', '双床房', '含早餐', '近地铁'],
     };
-    return cityTags[localCity] || ['双床房', '含早餐', '免费停车', '游泳池', '近地铁'];
+    return byCity[localCity] ?? ['双床房', '含早餐', '免费停车', '游泳池', '近地铁'];
   }, [localCity]);
 
-  const apiBaseDebugText = isWeappDevtools ? `Debug: API_BASE=${getApiBaseCacheKey()}` : '';
+  // 小程序页面“显示”时强制拉取一次，避免 DevTools/HMR/缓存导致“后端有数据但页面一直空”
+  useDidShow(() => {
+    if (isWeapp) {
+      triggerWeappRefresh();
+      return;
+    }
+    queryRefetch();
+  });
+
+  const apiBaseDebugText = isWeappDevtools
+    ? `Debug: API_BASE=${getApiBaseCacheKey()} | mode=${isWeapp ? 'manual' : 'rq'} | status=${
+        isWeapp ? (weappLoading ? 'loading' : weappError ? 'error' : 'success') : queryStatus
+      } | fetchStatus=${isWeapp ? (weappLoading || weappFetchingNextPage ? 'fetching' : 'idle') : queryFetchStatus}`
+    : '';
 
   return (
     <View className="ctrip-list">
@@ -390,13 +490,13 @@ export default function HotelList() {
         total={total}
         isLoading={isLoading}
         isError={isError}
-        errorMessage={error?.message}
+        errorMessage={errorMessage}
         hasNextPage={hasNextPage}
         isFetchingNextPage={isFetchingNextPage}
         isWeappDevtools={isWeappDevtools}
         apiBaseDebugText={apiBaseDebugText}
         onScrollToLower={handleScrollToLower}
-        onRetry={() => refetch()}
+        onRetry={() => (isWeapp ? triggerWeappRefresh() : queryRefetch())}
         onCardClick={handleCardClick}
       />
 
@@ -466,7 +566,7 @@ export default function HotelList() {
         />
       </Popup>
 
-      {/* 城市选择弹窗 */}
+      {/* 城市选择弹窗（与种子数据 50 城对齐） */}
       <Popup
         visible={showCityPicker}
         onClose={() => setShowCityPicker(false)}
@@ -486,12 +586,28 @@ export default function HotelList() {
             <Text className="picker-close" onClick={() => setShowCityPicker(false)}>×</Text>
           </View>
           <View className="picker-city-list">
+            <Text className="picker-city-section-label">热门</Text>
             {POPULAR_CITIES.map((c) => (
               <Text
                 key={c}
                 className={`picker-city-item ${localCity === c ? 'active' : ''}`}
                 onClick={() => {
                   setLocalCity(c);
+                  setCity(c);
+                  setShowCityPicker(false);
+                }}
+              >
+                {c}
+              </Text>
+            ))}
+            <Text className="picker-city-section-label">全部</Text>
+            {ALL_CITIES.filter((c) => !POPULAR_CITIES.includes(c)).map((c) => (
+              <Text
+                key={c}
+                className={`picker-city-item ${localCity === c ? 'active' : ''}`}
+                onClick={() => {
+                  setLocalCity(c);
+                  setCity(c);
                   setShowCityPicker(false);
                 }}
               >

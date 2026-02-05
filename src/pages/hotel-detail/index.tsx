@@ -1,29 +1,102 @@
-/**
- * 酒店详情页 - 修复版本
- * 
- * 修复内容：
- * 1. 修复 Zustand useEffect 无限循环
- * 2. 类名与 SCSS 保持一致（ctrip- 前缀）
- * 3. 支持调整入住/离店日期
- */
+/** 酒店详情页：轮播、房型、日期、收藏 */
 import { useState, useCallback, useEffect, useRef } from 'react';
 import { View, Text, Swiper, SwiperItem, Image, ScrollView } from '@tarojs/components';
-import Taro, { useRouter } from '@tarojs/taro';
-import { useHotelDetail } from '../../hooks/useHotels';
+import Taro, { useDidShow, useRouter } from '@tarojs/taro';
+import { useHotelDetail, useIsWeapp } from '../../hooks';
+import { publicHotelApi } from '../../services/api';
 import { useHotelStore } from '../../store/useHotelStore';
 import { Button, Skeleton, Popup } from '../../components/ui';
 import Calendar from '../../components/Calendar';
-import { getMinPrice, getDisplayTags, getSimulatedScore } from '../../utils/hotel';
+import { getMinPrice, getDisplayTags, getSimulatedScore, getHotelGalleryImages, getHotelDisplayImage, DEFAULT_HOTEL_IMAGE_URL } from '../../utils/hotel';
 import { SafeArea } from '../../components/SafeArea';
 import dayjs, { Dayjs } from 'dayjs';
+import type { Hotel, RoomType } from '../../types/hotel';
 import './index.scss';
 
 const ROOM_FILTER_TAGS = ['含早餐', '立即确认', '大床房', '双床房', '免费取消', '筛选'];
+
+function matchRoomByFilter(room: RoomType, filter: string | null): boolean {
+  if (!filter) return true;
+  const bedType = (room.bedType ?? '').toLowerCase();
+  const amenities = (room.amenities ?? []).map((a) => String(a).toLowerCase());
+  const roomName = (room.name ?? '').toLowerCase();
+  switch (filter) {
+    case '含早餐':
+      return amenities.some((a) => a.includes('早餐') || a.includes('含早'));
+    case '立即确认':
+      return amenities.some((a) => a.includes('立即确认') || a.includes('闪订'));
+    case '大床房':
+      return bedType.includes('大床') || roomName.includes('大床');
+    case '双床房':
+      return bedType.includes('双床') || bedType.includes('标准') || roomName.includes('双床') || roomName.includes('标准');
+    case '免费取消':
+      return amenities.some((a) => a.includes('免费取消') || a.includes('可取消'));
+    default:
+      return true;
+  }
+}
+
+/** 房型图片：主图失败用 fallback，都失败显示占位 */
+function RoomImage({ src, fallbackSrc }: { src?: string; fallbackSrc?: string }) {
+  const [primaryFailed, setPrimaryFailed] = useState(false);
+  const [fallbackFailed, setFallbackFailed] = useState(false);
+
+  const currentSrc = !src && fallbackSrc ? fallbackSrc : (primaryFailed ? fallbackSrc : src);
+  const showPlaceholder = !currentSrc || (primaryFailed && (fallbackFailed || !fallbackSrc));
+
+  const onError = useCallback(() => {
+    if (!src && fallbackSrc) setFallbackFailed(true);
+    else if (!primaryFailed) setPrimaryFailed(true);
+    else setFallbackFailed(true);
+  }, [primaryFailed, src, fallbackSrc]);
+
+  if (showPlaceholder) {
+    return (
+      <View className="room-thumb-placeholder">
+        <Text>🛏️</Text>
+      </View>
+    );
+  }
+  
+  return (
+    <Image
+      src={currentSrc!}
+      mode="aspectFill"
+      className="ctrip-detail-room-thumb-img"
+      onError={onError}
+    />
+  );
+}
+
+/** Gallery 图片组件 - 加载失败时用默认酒店图，不显示灰色占位块 */
+function GalleryImage({ 
+  src, 
+  onClick 
+}: { 
+  src?: string; 
+  onClick?: () => void;
+}) {
+  const [primaryFailed, setPrimaryFailed] = useState(false);
+  const onPrimaryError = useCallback(() => setPrimaryFailed(true), []);
+
+  const effectiveSrc = (src?.trim() && !primaryFailed) ? src : DEFAULT_HOTEL_IMAGE_URL;
+
+  return (
+    <Image
+      src={effectiveSrc}
+      mode="aspectFill"
+      className="ctrip-detail-slide-img"
+      onError={primaryFailed ? undefined : onPrimaryError}
+      onClick={onClick}
+    />
+  );
+}
 
 export default function HotelDetail() {
   const router = useRouter();
   const id = router.params?.id ? parseInt(router.params.id, 10) : undefined;
   const params = router.params || {};
+  const isWeapp = useIsWeapp();
 
   // Zustand store - 使用选择器避免无限循环
   const isFavorite = useHotelStore((state) => (id ? state.favoriteIds.includes(id) : false));
@@ -31,7 +104,43 @@ export default function HotelDetail() {
   const addToRecentlyViewed = useHotelStore((state) => state.addToRecentlyViewed);
 
   // TanStack Query
-  const { data: hotel, isLoading, isError, error, refetch } = useHotelDetail(id);
+  const {
+    data: queryHotel,
+    isLoading: queryLoading,
+    isError: queryIsError,
+    error: queryError,
+    refetch: queryRefetch,
+  } = useHotelDetail(id, { enabled: !isWeapp });
+
+  // weapp 最简兜底：不依赖 TanStack Query
+  const [weappHotel, setWeappHotel] = useState<Hotel | null>(null);
+  const [weappLoading, setWeappLoading] = useState(false);
+  const [weappError, setWeappError] = useState<Error | null>(null);
+
+  const fetchWeappHotel = useCallback(async () => {
+    if (!isWeapp || !id) return;
+    setWeappLoading(true);
+    setWeappError(null);
+    try {
+      const res = await publicHotelApi.getById(id);
+      setWeappHotel(res);
+    } catch (e: unknown) {
+      setWeappError(e instanceof Error ? e : new Error(String((e as { message?: string })?.message ?? e)));
+      setWeappHotel(null);
+    } finally {
+      setWeappLoading(false);
+    }
+  }, [id, isWeapp]);
+
+  useDidShow(() => {
+    if (isWeapp) fetchWeappHotel();
+  });
+
+  const hotel = isWeapp ? weappHotel : queryHotel;
+  const isLoading = isWeapp ? weappLoading : queryLoading;
+  const isError = isWeapp ? !!weappError : queryIsError;
+  const error = isWeapp ? weappError : queryError;
+  const refetch = isWeapp ? fetchWeappHotel : queryRefetch;
 
   // 本地 UI 状态
   const [roomFilter, setRoomFilter] = useState<string | null>(null);
@@ -136,35 +245,11 @@ export default function HotelDetail() {
     );
   }
 
-  // 数据处理
-  const images = hotel.images?.length ? hotel.images : [{ imageUrl: '', description: '暂无图片' }];
+  const images = getHotelGalleryImages(hotel);
   const allRoomTypes = (hotel.roomTypes || [])
     .slice()
-    .sort((a: any, b: any) => Number(a?.price ?? 0) - Number(b?.price ?? 0));
-
-  // 根据筛选标签过滤房型
-  const roomTypes = allRoomTypes.filter((room: any) => {
-    if (!roomFilter) return true;
-
-    const bedType = room.bedType?.toLowerCase() || '';
-    const amenities = (room.amenities || []).map((a: string) => a.toLowerCase());
-    const roomName = room.name?.toLowerCase() || '';
-
-    switch (roomFilter) {
-      case '含早餐':
-        return amenities.includes('早餐') || amenities.includes('含早餐') || amenities.includes('含早');
-      case '立即确认':
-        return amenities.includes('立即确认') || amenities.includes('闪订');
-      case '大床房':
-        return bedType.includes('大床') || roomName.includes('大床');
-      case '双床房':
-        return bedType.includes('双床') || bedType.includes('标准') || roomName.includes('双床') || roomName.includes('标准');
-      case '免费取消':
-        return amenities.includes('免费取消') || amenities.includes('可取消');
-      default:
-        return true;
-    }
-  });
+    .sort((a, b) => Number(a?.price ?? 0) - Number(b?.price ?? 0));
+  const roomTypes = allRoomTypes.filter((room) => matchRoomByFilter(room, roomFilter));
 
   const minPrice = getMinPrice(hotel);
   const score = getSimulatedScore(hotel);
@@ -206,26 +291,17 @@ export default function HotelDetail() {
             duration={500}
             onChange={(e) => setCurrentImageIndex(e.detail.current)}
           >
-            {images.map((img: any, index: number) => (
+            {images.map((img: { imageUrl: string; description?: string; id?: number }, index: number) => (
               <SwiperItem key={img.id ?? index}>
-                {img.imageUrl ? (
-                  <Image 
-                    src={img.imageUrl} 
-                    mode="aspectFill" 
-                    className="ctrip-detail-slide-img"
-                    onClick={() => {
-                      // 预览大图
-                      if (img.imageUrl) {
-                        Taro.previewImage({
-                          current: img.imageUrl,
-                          urls: images.filter((i: any) => i.imageUrl).map((i: any) => i.imageUrl),
-                        });
-                      }
-                    }}
-                  />
-                ) : (
-                  <View className="ctrip-detail-slide-placeholder" />
-                )}
+                <GalleryImage
+                  src={img.imageUrl}
+                  onClick={() => {
+                    if (img.imageUrl) {
+                      const urls = images.map((i) => i.imageUrl).filter(Boolean) as string[];
+                      Taro.previewImage({ current: img.imageUrl, urls });
+                    }
+                  }}
+                />
               </SwiperItem>
             ))}
           </Swiper>
@@ -355,20 +431,13 @@ export default function HotelDetail() {
               <Text>暂无房型</Text>
             </View>
           ) : (
-            roomTypes.map((room: any, index: number) => (
+            roomTypes.map((room: RoomType, index: number) => (
               <View key={room.id ?? index} className="ctrip-detail-room">
                 <View className="ctrip-detail-room-thumb">
-                  {room.imageUrl || hotel.images?.[0]?.imageUrl ? (
-                    <Image
-                      src={room.imageUrl || hotel.images?.[0]?.imageUrl}
-                      mode="aspectFill"
-                      className="ctrip-detail-room-thumb-img"
-                    />
-                  ) : (
-                    <View className="room-thumb-placeholder">
-                      <Text>🛏️</Text>
-                    </View>
-                  )}
+                  <RoomImage
+                    src={room.imageUrl}
+                    fallbackSrc={getHotelDisplayImage(hotel)}
+                  />
                 </View>
                 <View className="ctrip-detail-room-info">
                   <Text className="ctrip-detail-room-name">{room.name}</Text>

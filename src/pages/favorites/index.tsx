@@ -4,20 +4,44 @@
  */
 import { View, Text, ScrollView } from '@tarojs/components';
 import Taro, { useDidShow } from '@tarojs/taro';
-import { useState, useCallback } from 'react';
+import { useEffect, useState, useCallback } from 'react';
 import { useHotelStore } from '../../store/useHotelStore';
-import { useHotelDetail } from '../../hooks/useHotels';
+import { useHotelDetail, useIsWeapp } from '../../hooks';
+import { publicHotelApi } from '../../services/api';
 import { HotelCard } from '../../components/ui';
 import type { Hotel } from '../../types/hotel';
 import './index.scss';
 
-// 单个收藏酒店项组件
 function FavoriteItem({ hotelId, onRemove, onView }: {
     hotelId: number;
     onRemove: (id: number) => void;
     onView: (hotel: Hotel) => void;
 }) {
-    const { data: hotel, isLoading, isError } = useHotelDetail(hotelId);
+    const isWeapp = useIsWeapp();
+    const { data: queryHotel, isLoading: queryLoading, isError: queryIsError } = useHotelDetail(hotelId, { enabled: !isWeapp });
+
+    const [weappHotel, setWeappHotel] = useState<Hotel | null>(null);
+    const [weappLoading, setWeappLoading] = useState(false);
+    const [weappError, setWeappError] = useState<Error | null>(null);
+
+    const fetchWeappHotel = useCallback(() => {
+        if (!isWeapp) return;
+        setWeappLoading(true);
+        setWeappError(null);
+        publicHotelApi
+            .getById(hotelId)
+            .then((res) => setWeappHotel(res))
+            .catch((e: unknown) => setWeappError(e instanceof Error ? e : new Error(String(e))))
+            .finally(() => setWeappLoading(false));
+    }, [hotelId, isWeapp]);
+
+    useEffect(() => {
+        if (isWeapp) fetchWeappHotel();
+    }, [fetchWeappHotel, isWeapp]);
+
+    const hotel = isWeapp ? weappHotel : queryHotel;
+    const isLoading = isWeapp ? weappLoading : queryLoading;
+    const isError = isWeapp ? weappError : queryIsError;
 
     if (isLoading) {
         return (
@@ -85,9 +109,9 @@ export default function FavoritesPage() {
         Taro.navigateTo({ url: `/pages/hotel-detail/index?id=${hotel.id}` });
     }, [addToRecentlyViewed]);
 
-    const handleGoBack = () => {
+    const handleGoBack = useCallback(() => {
         Taro.navigateBack();
-    };
+    }, []);
 
     return (
         <View className="favorites-page">

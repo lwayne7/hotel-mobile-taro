@@ -4,11 +4,10 @@
  */
 import { useState, useCallback } from 'react';
 import { View, Text, Input } from '@tarojs/components';
-import Taro from '@tarojs/taro';
 import { useSearchStore } from '../../../store/useSearchStore';
 import { Button, Popup } from '../../../components/ui';
 import Calendar from '../../../components/Calendar';
-import { POPULAR_CITIES } from '../../../constants/cities';
+import { POPULAR_CITIES, ALL_CITIES } from '../../../constants/cities';
 import dayjs, { Dayjs } from 'dayjs';
 import { useLocation } from '../../../hooks/useLocation';
 
@@ -88,10 +87,6 @@ export function SearchCard({ onSearch, onQuickTagSearch }: SearchCardProps) {
         },
     });
 
-    const openCalendar = useCallback((type: 'checkIn' | 'checkOut') => {
-        setShowDatePicker(type);
-    }, []);
-
     const onCalendarSelect = useCallback((date: Dayjs) => {
         if (showDatePicker === 'checkIn') {
             setCheckIn(date.format('YYYY-MM-DD'));
@@ -160,6 +155,8 @@ export function SearchCard({ onSearch, onQuickTagSearch }: SearchCardProps) {
                         <View
                             className={`gps-icon ${gpsLoading ? 'loading' : ''}`}
                             onClick={handleGpsLocation}
+                            hoverClass="gps-icon-hover"
+                            hoverStayTime={100}
                         >
                             <Text className="gps-symbol">{gpsLoading ? '...' : '◎'}</Text>
                         </View>
@@ -167,12 +164,12 @@ export function SearchCard({ onSearch, onQuickTagSearch }: SearchCardProps) {
 
                     {/* Dates - 水平一行布局 */}
                     <View className="search-row date-row border-bottom">
-                        <View className="date-item" onClick={() => openCalendar('checkIn')}>
+                        <View className="date-item" onClick={() => setShowDatePicker('checkIn')}>
                             <Text className="date-value">{checkIn.format('MM月DD日')}</Text>
                             <Text className="date-label-inline">{checkInDateLabel || ''}</Text>
                         </View>
                         <Text className="date-separator">-</Text>
-                        <View className="date-item" onClick={() => openCalendar('checkOut')}>
+                        <View className="date-item" onClick={() => setShowDatePicker('checkOut')}>
                             <Text className="date-value">{checkOut.format('MM月DD日')}</Text>
                             <Text className="date-label-inline">{checkOutDateLabel || ''}</Text>
                         </View>
@@ -244,7 +241,21 @@ export function SearchCard({ onSearch, onQuickTagSearch }: SearchCardProps) {
                         <Text className="modal-close" onClick={() => setShowCityModal(false)}>✕</Text>
                     </View>
                     <View className="city-modal-list">
+                        <Text className="city-modal-section">热门</Text>
                         {POPULAR_CITIES.map((c) => (
+                            <Text
+                                key={c}
+                                className={`city-modal-item ${city === c ? 'active' : ''}`}
+                                onClick={() => {
+                                    setCity(c);
+                                    setShowCityModal(false);
+                                }}
+                            >
+                                {c}
+                            </Text>
+                        ))}
+                        <Text className="city-modal-section">全部</Text>
+                        {ALL_CITIES.filter((c) => !POPULAR_CITIES.includes(c)).map((c) => (
                             <Text
                                 key={c}
                                 className={`city-modal-item ${city === c ? 'active' : ''}`}

@@ -4,11 +4,7 @@
 import { View, Text } from '@tarojs/components';
 import Taro from '@tarojs/taro';
 import { useSearchStore } from '../../../store/useSearchStore';
-
-const POPULAR_CITIES = [
-    '北京', '上海', '广州', '深圳', '杭州', '成都', '西安', '三亚',
-    '南京', '武汉', '厦门', '青岛', '重庆', '苏州', '长沙', '昆明',
-];
+import { POPULAR_CITIES } from '../../../constants/cities';
 
 export function HotCities() {
     const setCity = useSearchStore((s) => s.setCity);

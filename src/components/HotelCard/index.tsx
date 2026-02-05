@@ -1,8 +1,8 @@
 /**
  * HotelCard - 酒店卡片组件
- * 三端统一实现，使用 Taro 基础组件
+ * 三端统一实现，使用 Taro 基础组件；图片加载失败时显示占位
  */
-import React from 'react';
+import React, { useState, useCallback } from 'react';
 import { View, Text, Image } from '@tarojs/components';
 import type { Hotel } from '../../types/hotel';
 import { rnShadow, platform } from '../../styles/rn-utils';
@@ -12,6 +12,8 @@ import {
   getDisplayTags,
   getDiscountLabel,
   getSimulatedScore,
+  getHotelDisplayImage,
+  DEFAULT_HOTEL_IMAGE_URL,
 } from '../../utils/hotel';
 import './index.scss';
 
@@ -30,18 +32,27 @@ export function HotelCard({
   className = '',
   style,
 }: HotelCardProps) {
+  const [imageError, setImageError] = useState(false);
+  const [fallbackError, setFallbackError] = useState(false);
   const handleClick = () => {
     if (onClick) {
       onClick(hotel);
     }
   };
+  const onImageError = useCallback(() => setImageError(true), []);
+  const onFallbackError = useCallback(() => setFallbackError(true), []);
 
   const minPrice = getMinPrice(hotel);
   const originalPrice = getOriginalPrice(hotel);
   const tags = getDisplayTags(hotel);
   const score = getSimulatedScore(hotel);
   const discountLabel = getDiscountLabel(hotel);
-  const image = hotel.images?.[0]?.imageUrl || '';
+  const image = getHotelDisplayImage(hotel);
+  const fallbackUrl = DEFAULT_HOTEL_IMAGE_URL && image !== DEFAULT_HOTEL_IMAGE_URL ? DEFAULT_HOTEL_IMAGE_URL : '';
+  const useFallback = imageError && fallbackUrl;
+  const displaySrc = useFallback ? fallbackUrl : image;
+  const showPlaceholder =
+    !displaySrc || (imageError && (!fallbackUrl || fallbackError || image === DEFAULT_HOTEL_IMAGE_URL));
 
   const cardStyle: React.CSSProperties = {
     ...style,
@@ -51,12 +62,18 @@ export function HotelCard({
   return (
     <View className={`hotel-card ${className}`} style={cardStyle} onClick={handleClick}>
       <View className="hotel-card-image-wrap">
-        {image ? (
-          <Image src={image} mode="aspectFill" lazyLoad className="hotel-card-image" />
-        ) : (
+        {showPlaceholder ? (
           <View className="hotel-card-image-placeholder">
             <Text className="hotel-card-image-placeholder-text">暂无图片</Text>
           </View>
+        ) : (
+          <Image
+            src={displaySrc}
+            mode="aspectFill"
+            lazyLoad
+            className="hotel-card-image"
+            onError={useFallback ? onFallbackError : onImageError}
+          />
         )}
         {discountLabel && (
           <View className="hotel-card-discount-badge">

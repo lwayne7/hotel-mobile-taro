@@ -6,6 +6,7 @@ import { View, Text, ScrollView, Image } from '@tarojs/components';
 import Taro from '@tarojs/taro';
 import { useHotelStore } from '../../../store/useHotelStore';
 import type { Hotel } from '../../../types/hotel';
+import { getHotelDisplayImage, getMinPrice } from '../../../utils/hotel';
 
 export function RecentlyViewed() {
     const recentlyViewed = useHotelStore((s) => s.recentlyViewed);
@@ -26,10 +27,8 @@ export function RecentlyViewed() {
             <ScrollView scrollX className="recently-viewed-scroll">
                 <View className="recently-viewed-list">
                     {recentlyViewed.slice(0, 10).map((hotel) => {
-                        const minPrice = hotel.roomTypes?.length
-                            ? Math.min(...hotel.roomTypes.map((r: any) => Number(r?.price || 0)).filter((n: number) => !isNaN(n) && n > 0))
-                            : 0;
-                        const image = hotel.images?.[0]?.imageUrl || '';
+                        const minPrice = getMinPrice(hotel);
+                        const image = getHotelDisplayImage(hotel);
 
                         return (
                             <View

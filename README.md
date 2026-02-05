@@ -1,10 +1,10 @@
 # 易宿酒店预订 - Taro 多端
 
-基于 Taro 3 + React + TypeScript 的用户端酒店预定流程，一套代码编译到 **H5**、**微信小程序** 与 **React Native APP**。
+基于 Taro 4 + React 18 + TypeScript 的用户端酒店预定流程，一套代码编译到 **H5**、**微信小程序** 与 **React Native APP**。
 
 ## 技术栈
 
-- **框架**: Taro 3、React 18、TypeScript
+- **框架**: Taro 4、React 18、TypeScript 5
 - **多端**: H5、微信小程序、React Native APP（分离模式，可选 Taro Playground 或 Taro Native Shell）
 - **后端**: 与 `hotel-management/backend` 共用 API（Node.js）
 
@@ -66,6 +66,12 @@ npm run dev:weapp
 
 用微信开发者工具打开项目根目录下的 `dist` 目录（编译产物）。
 
+**真机预览/调试**：开发环境下 weapp 默认会尝试使用「电脑局域网 IP」作为 `API_BASE`（保证手机可访问）。如果自动识别的 IP 不对，手动设置：
+```bash
+# 例：把后端改为你的电脑局域网 IP
+TARO_APP_API_BASE=http://192.168.1.100:3000 npm run dev:weapp
+```
+
 **小程序请求域名**：在微信公众平台将后端接口域名加入 request 合法域名（如 `https://your-api.com`）；本地调试时在微信开发者工具中勾选「不校验合法域名、web-view...」即可请求本地或任意后端。
 
 ### 5. 运行 APP（React Native）
@@ -88,7 +94,7 @@ npm run dev:weapp
 2. 将壳工程放在与 hotel-mobile-taro 同级目录，在 `config/index.js` 的 `rn.output` 中配置输出路径指向壳工程的 ios/android 目录。
 3. 执行 `npm run build:rn -- --platform ios` 或 `--platform android` 生成 bundle，再在壳工程中执行 `yarn ios` / `yarn android` 或使用 Xcode/Android Studio 运行。
 
-**RN 端请求**：RN 无法使用相对路径 `/api`，必须使用完整 baseURL。开发时默认使用 `http://localhost:3000`（真机调试时请改为电脑局域网 IP，如 `http://192.168.1.100:3000`）。生产可在构建时通过 `TARO_APP_API_BASE` 或 `config/prod.js` 的 `defineConstants` 配置。
+**RN 端请求**：RN 无法使用相对路径 `/api`，必须使用完整 baseURL。开发环境默认会尝试使用「电脑局域网 IP」作为 `TARO_APP_API_BASE`（真机可访问，识别失败会回退到 `http://localhost:3000`）；如需固定后端地址，请设置 `TARO_APP_API_BASE`。生产可在构建时通过 `TARO_APP_API_BASE` 或 `config/prod.js` 的 `defineConstants` 配置。
 
 **首次运行 RN**：若 `npm run dev:rn` 报错缺少 react-native 等依赖，可执行 `yarn upgradePeerdeps` 或按 [Taro RN 文档](https://docs.taro.zone/docs/3.x/react-native) 安装 `@tarojs/taro-rn`、`@tarojs/components-rn`、`@tarojs/router-rn` 的 peer 依赖。
 
@@ -96,7 +102,10 @@ npm run dev:weapp
 
 - **H5**：开发时默认通过 devServer 代理访问 `/api`，无需配置。生产部署时可设置 `TARO_APP_API_BASE` 为后端地址（如 `https://your-api.com`）。
 - **微信小程序**：在微信公众平台配置 request 合法域名，或本地调试时关闭域名校验。若需区分环境，可在 `config/dev.js` 或 `config/prod.js` 的 `defineConstants` 中设置 `TARO_APP_API_BASE`。
-- **APP（RN）**：开发时 `config/dev.js` 已设置 `TARO_APP_API_BASE: "http://localhost:3000"`；真机调试请改为电脑局域网 IP。生产构建时通过 `defineConstants` 或环境变量设置后端地址。
+- **APP（RN）**：开发时默认会尝试使用「电脑局域网 IP」作为 `TARO_APP_API_BASE`（真机可访问）。如需固定后端地址，请设置 `TARO_APP_API_BASE`。生产构建时通过 `defineConstants` 或环境变量设置后端地址。
+
+补充：
+- `TARO_APP_API_PORT`：仅用于开发环境的默认端口（默认 `3000`）。
 
 ## 构建
 
@@ -140,7 +149,7 @@ npm run build:rn -- --platform android
 ### 架构升级
 - **TanStack Query v5.62.0**：服务端状态管理，支持无限滚动、缓存、自动重试
 - **Zustand v5.0.0**：客户端状态管理，使用 persist 中间件持久化
-- **自定义 UI 组件**：Button/Popup/Loading/Skeleton/HotelCard，移除 NutUI 依赖
+- **自定义 UI 组件**：Button/Popup/Loading/Skeleton/HotelCard，为主要交互提供统一样式（仍保留少量 NutUI 组件作为补充）
 
 ### 核心修复
 - 统一城市配置 (`src/constants/cities.ts`)
