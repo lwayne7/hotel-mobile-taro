@@ -6,23 +6,14 @@
 // ============ 排序选项 ============
 export const SORT_OPTIONS = [
   { key: 'smart', label: '智能排序' },
-  { key: 'distance', label: '位置距离' },
+  { key: 'distance', label: '位置区域' },
   { key: 'price', label: '价格/星级' },
   { key: 'filter', label: '筛选' },
 ];
 
-// ============ 位置距离筛选 ============
-export const DISTANCE_OPTIONS = [
-  { key: '500', label: '500米内', value: 0.5 },
-  { key: '1000', label: '1公里内', value: 1 },
-  { key: '2000', label: '2公里内', value: 2 },
-  { key: '3000', label: '3公里内', value: 3 },
-  { key: '5000', label: '5公里内', value: 5 },
-];
-
-// 位置分类（左侧菜单）
+// ============ 位置筛选 ============
+// 本轮不做经纬度距离计算，保留可真实生效的地点/行政区筛选
 export const LOCATION_CATEGORIES = [
-  { key: 'distance', label: '直线距离' },
   { key: 'hot', label: '热门地点' },
   { key: 'district', label: '行政区' },
 ];
@@ -165,12 +156,11 @@ export const PRICE_RANGES = [
 
 // ============ 星级/钻级筛选 ============
 export const STAR_RATINGS = [
+  { key: '1', label: '1钻/星及以下', subLabel: '基础', value: 1 },
   { key: '2', label: '2钻/星及以下', subLabel: '经济', value: 2 },
   { key: '3', label: '3钻/星', subLabel: '舒适', value: 3 },
   { key: '4', label: '4钻/星', subLabel: '高档', value: 4 },
   { key: '5', label: '5钻/星', subLabel: '豪华', value: 5 },
-  { key: 'gold', label: '金钻酒店', subLabel: '奢华体验', value: 6 },
-  { key: 'platinum', label: '铂钻酒店', subLabel: '超奢品质', value: 7 },
 ];
 
 // ============ 综合筛选 ============
@@ -245,10 +235,9 @@ export const FILTER_CATEGORIES = [
 export interface FilterState {
   // 排序
   sortBy: string;
-  // 位置距离
+  // 位置
   locationCategory: string;
   selectedLocation: string;
-  maxDistance: number | null;
   // 价格
   minPrice: number | null;
   maxPrice: number | null;
@@ -271,7 +260,6 @@ export const DEFAULT_FILTER_STATE: FilterState = {
   sortBy: 'smart',
   locationCategory: 'hot',
   selectedLocation: '',
-  maxDistance: null,
   minPrice: null,
   maxPrice: null,
   priceRange: null,

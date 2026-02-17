@@ -1,10 +1,9 @@
 /**
- * 位置距离筛选弹窗
+ * 位置筛选弹窗
  */
 import { View, Text, ScrollView } from '@tarojs/components';
 import {
   LOCATION_CATEGORIES,
-  DISTANCE_OPTIONS,
   HOT_LOCATIONS,
   DEFAULT_HOT_LOCATIONS,
   DISTRICT_LOCATIONS,
@@ -16,10 +15,8 @@ interface LocationFilterProps {
   city: string;
   selectedCategory: string;
   selectedLocation: string;
-  maxDistance: number | null;
   onCategoryChange: (category: string) => void;
   onLocationChange: (location: string) => void;
-  onDistanceChange: (distance: number | null) => void;
   onConfirm: () => void;
   onClear: () => void;
 }
@@ -28,10 +25,8 @@ export default function LocationFilter({
   city,
   selectedCategory,
   selectedLocation,
-  maxDistance,
   onCategoryChange,
   onLocationChange,
-  onDistanceChange,
   onConfirm,
   onClear,
 }: LocationFilterProps) {
@@ -39,22 +34,6 @@ export default function LocationFilter({
   const districtLocations = DISTRICT_LOCATIONS[city] || DEFAULT_DISTRICT_LOCATIONS;
 
   const renderRightContent = () => {
-    if (selectedCategory === 'distance') {
-      return (
-        <View className="distance-options">
-          {DISTANCE_OPTIONS.map((opt) => (
-            <View
-              key={opt.key}
-              className={`distance-option ${maxDistance === opt.value ? 'active' : ''}`}
-              onClick={() => onDistanceChange(maxDistance === opt.value ? null : opt.value)}
-            >
-              <Text>{opt.label}</Text>
-            </View>
-          ))}
-        </View>
-      );
-    }
-
     if (selectedCategory === 'hot') {
       return (
         <View className="location-list">

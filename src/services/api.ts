@@ -13,6 +13,7 @@ export interface HotelListParams {
   minPrice?: number;
   maxPrice?: number;
   sortBy?: string;
+  accommodationType?: string;
   facilities?: string;
   brands?: string;
   hotelFeatures?: string;
@@ -237,6 +238,7 @@ function buildListQuery(params?: HotelListParams): Record<string, string | numbe
     minPrice: params.minPrice,
     maxPrice: params.maxPrice,
     sortBy: params.sortBy,
+    accommodationType: params.accommodationType,
     facilities: params.facilities,
     brands: params.brands,
     hotelFeatures: params.hotelFeatures,

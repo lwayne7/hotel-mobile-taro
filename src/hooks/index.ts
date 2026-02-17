@@ -4,3 +4,4 @@ export * from './useSearch';
 export * from './useLocation';
 export * from './useIsWeapp';
 export * from './useWeappFetch';
+export * from './usePriceUpdates';

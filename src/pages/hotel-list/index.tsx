@@ -4,7 +4,7 @@ import { View, Text, Input } from '@tarojs/components';
 import Taro, { useDidShow, useRouter } from '@tarojs/taro';
 
 const HISTORY_TAGS_STORAGE_KEY = 'hotel_filter_history_tags';
-import { useInfiniteHotelList, flattenHotelPages, getTotalFromPages, useIsWeapp } from '../../hooks';
+import { useInfiniteHotelList, flattenHotelPages, getTotalFromPages, useIsWeapp, usePriceUpdates } from '../../hooks';
 import { useLocation } from '../../hooks/useLocation';
 import { useSearchStore } from '../../store/useSearchStore';
 import { useHotelStore } from '../../store/useHotelStore';
@@ -59,7 +59,6 @@ export default function HotelList() {
   // 位置筛选
   const [locationCategory, setLocationCategory] = useState('hot');
   const [selectedLocation, setSelectedLocation] = useState('');
-  const [maxDistance, setMaxDistance] = useState<number | null>(null);
 
   // 价格/星级筛选
   const [minPrice, setMinPrice] = useState<number | null>(storeMinPrice ?? null);
@@ -128,7 +127,7 @@ export default function HotelList() {
     },
   });
 
-  const locationFilterCount = (selectedLocation ? 1 : 0) + (maxDistance != null ? 1 : 0);
+  const locationFilterCount = selectedLocation ? 1 : 0;
   const priceFilterCount = (minPrice != null || maxPrice != null ? 1 : 0) + (localStarRating != null ? 1 : 0);
   const generalFilterCount =
     hotTags.length + accommodationType.length + hotelFeatures.length +
@@ -144,6 +143,7 @@ export default function HotelList() {
       maxPrice: maxPrice || undefined,
       sortBy: sortBy,
       // 综合筛选参数
+      accommodationType: accommodationType.length > 0 ? accommodationType.join(',') : undefined,
       facilities: facilities.length > 0 ? facilities.join(',') : undefined,
       brands: brands.length > 0 ? brands.join(',') : undefined,
       hotelFeatures: hotelFeatures.length > 0 ? hotelFeatures.join(',') : undefined,
@@ -152,7 +152,7 @@ export default function HotelList() {
       tags: hotTags.length > 0 ? hotTags.join(',') : undefined,
       pageSize: PAGE_SIZE,
     }),
-    [localCity, localKeyword, selectedLocation, localStarRating, minPrice, maxPrice, sortBy, facilities, brands, hotelFeatures, roomFeatures, hotTags]
+    [localCity, localKeyword, selectedLocation, localStarRating, minPrice, maxPrice, sortBy, accommodationType, facilities, brands, hotelFeatures, roomFeatures, hotTags]
   );
 
   // 使用 TanStack Query 的无限滚动 hook
@@ -168,6 +168,15 @@ export default function HotelList() {
     isFetchingNextPage: queryIsFetchingNextPage,
     refetch: queryRefetch,
   } = useInfiniteHotelList(searchParams, { enabled: !isWeapp });
+
+  const handleSsePriceUpdate = useCallback(() => {
+    queryRefetch();
+  }, [queryRefetch]);
+
+  usePriceUpdates({
+    enabled: !isWeapp,
+    onPriceUpdate: handleSsePriceUpdate,
+  });
 
   // weapp 最简兜底：不依赖 TanStack Query，避免小程序环境下 Query 不触发导致“不发请求、一直空列表”
   const [weappHotels, setWeappHotels] = useState<Hotel[]>([]);
@@ -375,7 +384,6 @@ export default function HotelList() {
   const handleLocationClear = useCallback(() => {
     setLocationCategory('hot');
     setSelectedLocation('');
-    setMaxDistance(null);
     if (isWeapp) triggerWeappRefresh();
   }, [isWeapp, triggerWeappRefresh]);
 
@@ -538,10 +546,8 @@ export default function HotelList() {
           city={localCity}
           selectedCategory={locationCategory}
           selectedLocation={selectedLocation}
-          maxDistance={maxDistance}
           onCategoryChange={setLocationCategory}
           onLocationChange={setSelectedLocation}
-          onDistanceChange={setMaxDistance}
           onConfirm={handleLocationConfirm}
           onClear={handleLocationClear}
         />

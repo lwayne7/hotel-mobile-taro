@@ -3,7 +3,7 @@ import './GeneralFilter.scss'; // 复用现有筛选样式基础（如需要可�
 
 const FILTER_TABS = [
   { key: 'smart', label: '智能排序' },
-  { key: 'distance', label: '位置距离' },
+  { key: 'distance', label: '位置区域' },
   { key: 'price', label: '价格/星级' },
   { key: 'filter', label: '筛选' },
 ];
@@ -71,4 +71,3 @@ export function FilterTabs({
     </View>
   );
 }
-

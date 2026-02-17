@@ -2,7 +2,7 @@
 import { useState, useCallback, useEffect, useRef } from 'react';
 import { View, Text, Swiper, SwiperItem, Image, ScrollView } from '@tarojs/components';
 import Taro, { useDidShow, useRouter } from '@tarojs/taro';
-import { useHotelDetail, useIsWeapp } from '../../hooks';
+import { useHotelDetail, useIsWeapp, usePriceUpdates } from '../../hooks';
 import { publicHotelApi } from '../../services/api';
 import { useHotelStore } from '../../store/useHotelStore';
 import { Button, Skeleton, Popup } from '../../components/ui';
@@ -119,6 +119,15 @@ export default function HotelDetail() {
     error: queryError,
     refetch: queryRefetch,
   } = useHotelDetail(id, { enabled: !isWeapp });
+
+  const handleSsePriceUpdate = useCallback(() => {
+    queryRefetch();
+  }, [queryRefetch]);
+
+  usePriceUpdates({
+    enabled: !isWeapp && !!id,
+    onPriceUpdate: handleSsePriceUpdate,
+  });
 
   // weapp 最简兜底：不依赖 TanStack Query
   const [weappHotel, setWeappHotel] = useState<Hotel | null>(null);
@@ -290,6 +299,11 @@ export default function HotelDetail() {
       <View className="ctrip-detail-header-overlay">
         <View className="ctrip-back-btn" onClick={goBack}>
           <Text className="back-arrow">‹</Text>
+        </View>
+        <View className="ctrip-detail-header-title-wrap">
+          <Text className="ctrip-detail-header-title" numberOfLines={1}>
+            {hotel.nameCn}
+          </Text>
         </View>
         <View className="ctrip-detail-header-actions">
           <Text className="ctrip-detail-action" onClick={handleToggleFavorite}>

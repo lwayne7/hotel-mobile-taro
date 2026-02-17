@@ -21,6 +21,7 @@ export interface HotelSearchParams {
   maxPrice?: number;
   sortBy?: string;
   // 综合筛选参数
+  accommodationType?: string;
   facilities?: string;
   brands?: string;
   hotelFeatures?: string;
