@@ -257,6 +257,32 @@ export default function HotelList() {
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [isWeapp, weappRefreshKey]);
 
+  // 小程序端静默轮询：每 60s 拉取第一页，合并更新已有列表中的酒店价格
+  useEffect(() => {
+    if (!isWeapp) return;
+    const timer = setInterval(async () => {
+      try {
+        const res = await publicHotelApi.getList({
+          ...searchParams,
+          page: 1,
+          pageSize: PAGE_SIZE,
+        });
+        if (!res.data?.length) return;
+        const freshMap = new Map(res.data.map((h) => [h.id, h]));
+        setWeappHotels((prev) =>
+          prev.map((h) => {
+            const fresh = freshMap.get(h.id);
+            return fresh ? { ...h, roomTypes: fresh.roomTypes } : h;
+          }),
+        );
+        setWeappTotal(res.total || 0);
+      } catch {
+        // 静默刷新失败不提示
+      }
+    }, 60_000);
+    return () => clearInterval(timer);
+  }, [isWeapp, searchParams]);
+
   // 扁平化分页数据
   const queryHotels = flattenHotelPages(queryData as { pages: HotelListResponse[] } | undefined);
   const queryTotal = getTotalFromPages(queryData as { pages: HotelListResponse[] } | undefined);

@@ -1,6 +1,7 @@
 import './app.scss';
 import Taro from '@tarojs/taro';
 import { QueryClient, QueryClientProvider, onlineManager } from '@tanstack/react-query';
+import { ErrorBoundary } from './components/ErrorBoundary';
 
 // 小程序/RN 下让 React Query 正确感知在线，避免 paused 导致不发请求
 if (process.env.TARO_ENV === 'weapp' || process.env.TARO_ENV === 'rn') {
@@ -59,9 +60,11 @@ const queryClient = new QueryClient({
 
 function App(props: React.PropsWithChildren) {
   return (
-    <QueryClientProvider client={queryClient}>
-      {props.children}
-    </QueryClientProvider>
+    <ErrorBoundary>
+      <QueryClientProvider client={queryClient}>
+        {props.children}
+      </QueryClientProvider>
+    </ErrorBoundary>
   );
 }
 

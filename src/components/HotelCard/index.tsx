@@ -25,7 +25,7 @@ export interface HotelCardProps {
   style?: React.CSSProperties;
 }
 
-export function HotelCard({
+export const HotelCard = React.memo(function HotelCard({
   hotel,
   onClick,
   className = '',
@@ -110,4 +110,4 @@ export function HotelCard({
       </View>
     </View>
   );
-}
+});

@@ -5,7 +5,7 @@ import Taro, { useDidShow } from '@tarojs/taro';
 import { useSearch } from '../../hooks/useSearch';
 import { useHotelList, useIsWeapp } from '../../hooks';
 import { useSearchStore } from '../../store/useSearchStore';
-import { SearchCard, HotCities, RecommendSection, RecentlyViewed } from './components';
+import { SearchCard, HotCities, RecommendSection, RecentlyViewed, SmartRecommend } from './components';
 import { publicHotelApi } from '../../services/api';
 import type { Hotel } from '../../types/hotel';
 import './index.scss';
@@ -158,6 +158,9 @@ export default function Index() {
 
           {/* 最近浏览 */}
           <RecentlyViewed />
+
+          {/* 猜你喜欢 - 基于浏览历史的智能推荐 */}
+          <SmartRecommend />
 
           {/* 推荐酒店 */}
           <View className="ctrip-section">

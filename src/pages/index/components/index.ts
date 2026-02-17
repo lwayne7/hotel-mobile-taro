@@ -10,3 +10,5 @@ export type { RecommendSectionProps } from './RecommendSection';
 export { HotCities } from './HotCities';
 
 export { RecentlyViewed } from './RecentlyViewed';
+
+export { SmartRecommend } from './SmartRecommend';

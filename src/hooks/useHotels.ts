@@ -55,6 +55,8 @@ export function useInfiniteHotelList(params: HotelSearchParams, options?: { enab
       }
       return undefined;
     },
+    refetchInterval: 60_000,
+    refetchIntervalInBackground: false,
   });
 }
 
@@ -67,6 +69,8 @@ export function useHotelDetail(
     queryKey: hotelKeys.detail(id!),
     queryFn: () => publicHotelApi.getById(id!),
     enabled: !!id,
+    refetchInterval: 30_000,
+    refetchIntervalInBackground: false,
     ...options,
   });
 }

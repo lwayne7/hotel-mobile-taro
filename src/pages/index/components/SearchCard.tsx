@@ -2,8 +2,9 @@
  * 搜索卡片组件
  * 包含城市选择、关键词输入、日期选择、价格/星级筛选
  */
-import { useState, useCallback } from 'react';
+import { useState, useCallback, useEffect } from 'react';
 import { View, Text, Input } from '@tarojs/components';
+import Taro from '@tarojs/taro';
 import { useSearchStore } from '../../../store/useSearchStore';
 import { Button, Popup } from '../../../components/ui';
 import Calendar from '../../../components/Calendar';
@@ -64,6 +65,26 @@ export function SearchCard({ onSearch, onQuickTagSearch }: SearchCardProps) {
     const [showDatePicker, setShowDatePicker] = useState<'checkIn' | 'checkOut' | null>(null);
     const [showCityModal, setShowCityModal] = useState(false);
     const [showFilterModal, setShowFilterModal] = useState(false);
+
+    // 搜索历史
+    const [searchHistory, setSearchHistory] = useState<string[]>([]);
+    useEffect(() => {
+        Taro.getStorage({ key: 'search_history' })
+            .then((res) => { if (Array.isArray(res.data)) setSearchHistory(res.data); })
+            .catch(() => {});
+    }, []);
+    const addToHistory = useCallback((text: string) => {
+        if (!text.trim()) return;
+        setSearchHistory((prev) => {
+            const next = [text.trim(), ...prev.filter((h) => h !== text.trim())].slice(0, 8);
+            Taro.setStorage({ key: 'search_history', data: next });
+            return next;
+        });
+    }, []);
+    const clearHistory = useCallback(() => {
+        setSearchHistory([]);
+        Taro.removeStorage({ key: 'search_history' });
+    }, []);
 
     // 日期计算
     const checkIn = storeCheckIn ? dayjs(storeCheckIn) : dayjs();
@@ -202,8 +223,41 @@ export function SearchCard({ onSearch, onQuickTagSearch }: SearchCardProps) {
                         ))}
                     </View>
 
+                    {/* Search History */}
+                    {searchHistory.length > 0 && (
+                        <View className="search-history-section">
+                            <View className="search-history-header">
+                                <Text className="search-history-title">搜索历史</Text>
+                                <Text className="search-history-clear" onClick={clearHistory}>清除</Text>
+                            </View>
+                            <View className="search-history-tags">
+                                {searchHistory.map((h) => (
+                                    <Text
+                                        key={h}
+                                        className="search-history-tag"
+                                        onClick={() => {
+                                            setKeyword(h);
+                                            if (onQuickTagSearch) onQuickTagSearch(h);
+                                            else onSearch();
+                                        }}
+                                    >
+                                        {h}
+                                    </Text>
+                                ))}
+                            </View>
+                        </View>
+                    )}
+
                     {/* Button */}
-                    <Button type="primary" block className="search-submit-btn" onClick={onSearch}>
+                    <Button
+                        type="primary"
+                        block
+                        className="search-submit-btn"
+                        onClick={() => {
+                            addToHistory(keyword);
+                            onSearch();
+                        }}
+                    >
                         查询
                     </Button>
                 </View>

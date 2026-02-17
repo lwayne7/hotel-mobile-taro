@@ -2,7 +2,6 @@
   "compilerOptions": {
     "target": "ES2020",
     "module": "ESNext",
-    // 使用 Node 模块解析以支持 resolveJsonModule 和 Taro/Node 生态
     "moduleResolution": "node",
     "removeComments": false,
     "preserveConstEnums": true,
@@ -36,5 +35,6 @@
     "./src",
     "./types"
   ],
-  "compileOnSave": false
+  "compileOnSave": false,
+  "extends": "expo/tsconfig.base"
 }

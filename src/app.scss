@@ -1,11 +1,17 @@
 @use './styles/tokens' as *;
 
+@keyframes pageFadeIn {
+  from { opacity: 0; transform: translateY(10px); }
+  to   { opacity: 1; transform: translateY(0); }
+}
+
 page {
   font-family: -apple-system, BlinkMacSystemFont, "PingFang SC", "Hiragino Sans GB", "Microsoft YaHei",
     "Helvetica Neue", Arial, sans-serif;
   background-color: $ctrip-bg-page;
   color: $ctrip-text;
   box-sizing: border-box;
+  animation: pageFadeIn 0.35s ease-out;
 }
 
 view,

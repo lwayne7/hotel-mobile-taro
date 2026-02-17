@@ -9,6 +9,7 @@ import { Button, Skeleton, Popup } from '../../components/ui';
 import Calendar from '../../components/Calendar';
 import { getMinPrice, getDisplayTags, getSimulatedScore, getHotelGalleryImages, getHotelDisplayImage } from '../../utils/hotel';
 import { SafeArea } from '../../components/SafeArea';
+import { PriceTrend } from '../../components/PriceTrend';
 import dayjs, { Dayjs } from 'dayjs';
 import type { Hotel, RoomType } from '../../types/hotel';
 import './index.scss';
@@ -138,6 +139,23 @@ export default function HotelDetail() {
       setWeappLoading(false);
     }
   }, [id, isWeapp]);
+
+  // 小程序端静默轮询：每 30s 刷新一次酒店数据（价格实时更新）
+  const silentRefetchWeapp = useCallback(async () => {
+    if (!isWeapp || !id) return;
+    try {
+      const res = await publicHotelApi.getById(id);
+      setWeappHotel(res);
+    } catch {
+      // 静默刷新失败不影响用户体验，忽略错误
+    }
+  }, [id, isWeapp]);
+
+  useEffect(() => {
+    if (!isWeapp || !id) return;
+    const timer = setInterval(silentRefetchWeapp, 30_000);
+    return () => clearInterval(timer);
+  }, [isWeapp, id, silentRefetchWeapp]);
 
   useDidShow(() => {
     if (isWeapp) fetchWeappHotel();
@@ -403,6 +421,9 @@ export default function HotelDetail() {
               </View>
             )}
         </View>
+
+        {/* Price Trend - 价格趋势图 */}
+        {minPrice > 0 && id && <PriceTrend currentPrice={minPrice} hotelId={id} />}
 
         {/* Date Card - 可点击调整日期 */}
         <View className="ctrip-detail-dates-card">
