@@ -541,7 +541,7 @@
 
 .ctrip-detail-room-thumb {
   width: min(100px, 28vw);
-  aspect-ratio: 1;
+  height: min(100px, 28vw);
   border-radius: 8px;
   overflow: hidden;
   background: #eee;
@@ -630,7 +630,7 @@
 }
 
 .ctrip-detail-bottom-spacer {
-  height: 80px;
+  height: 100px;
 }
 
 /* Bottom Fixed Bar */

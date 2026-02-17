@@ -84,20 +84,20 @@
 }
 
 .ad-banner-text-hotel {
-  font-size: 28px;
+  font-size: clamp(22px, 7vw, 28px);
   font-weight: 800;
   color: #e65c00;
 }
 
 .ad-banner-text-discount {
-  font-size: 32px;
+  font-size: clamp(26px, 8vw, 32px);
   font-weight: 900;
   color: #f72585;
   margin-left: 2px;
 }
 
 .ad-banner-text-suffix {
-  font-size: 20px;
+  font-size: clamp(16px, 5vw, 20px);
   font-weight: 600;
   color: #e65c00;
   margin-left: 2px;
@@ -194,17 +194,18 @@
 
 /* City & Keyword */
 .city-selector {
-  max-width: 100px;
   margin-right: 12px;
   display: flex;
   align-items: center;
+  flex-shrink: 0;
 }
 
 .city-text {
-  font-size: 18px;
+  font-size: clamp(15px, 4.5vw, 18px);
   font-weight: 600;
   color: #333;
   margin-right: 4px;
+  white-space: nowrap;
 }
 
 .city-arrow {
@@ -216,18 +217,20 @@
   width: 1px;
   height: 20px;
   background: #eee;
-  margin-right: 12px;
+  margin-right: 8px;
+  flex-shrink: 0;
 }
 
 .keyword-input {
   flex: 1;
-  font-size: 16px;
+  font-size: 14px;
   color: #333;
+  min-width: 0;
 }
 
 .placeholder-gray {
   color: #ccc;
-  font-size: 16px;
+  font-size: 14px;
 }
 
 /* 保证小程序端有足够触控区域，避免点击无反应 */
@@ -236,12 +239,13 @@
   flex-direction: column;
   align-items: center;
   justify-content: center;
-  min-width: 44px;
-  min-height: 44px;
+  min-width: 32px;
+  min-height: 32px;
   padding: 4px;
   box-sizing: border-box;
   color: $ctrip-blue;
   font-size: 10px;
+  flex-shrink: 0;
 }
 
 .gps-text {
@@ -455,7 +459,7 @@
 .quick-tag-chip {
   cursor: pointer;
   transition: all 0.2s;
-  
+
   &:active {
     transform: scale(0.95);
     opacity: 0.8;
@@ -475,7 +479,7 @@
   box-shadow: 0 4px 10px rgba(0, 134, 246, 0.3);
   cursor: pointer;
   transition: all 0.2s;
-  
+
   &:active {
     transform: scale(0.98);
     box-shadow: 0 2px 6px rgba(0, 134, 246, 0.25);
@@ -514,7 +518,7 @@
   border: 1px solid #eef1f5;
   cursor: pointer;
   transition: all 0.2s;
-  
+
   &:active {
     transform: scale(0.95);
     background: #e8ecf0;
@@ -558,8 +562,8 @@
   display: inline-flex;
   flex-direction: column;
   flex-shrink: 0;
-  width: 150px;
-  min-width: 150px;
+  width: min(150px, 40vw);
+  min-width: min(150px, 40vw);
   margin-right: 12px;
   vertical-align: top;
   background: #fff;
@@ -569,10 +573,22 @@
 }
 
 .ctrip-banner-cover {
-  width: 150px;
-  height: 110px;
+  width: 100%;
+  height: 0;
+  padding-bottom: 73.3%;
+  /* 110/150 aspect ratio */
   overflow: hidden;
   background: linear-gradient(135deg, #f0f0f0, #e8e8e8);
+  position: relative;
+}
+
+.ctrip-banner-cover .ctrip-banner-img,
+.ctrip-banner-cover .ctrip-banner-placeholder {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
 }
 
 .ctrip-banner-img {
@@ -688,7 +704,7 @@
   margin-bottom: 10px;
   cursor: pointer;
   transition: all 0.2s;
-  
+
   &:active {
     transform: scale(0.95);
     background: #e8ecf0;
@@ -911,14 +927,17 @@
 
 .recently-viewed-item {
   display: inline-block;
-  width: 140px;
+  width: min(140px, 38vw);
   margin-right: 12px;
   vertical-align: top;
 }
 
 .recently-viewed-image-wrap {
-  width: 140px;
-  height: 100px;
+  width: 100%;
+  height: 0;
+  padding-bottom: 71.4%;
+  /* 1/1.4 aspect ratio */
+  position: relative;
   border-radius: 10px;
   overflow: hidden;
   background: linear-gradient(135deg, #f0f0f0, #e8e8e8);
@@ -926,6 +945,9 @@
 }
 
 .recently-viewed-image {
+  position: absolute;
+  top: 0;
+  left: 0;
   width: 100%;
   height: 100%;
 }
@@ -970,27 +992,32 @@
   margin-bottom: 4px;
   border-top: 1px solid #f0f0f0;
 }
+
 .search-history-header {
   display: flex;
   justify-content: space-between;
   align-items: center;
   margin-bottom: 10px;
 }
+
 .search-history-title {
   font-size: 13px;
   color: #666;
   font-weight: 500;
 }
+
 .search-history-clear {
   font-size: 12px;
   color: #bbb;
   padding: 2px 8px;
 }
+
 .search-history-tags {
   display: flex;
   flex-wrap: wrap;
   gap: 8px;
 }
+
 .search-history-tag {
   font-size: 12px;
   color: #555;
@@ -1005,40 +1032,48 @@
   background: #fff;
   margin: 0 0 8px;
 }
+
 .price-trend-title {
   font-size: 14px;
   font-weight: 600;
   color: #333;
   margin-bottom: 12px;
 }
+
 .price-trend-chart {
   position: relative;
   height: 100px;
 }
+
 .price-trend-svg {
   width: 100%;
   height: 100%;
 }
+
 .price-trend-labels {
   display: flex;
   justify-content: space-between;
   margin-top: 4px;
 }
+
 .price-trend-label {
   font-size: 10px;
   color: #999;
 }
+
 .price-trend-indicator {
   display: flex;
   align-items: center;
   gap: 4px;
   margin-top: 8px;
 }
+
 .price-trend-dot {
   width: 8px;
   height: 8px;
   border-radius: 50%;
 }
+
 .price-trend-text {
   font-size: 12px;
   color: #666;
@@ -1048,12 +1083,14 @@
 .smart-recommend-section {
   margin: 16px;
 }
+
 .smart-recommend-title {
   font-size: 15px;
   font-weight: 600;
   color: #333;
   margin-bottom: 12px;
 }
+
 .smart-recommend-reason {
   font-size: 11px;
   color: #999;
