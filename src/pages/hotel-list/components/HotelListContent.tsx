@@ -1,5 +1,6 @@
-import { useState, useCallback, useMemo, useRef } from 'react';
+import { useState, useCallback, useMemo, useRef, useEffect } from 'react';
 import { ScrollView, View, Text } from '@tarojs/components';
+import Taro from '@tarojs/taro';
 import type { Hotel } from '../../../types/hotel';
 import { HotelCard } from '../../../components/ui';
 import './GeneralFilter.scss';
@@ -25,12 +26,50 @@ function HotelCardSkeleton() {
   );
 }
 
-/** Estimated height per HotelCard in px */
-const ITEM_HEIGHT = 136;
+/** Fallback row height when measurement is not ready */
+const DEFAULT_ITEM_HEIGHT = 196;
+/** Fallback viewport height when measurement is not ready */
+const DEFAULT_VIEWPORT_HEIGHT = 700;
+/** Lower bound for viewport used in window calculation */
+const MIN_VIEWPORT_HEIGHT = 320;
+/** HotelCard bottom gap (margin-bottom) in px */
+const ITEM_GAP = 12;
 /** Extra items rendered above/below the visible area */
 const OVERSCAN = 8;
 /** Only activate virtual scrolling when list exceeds this count */
 const VIRTUALIZE_THRESHOLD = 30;
+/** Interval to batch scroll range updates */
+const SCROLL_BATCH_MS = 16;
+
+interface ScrollEventDetail {
+  detail?: {
+    scrollTop?: number;
+  };
+}
+
+interface RectLike {
+  height?: number;
+}
+
+function clampToPositiveInt(value: number, fallback: number): number {
+  if (!Number.isFinite(value) || value <= 0) return fallback;
+  return Math.round(value);
+}
+
+function getRenderRange(
+  scrollTop: number,
+  total: number,
+  itemHeight: number,
+  viewportHeight: number,
+) {
+  if (total <= 0) return { start: 0, end: 0 };
+  const safeItemHeight = Math.max(1, itemHeight);
+  const safeViewportHeight = Math.max(MIN_VIEWPORT_HEIGHT, viewportHeight);
+  const start = Math.max(0, Math.floor(scrollTop / safeItemHeight) - OVERSCAN);
+  const visibleCount = Math.ceil(safeViewportHeight / safeItemHeight) + OVERSCAN * 2;
+  const end = Math.min(total, start + Math.max(visibleCount, OVERSCAN * 2 + 1));
+  return { start, end };
+}
 
 interface HotelListContentProps {
   hotels: Hotel[];
@@ -62,33 +101,96 @@ export function HotelListContent({
   onCardClick,
 }: HotelListContentProps) {
   const scrollTopRef = useRef(0);
-  const [renderRange, setRenderRange] = useState({ start: 0, end: 50 });
+  const updateTimerRef = useRef<ReturnType<typeof setTimeout> | null>(null);
+  const [itemHeight, setItemHeight] = useState(DEFAULT_ITEM_HEIGHT);
+  const [viewportHeight, setViewportHeight] = useState(DEFAULT_VIEWPORT_HEIGHT);
+  const [renderRange, setRenderRange] = useState(() => getRenderRange(
+    0,
+    hotels.length,
+    DEFAULT_ITEM_HEIGHT,
+    DEFAULT_VIEWPORT_HEIGHT,
+  ));
 
   const shouldVirtualize = hotels.length > VIRTUALIZE_THRESHOLD;
 
+  const updateRenderRange = useCallback(
+    (nextScrollTop: number) => {
+      if (!shouldVirtualize) return;
+      const nextRange = getRenderRange(nextScrollTop, hotels.length, itemHeight, viewportHeight);
+      setRenderRange((prev) => {
+        if (prev.start === nextRange.start && prev.end === nextRange.end) return prev;
+        return nextRange;
+      });
+    },
+    [hotels.length, itemHeight, shouldVirtualize, viewportHeight],
+  );
+
+  const measureMetrics = useCallback(() => {
+    try {
+      const info = Taro.getSystemInfoSync();
+      const safeWindowHeight = clampToPositiveInt(info.windowHeight, DEFAULT_VIEWPORT_HEIGHT);
+      setViewportHeight(Math.max(MIN_VIEWPORT_HEIGHT, safeWindowHeight));
+    } catch {
+      // ignore and keep fallback
+    }
+
+    const query = Taro.createSelectorQuery();
+    query.select('.ctrip-list-scroll').boundingClientRect();
+    query.select('.hotel-card').boundingClientRect();
+    query.exec((res: Array<RectLike | null>) => {
+      const rects = Array.isArray(res) ? res : [];
+      const scrollRect = (rects[0] ?? null) as RectLike | null;
+      const cardRect = (rects[1] ?? null) as RectLike | null;
+
+      if (scrollRect?.height && scrollRect.height > 0) {
+        setViewportHeight(Math.max(MIN_VIEWPORT_HEIGHT, clampToPositiveInt(scrollRect.height, DEFAULT_VIEWPORT_HEIGHT)));
+      }
+      if (cardRect?.height && cardRect.height > 0) {
+        const nextItemHeight = clampToPositiveInt(cardRect.height + ITEM_GAP, DEFAULT_ITEM_HEIGHT);
+        setItemHeight(nextItemHeight);
+      }
+    });
+  }, []);
+
+  useEffect(() => {
+    const timer = setTimeout(() => {
+      measureMetrics();
+    }, 0);
+    return () => clearTimeout(timer);
+  }, [measureMetrics, hotels.length, shouldVirtualize]);
+
+  useEffect(() => {
+    if (!shouldVirtualize) {
+      setRenderRange({ start: 0, end: hotels.length });
+      return;
+    }
+    updateRenderRange(scrollTopRef.current);
+  }, [hotels.length, shouldVirtualize, updateRenderRange]);
+
+  useEffect(() => {
+    return () => {
+      if (!updateTimerRef.current) return;
+      clearTimeout(updateTimerRef.current);
+      updateTimerRef.current = null;
+    };
+  }, []);
+
   const handleScroll = useCallback(
-    (e: any) => {
+    (e: ScrollEventDetail) => {
       const newScrollTop: number = e.detail?.scrollTop ?? 0;
+      scrollTopRef.current = newScrollTop;
 
       if (!shouldVirtualize) {
-        scrollTopRef.current = newScrollTop;
         return;
       }
 
-      if (Math.abs(newScrollTop - scrollTopRef.current) < ITEM_HEIGHT) return;
-      scrollTopRef.current = newScrollTop;
-
-      const viewportHeight = 700;
-      const start = Math.max(0, Math.floor(newScrollTop / ITEM_HEIGHT) - OVERSCAN);
-      const visibleCount = Math.ceil(viewportHeight / ITEM_HEIGHT) + OVERSCAN * 2;
-      const end = Math.min(hotels.length, start + visibleCount);
-
-      setRenderRange((prev) => {
-        if (prev.start === start && prev.end === end) return prev;
-        return { start, end };
-      });
+      if (updateTimerRef.current) return;
+      updateTimerRef.current = setTimeout(() => {
+        updateTimerRef.current = null;
+        updateRenderRange(scrollTopRef.current);
+      }, SCROLL_BATCH_MS);
     },
-    [shouldVirtualize, hotels.length],
+    [shouldVirtualize, updateRenderRange],
   );
 
   const { visibleHotels, topPadding, bottomPadding } = useMemo(() => {
@@ -99,10 +201,10 @@ export function HotelListContent({
     const safeEnd = Math.min(end, hotels.length);
     return {
       visibleHotels: hotels.slice(start, safeEnd),
-      topPadding: start * ITEM_HEIGHT,
-      bottomPadding: Math.max(0, (hotels.length - safeEnd) * ITEM_HEIGHT),
+      topPadding: start * itemHeight,
+      bottomPadding: Math.max(0, (hotels.length - safeEnd) * itemHeight),
     };
-  }, [hotels, renderRange, shouldVirtualize]);
+  }, [hotels, itemHeight, renderRange, shouldVirtualize]);
 
   return (
     <ScrollView

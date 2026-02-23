@@ -24,7 +24,7 @@ import dayjs, { Dayjs } from 'dayjs';
 import type { PriceUpdateEvent } from '../../hooks/usePriceUpdates';
 import './index.scss';
 
-const PAGE_SIZE = 50;
+const PAGE_SIZE = 30;
 const CITY_COORDINATES: Record<string, { latitude: number; longitude: number }> = {
   '上海': { latitude: 31.2304, longitude: 121.4737 },
   '北京': { latitude: 39.9042, longitude: 116.4074 },
