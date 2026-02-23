@@ -2,7 +2,9 @@
 
 .ctrip-detail {
   flex: 1;
-  background: $ctrip-bg-page;
+  background:
+    radial-gradient(circle at 0% 0%, rgba(22, 119, 255, 0.14), transparent 32%),
+    $ctrip-bg-page;
   position: relative;
   display: flex;
   flex-direction: column;
@@ -32,16 +34,19 @@
   display: flex;
   justify-content: space-between;
   align-items: center;
+  background: linear-gradient(180deg, rgba(0, 0, 0, 0.28) 0%, rgba(0, 0, 0, 0) 100%);
 }
 
 .ctrip-back-btn {
-  background: rgba(255, 255, 255, 0.8);
+  background: rgba(255, 255, 255, 0.9);
   width: 32px;
   height: 32px;
   border-radius: 16px;
   display: flex;
   align-items: center;
   justify-content: center;
+  border: 1px solid rgba(255, 255, 255, 0.76);
+  box-shadow: 0 6px 14px rgba(0, 0, 0, 0.14);
 
   &:active {
     background: rgba(255, 255, 255, 0.95);
@@ -84,7 +89,7 @@
 }
 
 .ctrip-detail-action {
-  background: rgba(255, 255, 255, 0.8);
+  background: rgba(255, 255, 255, 0.9);
   width: 32px;
   height: 32px;
   border-radius: 16px;
@@ -94,6 +99,8 @@
   justify-content: center;
   color: $ctrip-text;
   margin-left: 12px;
+  border: 1px solid rgba(255, 255, 255, 0.76);
+  box-shadow: 0 6px 14px rgba(0, 0, 0, 0.14);
 
   &:active {
     background: rgba(255, 255, 255, 0.95);
@@ -104,8 +111,9 @@
 /* Gallery */
 .ctrip-detail-gallery {
   position: relative;
-  height: 320px;
+  height: 332px;
   background: #eee;
+  overflow: hidden;
 }
 
 .ctrip-detail-swiper {
@@ -184,7 +192,8 @@
   border-radius: 16px;
   padding: 16px;
   position: relative;
-  box-shadow: 0 2px 12px rgba(0, 0, 0, 0.05);
+  border: 1px solid #e8eefa;
+  box-shadow: 0 12px 26px rgba(14, 41, 87, 0.1);
   z-index: 2;
 }
 
@@ -230,6 +239,8 @@
   background: #fff;
   border-radius: 12px;
   padding: 16px;
+  border: 1px solid #e8eef9;
+  box-shadow: 0 10px 22px rgba(14, 41, 87, 0.08);
 }
 
 .nearby-section {
@@ -338,9 +349,10 @@
   margin-top: 20px;
   display: flex;
   align-items: center;
-  background: #f9faff;
+  background: linear-gradient(160deg, #f8fbff 0%, #eef4ff 100%);
   border-radius: 12px;
   padding: 12px;
+  border: 1px solid #e5edfb;
 }
 
 .ctrip-detail-score-block {
@@ -406,6 +418,8 @@
   background: #fff;
   border-radius: 12px;
   padding: 16px;
+  border: 1px solid #e8eef9;
+  box-shadow: 0 10px 22px rgba(14, 41, 87, 0.08);
 }
 
 .dates-row {
@@ -507,7 +521,7 @@
   color: $ctrip-text;
   margin-right: 10px;
   margin-bottom: 8px;
-  border: 1px solid #e8e8e8;
+  border: 1px solid #e3eaf8;
   cursor: pointer;
   transition: all 0.2s;
 
@@ -532,11 +546,13 @@
 }
 
 .ctrip-detail-room {
-  background: #fff;
+  background: linear-gradient(160deg, #fff 0%, #f8fbff 100%);
   border-radius: 12px;
   padding: 12px;
   display: flex;
   margin-bottom: 12px;
+  border: 1px solid #e8eef9;
+  box-shadow: 0 10px 22px rgba(14, 41, 87, 0.08);
 }
 
 .ctrip-detail-room-thumb {
@@ -618,7 +634,7 @@
   padding: 0 16px;
   height: 32px;
   line-height: 32px;
-  border-radius: 18px;
+  border-radius: 20px;
   border-width: 0;
   cursor: pointer;
   transition: all 0.2s;
@@ -639,14 +655,16 @@
   bottom: 0;
   left: 0;
   right: 0;
-  background: #fff;
+  background: rgba(255, 255, 255, 0.96);
   padding: 10px 16px;
   padding-bottom: calc(10px + env(safe-area-inset-bottom, 0px));
   display: flex;
   align-items: center;
   z-index: 100;
   border-top-width: 1px;
-  border-top-color: #f0f0f0;
+  border-top-color: #e4ecfa;
+  box-shadow: 0 -8px 20px rgba(14, 41, 87, 0.08);
+  backdrop-filter: blur(8px);
 }
 
 .ctrip-detail-bottom-left {

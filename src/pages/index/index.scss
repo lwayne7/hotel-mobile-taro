@@ -2,7 +2,10 @@
 
 .page-search {
   flex: 1;
-  background: linear-gradient(180deg, #4facfe 0%, #f5f7fa 25%);
+  background:
+    radial-gradient(circle at 12% 0%, rgba(22, 119, 255, 0.32), transparent 34%),
+    radial-gradient(circle at 88% 0%, rgba(46, 211, 217, 0.24), transparent 30%),
+    linear-gradient(180deg, #dcebff 0%, #f2f6ff 28%, #f2f6ff 100%);
   display: flex;
   flex-direction: column;
   position: relative;
@@ -30,7 +33,11 @@
   display: flex;
   justify-content: space-between;
   align-items: center;
-  padding: 10px 16px;
+  padding: 12px 16px;
+  position: sticky;
+  top: 0;
+  z-index: 8;
+  backdrop-filter: blur(6px);
 }
 
 .ctrip-header-fav {
@@ -57,10 +64,11 @@
   align-items: flex-start;
   margin: 0 12px;
   padding: 16px 20px 50px;
-  background: linear-gradient(135deg, #ffe4b5 0%, #ffd89b 50%, #ffcc80 100%);
+  background: linear-gradient(138deg, #ffe0b5 0%, #ffd190 54%, #ffbc6f 100%);
   border-radius: 16px;
   position: relative;
   z-index: 1;
+  box-shadow: 0 10px 24px rgba(181, 114, 43, 0.18);
 }
 
 .ad-banner-left {
@@ -133,7 +141,8 @@
   z-index: 2;
   background: #fff;
   border-radius: 20px;
-  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.1);
+  border: 1px solid rgba(255, 255, 255, 0.8);
+  box-shadow: 0 14px 28px rgba(20, 62, 126, 0.14);
   padding: 0 16px 12px;
   overflow: hidden;
 }
@@ -446,7 +455,7 @@
   margin-right: 10px;
   margin-bottom: 8px;
   border: 1px solid #e8e8e8;
-  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.04);
+  box-shadow: 0 4px 10px rgba(14, 47, 96, 0.08);
 }
 
 .quick-tag-chip.active {
@@ -476,7 +485,7 @@
   border-radius: 24px;
   height: 50px;
   line-height: 50px;
-  box-shadow: 0 4px 10px rgba(0, 134, 246, 0.3);
+  box-shadow: 0 10px 18px rgba(22, 119, 255, 0.32);
   cursor: pointer;
   transition: all 0.2s;
 
@@ -491,7 +500,8 @@
   margin: 0 12px 12px;
   background: #fff;
   border-radius: 16px;
-  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.04);
+  border: 1px solid #e8eefb;
+  box-shadow: 0 10px 22px rgba(14, 41, 87, 0.08);
 }
 
 .ctrip-section-title {
@@ -569,7 +579,8 @@
   background: #fff;
   border-radius: 12px;
   overflow: hidden;
-  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08);
+  border: 1px solid #e6edf9;
+  box-shadow: 0 8px 16px rgba(14, 41, 87, 0.08);
 }
 
 .ctrip-banner-cover {

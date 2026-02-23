@@ -1,16 +1,16 @@
 // ============ 颜色变量 ============
-$ctrip-primary: #ff6b00;
-$ctrip-primary-light: #ff8533;
-$ctrip-primary-dark: #e85c0d;
+$ctrip-primary: #f47220;
+$ctrip-primary-light: #ff934f;
+$ctrip-primary-dark: #d95a0a;
 
-$ctrip-blue: #0086f6;
-$ctrip-blue-dark: #006ed3;
-$ctrip-blue-light: #e6f4ff;
-$ctrip-blue-gradient: linear-gradient(90deg, #0086f6 0%, #29a1f7 100%);
-$ctrip-blue-gradient-btn: linear-gradient(90deg, #4facfe 0%, #00f2fe 100%);
+$ctrip-blue: #1677ff;
+$ctrip-blue-dark: #0d5bd6;
+$ctrip-blue-light: #eaf2ff;
+$ctrip-blue-gradient: linear-gradient(90deg, #1677ff 0%, #33a0ff 100%);
+$ctrip-blue-gradient-btn: linear-gradient(90deg, #45a2ff 0%, #2ed3d9 100%);
 
 $ctrip-bg: #f5f5f5;
-$ctrip-bg-page: #f5f7fa;
+$ctrip-bg-page: #f2f6ff;
 $ctrip-bg-skeleton: #f2f2f2;
 $ctrip-card: #fff;
 $ctrip-border: #f2f2f2;
@@ -18,9 +18,9 @@ $ctrip-border-light: #f0f0f0;
 $ctrip-border-medium: #e8e8e8;
 
 $ctrip-price: #ff6b00;
-$ctrip-text: #333;
-$ctrip-text-secondary: #666;
-$ctrip-text-placeholder: #999;
+$ctrip-text: #1f2a44;
+$ctrip-text-secondary: #5f6d86;
+$ctrip-text-placeholder: #8d99ad;
 
 // 语义色
 $ctrip-star: #ffa000; // 星级颜色
@@ -80,9 +80,9 @@ $radius-xl: 24px;
 $radius-full: 9999px;
 
 // ============ 阴影变量（仅 H5/小程序使用，RN 需用 rn-utils.ts）============
-$shadow-sm: 0 2px 8px rgba(0, 0, 0, 0.06);
-$shadow-md: 0 4px 16px rgba(0, 0, 0, 0.08);
-$shadow-lg: 0 8px 24px rgba(0, 0, 0, 0.12);
+$shadow-sm: 0 4px 10px rgba(17, 46, 92, 0.06);
+$shadow-md: 0 8px 18px rgba(17, 46, 92, 0.1);
+$shadow-lg: 0 14px 30px rgba(17, 46, 92, 0.14);
 
 // ============ 安全区域 ============
 $safe-area-top: env(safe-area-inset-top, 0);

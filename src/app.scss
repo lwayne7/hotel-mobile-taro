@@ -8,10 +8,14 @@
 page {
   font-family: -apple-system, BlinkMacSystemFont, "PingFang SC", "Hiragino Sans GB", "Microsoft YaHei",
     "Helvetica Neue", Arial, sans-serif;
-  background-color: $ctrip-bg-page;
+  background:
+    radial-gradient(circle at 0% 0%, rgba(22, 119, 255, 0.12), transparent 34%),
+    radial-gradient(circle at 100% 0%, rgba(46, 211, 217, 0.12), transparent 30%),
+    $ctrip-bg-page;
   color: $ctrip-text;
   box-sizing: border-box;
   animation: pageFadeIn 0.35s ease-out;
+  line-height: 1.45;
 }
 
 view,

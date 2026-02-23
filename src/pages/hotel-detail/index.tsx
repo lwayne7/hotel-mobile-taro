@@ -59,7 +59,7 @@ function RoomImage({ src, fallbackSrc }: { src?: string; fallbackSrc?: string })
       </View>
     );
   }
-  
+
   return (
     <Image
       src={currentSrc!}
@@ -71,11 +71,11 @@ function RoomImage({ src, fallbackSrc }: { src?: string; fallbackSrc?: string })
 }
 
 /** Gallery 图片组件 - 无图/加载失败显示占位 */
-function GalleryImage({ 
-  src, 
-  onClick 
-}: { 
-  src?: string; 
+function GalleryImage({
+  src,
+  onClick
+}: {
+  src?: string;
   onClick?: () => void;
 }) {
   const [failed, setFailed] = useState(false);
@@ -244,6 +244,42 @@ export default function HotelDetail() {
     setShowDatePicker(null);
   }, [showDatePicker, localCheckIn, localCheckOut]);
 
+  const handleShare = useCallback(() => {
+    if (!hotel) {
+      Taro.showToast({ title: '酒店信息加载中，请稍后', icon: 'none' });
+      return;
+    }
+
+    const minPriceForShare = getMinPrice(hotel);
+    const shareSummary = `${hotel.nameCn} ¥${minPriceForShare}起`;
+    const checkInDate = localCheckIn.format('YYYY-MM-DD');
+    const checkOutDate = localCheckOut.format('YYYY-MM-DD');
+    const sharePath = `/pages/hotel-detail/index?id=${hotel.id}&checkIn=${checkInDate}&checkOut=${checkOutDate}`;
+    const shareText = `${shareSummary}\n${hotel.address}\n入住:${checkInDate} 离店:${checkOutDate}`;
+
+    if (process.env.TARO_ENV === 'weapp') {
+      Taro.showShareMenu({ withShareTicket: true }).catch(() => {
+        // 部分场景不支持主动调起，忽略错误
+      });
+      Taro.setClipboardData({ data: `${shareText}\n${sharePath}` })
+        .then(() => {
+          Taro.showToast({ title: '已复制分享文案，请使用右上角分享', icon: 'none' });
+        })
+        .catch(() => {
+          Taro.showToast({ title: '请使用右上角分享该酒店', icon: 'none' });
+        });
+      return;
+    }
+
+    Taro.setClipboardData({ data: shareText })
+      .then(() => {
+        Taro.showToast({ title: '酒店信息已复制，可直接分享', icon: 'none' });
+      })
+      .catch(() => {
+        Taro.showToast({ title: '当前环境不支持系统分享', icon: 'none' });
+      });
+  }, [hotel, localCheckIn, localCheckOut]);
+
   // 加载中
   if (isLoading) {
     return (
@@ -295,36 +331,6 @@ export default function HotelDetail() {
     hotel.facilities?.length && hotel.facilities.length > 0
       ? getDisplayTags(hotel, 4)
       : ['免费WiFi', '停车场', '新中式风', '24h前台'];
-
-  const handleShare = useCallback(() => {
-    const shareSummary = `${hotel.nameCn} ¥${minPrice}起`;
-    const checkInDate = localCheckIn.format('YYYY-MM-DD');
-    const checkOutDate = localCheckOut.format('YYYY-MM-DD');
-    const sharePath = `/pages/hotel-detail/index?id=${hotel.id}&checkIn=${checkInDate}&checkOut=${checkOutDate}`;
-    const shareText = `${shareSummary}\n${hotel.address}\n入住:${checkInDate} 离店:${checkOutDate}`;
-
-    if (process.env.TARO_ENV === 'weapp') {
-      Taro.showShareMenu({ withShareTicket: true }).catch(() => {
-        // 部分场景不支持主动调起，忽略错误
-      });
-      Taro.setClipboardData({ data: `${shareText}\n${sharePath}` })
-        .then(() => {
-          Taro.showToast({ title: '已复制分享文案，请使用右上角分享', icon: 'none' });
-        })
-        .catch(() => {
-          Taro.showToast({ title: '请使用右上角分享该酒店', icon: 'none' });
-        });
-      return;
-    }
-
-    Taro.setClipboardData({ data: shareText })
-      .then(() => {
-        Taro.showToast({ title: '酒店信息已复制，可直接分享', icon: 'none' });
-      })
-      .catch(() => {
-        Taro.showToast({ title: '当前环境不支持系统分享', icon: 'none' });
-      });
-  }, [hotel, localCheckIn, localCheckOut, minPrice]);
 
   return (
     <View className="ctrip-detail">

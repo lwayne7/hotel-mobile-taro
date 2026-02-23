@@ -1,20 +1,22 @@
 .hotel-card {
   display: flex;
   flex-direction: row;
-  background-color: #fff;
-  border-radius: 12px;
+  background:
+    linear-gradient(155deg, #ffffff 0%, #f8fbff 100%);
+  border-radius: 14px;
   margin-bottom: 12px;
   padding-top: 12px;
   padding-bottom: 12px;
   padding-left: 12px;
   padding-right: 12px;
-  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.06);
+  border: 1px solid #e8eef9;
+  box-shadow: 0 10px 22px rgba(12, 37, 77, 0.08);
   cursor: pointer;
   transition: transform 0.2s, box-shadow 0.2s;
   
   &:active {
     transform: scale(0.98);
-    box-shadow: 0 1px 4px rgba(0, 0, 0, 0.08);
+    box-shadow: 0 4px 10px rgba(12, 37, 77, 0.1);
   }
 }
 
@@ -98,7 +100,7 @@
 .hotel-card-name {
   font-size: 15px;
   font-weight: 600;
-  color: #333;
+  color: #1f2a44;
   flex: 1;
 }
 
@@ -110,7 +112,7 @@
 
 .hotel-card-address {
   font-size: 11px;
-  color: #666;
+  color: #5f6d86;
   margin-top: 4px;
 }
 
@@ -123,8 +125,8 @@
 
 .hotel-card-tag {
   font-size: 10px;
-  color: #0086f6;
-  background-color: #e6f4ff;
+  color: #1677ff;
+  background-color: #eaf2ff;
   padding-top: 3px;
   padding-bottom: 3px;
   padding-left: 8px;
@@ -145,7 +147,7 @@
   font-size: 13px;
   font-weight: 700;
   color: #fff;
-  background-color: #0086f6;
+  background: linear-gradient(90deg, #1677ff 0%, #369dff 100%);
   padding: 2px 6px;
   border-radius: 4px;
   margin-right: 4px;
@@ -153,7 +155,7 @@
 
 .hotel-card-score-label {
   font-size: 11px;
-  color: #0086f6;
+  color: #1677ff;
   font-weight: 600;
   margin-right: 4px;
 }
@@ -216,7 +218,7 @@
 .hotel-card-current-price {
   font-size: 20px;
   font-weight: 700;
-  color: #ff6b00;
+  color: #f47220;
 }
 
 .hotel-card-price-unit {
