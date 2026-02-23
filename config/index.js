@@ -5,15 +5,14 @@ const taroEnv = process.env.TARO_ENV || 'weapp';
 const outputRoot =
     taroEnv === 'h5' ? 'dist-h5' : taroEnv === 'rn' ? 'dist-rn' : 'dist';
 
-// 开发环境下的"后端候选地址"
-// - 显式设置 TARO_APP_API_BASE 时，H5 proxy 与小程序/RN baseURL 会统一指向该地址
-// - 未显式设置时：H5 默认代理到 localhost，小程序/RN 默认使用局域网 IP（config/dev.js）
+// 后端地址：默认使用线上 Railway 后端，无需启动本地后端
+// 设置 TARO_APP_API_BASE=http://localhost:3000 可切换为本地后端
 const DEFAULT_DEV_API_PORT = process.env.TARO_APP_API_PORT || '3000';
-const DEFAULT_LOCAL_API_BASE = `http://localhost:${DEFAULT_DEV_API_PORT}`;
+const RAILWAY_API_BASE = 'https://hotel-management-production-wayne.up.railway.app';
 const explicitBase = (process.env.TARO_APP_API_BASE || '').trim();
 const lanIp = getLanIp();
 const lanBase = lanIp ? `http://${lanIp}:${DEFAULT_DEV_API_PORT}` : '';
-const sharedDevApiBase = explicitBase || (taroEnv === 'weapp' || taroEnv === 'rn' ? lanBase || DEFAULT_LOCAL_API_BASE : DEFAULT_LOCAL_API_BASE);
+const sharedDevApiBase = explicitBase || RAILWAY_API_BASE;
 
 const config = {
     projectName: 'hotel-mobile-taro',
