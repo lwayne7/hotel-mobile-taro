@@ -17,6 +17,25 @@ import './index.scss';
 
 const ROOM_FILTER_TAGS = ['含早餐', '立即确认', '大床房', '双床房', '免费取消', '筛选'];
 
+/** 设施名称 → 语义图标映射 */
+const FEATURE_ICON_MAP: Record<string, string> = {
+  '免费WiFi': '📶', 'WiFi': '📶', '无线网络': '📶',
+  '停车场': '🅿️', '免费停车': '🅿️',
+  '游泳池': '🏊', '泳池': '🏊', '室内泳池': '🏊', '室外泳池': '🏊',
+  '健身房': '💪', '健身中心': '💪',
+  '餐厅': '🍽️', '中餐厅': '🍽️', '西餐厅': '🍽️', '自助餐': '🍽️',
+  '酒吧': '🍸', '大堂吧': '🍸',
+  'SPA': '💆', '水疗': '💆',
+  '会议室': '📋', '商务中心': '📋',
+  '儿童乐园': '🎠', '亲子': '🎠',
+  '24小时前台': '🛎️', '24h前台': '🛎️', '前台': '🛎️',
+  '行李寄存': '🧳',
+  '洗衣服务': '👔', '洗衣房': '👔',
+  '新中式风': '🏮', '中式': '🏮',
+  '花园': '🌿', '露台': '🌿',
+  '接机服务': '✈️', '机场接送': '✈️',
+};
+
 function matchRoomByFilter(room: RoomType, filter: string | null): boolean {
   if (!filter) return true;
   const bedType = (room.bedType ?? '').toLowerCase();
@@ -420,7 +439,7 @@ export default function HotelDetail() {
             {features.map((f, i) => (
               <View key={i} className="feature-item">
                 <View className="feature-icon">
-                  {i === 0 ? '📶' : i === 1 ? '🅿️' : i === 2 ? '🏠' : '🛎️'}
+                  {FEATURE_ICON_MAP[f] || '✦'}
                 </View>
                 <Text className="feature-text">{f}</Text>
               </View>

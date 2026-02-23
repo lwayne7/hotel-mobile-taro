@@ -458,6 +458,10 @@ export default function HotelList() {
     });
   }, [localCity]);
 
+  const handleOpenMore = useCallback(() => {
+    setActiveFilter((prev) => (prev === 'filter' ? null : 'filter'));
+  }, []);
+
   // 筛选标签点击
   const handleFilterTabClick = useCallback((key: string) => {
     if (key === 'smart') {
@@ -615,7 +619,10 @@ export default function HotelList() {
           <Text className="map-icon">📍</Text>
           <Text className="map-text">地图</Text>
         </View>
-        <View className="ctrip-list-more-btn">
+        <View
+          className={`ctrip-list-more-btn ${activeFilter === 'filter' ? 'active' : ''}`}
+          onClick={handleOpenMore}
+        >
           <Text className="more-icon">•••</Text>
           <Text className="more-text">更多</Text>
         </View>
