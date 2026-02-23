@@ -39,11 +39,6 @@ const config = {
                 from: path.resolve(__dirname, '..', 'app.miniapp.json'),
                 to: 'app.miniapp.json',
             },
-            // 复制 favicon 到 dist 目录
-            {
-                from: path.resolve(__dirname, '..', 'src', 'favicon.svg'),
-                to: 'favicon.svg',
-            },
         ],
         options: {},
     },
