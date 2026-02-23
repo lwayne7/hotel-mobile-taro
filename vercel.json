@@ -4,6 +4,10 @@
   "outputDirectory": "dist-h5",
   "rewrites": [
     {
+      "source": "/api/:path*",
+      "destination": "https://hotel-management-production-wayne.up.railway.app/api/:path*"
+    },
+    {
       "source": "/(.*)",
       "destination": "/index.html"
     }
