@@ -2,9 +2,10 @@
 import { useMemo, useCallback, useState, useEffect } from 'react';
 import { View, Text, Input } from '@tarojs/components';
 import Taro, { useDidShow, useRouter } from '@tarojs/taro';
+import { useQueryClient } from '@tanstack/react-query';
 
 const HISTORY_TAGS_STORAGE_KEY = 'hotel_filter_history_tags';
-import { useInfiniteHotelList, flattenHotelPages, getTotalFromPages, useIsWeapp, usePriceUpdates } from '../../hooks';
+import { useInfiniteHotelList, flattenHotelPages, getTotalFromPages, useIsWeapp, usePriceUpdates, hotelKeys } from '../../hooks';
 import { useLocation } from '../../hooks/useLocation';
 import { useSearchStore } from '../../store/useSearchStore';
 import { useHotelStore } from '../../store/useHotelStore';
@@ -20,9 +21,22 @@ import type { Hotel, HotelListResponse } from '../../types/hotel';
 import { toQueryString } from '../../utils/queryString';
 import { getApiBaseCacheKey, isWeappDevtoolsRuntime } from '../../services/request';
 import dayjs, { Dayjs } from 'dayjs';
+import type { PriceUpdateEvent } from '../../hooks/usePriceUpdates';
 import './index.scss';
 
 const PAGE_SIZE = 50;
+const CITY_COORDINATES: Record<string, { latitude: number; longitude: number }> = {
+  '上海': { latitude: 31.2304, longitude: 121.4737 },
+  '北京': { latitude: 39.9042, longitude: 116.4074 },
+  '广州': { latitude: 23.1291, longitude: 113.2644 },
+  '深圳': { latitude: 22.5431, longitude: 114.0579 },
+  '杭州': { latitude: 30.2741, longitude: 120.1551 },
+  '成都': { latitude: 30.5728, longitude: 104.0668 },
+  '重庆': { latitude: 29.4316, longitude: 106.9123 },
+  '西安': { latitude: 34.3416, longitude: 108.9398 },
+  '三亚': { latitude: 18.2528, longitude: 109.5119 },
+  '厦门': { latitude: 24.4798, longitude: 118.0894 },
+};
 
 function decodeParam(value: string | undefined): string {
   if (!value || typeof value !== 'string') return '';
@@ -38,6 +52,7 @@ export default function HotelList() {
   const rawParams = router.params || {};
   const isWeapp = useIsWeapp();
   const isWeappDevtools = useMemo(() => isWeapp && isWeappDevtoolsRuntime(), [isWeapp]);
+  const queryClient = useQueryClient();
 
   // Zustand - 使用选择器
   const city = useSearchStore((s) => s.city);
@@ -169,15 +184,6 @@ export default function HotelList() {
     refetch: queryRefetch,
   } = useInfiniteHotelList(searchParams, { enabled: !isWeapp });
 
-  const handleSsePriceUpdate = useCallback(() => {
-    queryRefetch();
-  }, [queryRefetch]);
-
-  usePriceUpdates({
-    enabled: !isWeapp,
-    onPriceUpdate: handleSsePriceUpdate,
-  });
-
   // weapp 最简兜底：不依赖 TanStack Query，避免小程序环境下 Query 不触发导致“不发请求、一直空列表”
   const [weappHotels, setWeappHotels] = useState<Hotel[]>([]);
   const [weappTotal, setWeappTotal] = useState(0);
@@ -192,6 +198,90 @@ export default function HotelList() {
     if (!isWeapp) return;
     setWeappRefreshKey((k) => k + 1);
   }, [isWeapp]);
+
+  const upsertHotelInQueryCache = useCallback((nextHotel: Hotel) => {
+    queryClient.setQueryData<{ pages: HotelListResponse[]; pageParams: unknown[] } | undefined>(
+      hotelKeys.list(searchParams),
+      (prev) => {
+        if (!prev) return prev;
+        let touched = false;
+        const pages = prev.pages.map((page) => {
+          let pageTouched = false;
+          const data = page.data.map((item) => {
+            if (item.id !== nextHotel.id) return item;
+            pageTouched = true;
+            touched = true;
+            return {
+              ...item,
+              ...nextHotel,
+              roomTypes: nextHotel.roomTypes ?? item.roomTypes,
+            };
+          });
+          return pageTouched ? { ...page, data } : page;
+        });
+        return touched ? { ...prev, pages } : prev;
+      },
+    );
+  }, [queryClient, searchParams]);
+
+  const removeHotelFromQueryCache = useCallback((hotelId: number) => {
+    queryClient.setQueryData<{ pages: HotelListResponse[]; pageParams: unknown[] } | undefined>(
+      hotelKeys.list(searchParams),
+      (prev) => {
+        if (!prev) return prev;
+        let removed = 0;
+        const pages = prev.pages.map((page, index) => {
+          const nextData = page.data.filter((item) => item.id !== hotelId);
+          removed += page.data.length - nextData.length;
+          if (nextData.length === page.data.length) return page;
+          const nextTotal = index === 0 ? Math.max(0, page.total - removed) : page.total;
+          return { ...page, data: nextData, total: nextTotal };
+        });
+        if (removed === 0) return prev;
+        return { ...prev, pages };
+      },
+    );
+  }, [queryClient, searchParams]);
+
+  const handleSsePriceUpdate = useCallback(async (event: PriceUpdateEvent) => {
+    if (!event || event.changeKind === 'keepalive') return;
+
+    const hotelId = event.hotelId;
+    const shouldHardRefresh =
+      !hotelId || event.changeKind === 'hotel_online';
+
+    if (shouldHardRefresh) {
+      queryRefetch();
+      return;
+    }
+
+    if (event.changeKind === 'hotel_offline' || event.changeKind === 'hotel_hidden') {
+      removeHotelFromQueryCache(hotelId);
+      setWeappHotels((prev) => prev.filter((hotel) => hotel.id !== hotelId));
+      return;
+    }
+
+    try {
+      const freshHotel = await publicHotelApi.getById(hotelId);
+      upsertHotelInQueryCache(freshHotel);
+      setWeappHotels((prev) =>
+        prev.map((hotel) =>
+          hotel.id === freshHotel.id
+            ? { ...hotel, ...freshHotel, roomTypes: freshHotel.roomTypes ?? hotel.roomTypes }
+            : hotel,
+        ),
+      );
+    } catch {
+      // 酒店可能已下线或不再公开，移除当前列表项
+      removeHotelFromQueryCache(hotelId);
+      setWeappHotels((prev) => prev.filter((hotel) => hotel.id !== hotelId));
+    }
+  }, [queryRefetch, removeHotelFromQueryCache, upsertHotelInQueryCache]);
+
+  usePriceUpdates({
+    enabled: !isWeapp,
+    onPriceUpdate: handleSsePriceUpdate,
+  });
 
   const fetchWeappFirstPage = useCallback(async () => {
     if (!isWeapp) return;
@@ -341,6 +431,32 @@ export default function HotelList() {
       Taro.redirectTo({ url: '/pages/index/index' });
     });
   }, []);
+
+  const handleOpenMap = useCallback(() => {
+    const cityCenter = CITY_COORDINATES[localCity];
+    if (!cityCenter) {
+      setActiveFilter('distance');
+      Taro.showToast({
+        title: '暂不支持该城市地图，已打开位置筛选',
+        icon: 'none',
+      });
+      return;
+    }
+
+    Taro.openLocation({
+      latitude: cityCenter.latitude,
+      longitude: cityCenter.longitude,
+      name: `${localCity}热门酒店区域`,
+      address: `${localCity}市中心`,
+      scale: 12,
+    }).catch(() => {
+      setActiveFilter('distance');
+      Taro.showToast({
+        title: '当前环境不支持地图，已打开位置筛选',
+        icon: 'none',
+      });
+    });
+  }, [localCity]);
 
   // 筛选标签点击
   const handleFilterTabClick = useCallback((key: string) => {
@@ -495,7 +611,7 @@ export default function HotelList() {
             />
           </View>
         </View>
-        <View className="ctrip-list-map">
+        <View className="ctrip-list-map" onClick={handleOpenMap}>
           <Text className="map-icon">📍</Text>
           <Text className="map-text">地图</Text>
         </View>
