@@ -1,62 +1,121 @@
-# 易宿酒店预订 - Taro 多端
+# 🏨 易宿酒店预订 — Taro 多端用户版
 
-基于 Taro 4 + React 18 + TypeScript 的用户端酒店预定流程，一套代码编译到 **H5**、**微信小程序** 与 **React Native APP**。
+> 一套代码，三端运行：**H5** · **微信小程序** · **React Native APP**  
+> Taro 4 + React 18 + TypeScript · Zustand + TanStack Query · NutUI React
 
-## 技术栈
+---
 
-- **框架**: Taro 4、React 18、TypeScript 5
-- **多端**: H5、微信小程序、React Native APP（分离模式，可选 Taro Playground 或 Taro Native Shell）
-- **后端**: 与 `hotel-management/backend` 共用 API（Node.js）
+## ✨ 项目亮点
 
-## 目录结构
+| 亮点 | 说明 |
+|------|------|
+| 📱 **一码三端** | Taro 4 编译到 H5、微信小程序、React Native，UI 与逻辑零差异 |
+| 🚀 **虚拟滚动** | 万级酒店列表高性能渲染，TanStack Query 无限滚动 + 60s 自动刷新 |
+| 📈 **价格趋势图** | 纯 View 绘制的折线图组件（PriceTrend），展示近 7 日价格走势 |
+| 📡 **SSE 实时价格** | H5 端 EventSource 自动重连 + keepalive 节流；小程序/RN 轮询兜底 |
+| 📍 **GPS 城市定位** | Taro.getLocation → 逆地理编码推断城市，一键定位当前位置 |
+| 💾 **离线持久化** | Zustand + persist 中间件，收藏夹与浏览历史跨端持久存储 |
+| 🧪 **Vitest 单测** | useHotels / useSearchStore / useHotelStore 等核心逻辑全覆盖 |
+| 🎨 **12 个自研组件** | Button / Calendar / CityPicker / RoomPicker / Popup / Skeleton / Loading / HotelCard / PriceTrend / ErrorBoundary / SafeArea / ui |
+| 🔍 **智能搜索** | 搜索历史持久化 + 热门标签 + 多维筛选（城市/星级/价格/设施/品牌） |
+| ⚡ **Vercel 部署** | H5 版已配置 vercel.json，一键部署到生产环境 |
+
+---
+
+## 🛠️ 技术栈
+
+| 层级 | 技术 |
+|------|------|
+| 框架 | **Taro 4.0.9** + **React 18** + **TypeScript 5** |
+| 多端 | H5 / 微信小程序 / React Native（分离模式） |
+| UI | **NutUI React Taro** + 自定义组件体系 |
+| 状态管理 | **Zustand 5**（客户端，persist 中间件）+ **TanStack Query 5**（服务端） |
+| 数据校验 | **Zod 4** |
+| 日期处理 | **Day.js** |
+| 测试 | **Vitest 2** + **Testing Library** + **jsdom** |
+| 构建 | Webpack 5（Taro runner）/ Babel / SWC |
+| 部署 | Vercel（H5）/ 微信开发者工具（小程序） |
+
+---
+
+## 📁 目录结构
 
 ```
-（本仓库根目录）
-├── config/           # 构建配置（dev/prod）
+hotel-mobile-taro/
+├── config/               # 构建配置（dev / prod）
 ├── src/
-│   ├── app.tsx       # 应用入口
-│   ├── app.config.ts # 路由与全局配置
-│   ├── app.scss      # 全局样式
-│   ├── components/   # 公共组件（Button/Calendar/HotelCard/Popup等）
-│   ├── constants/    # 常量配置（城市列表等）
-│   ├── hooks/        # 自定义Hooks（useHotels/useSearch）
-│   ├── pages/        # 页面：index、hotel-list、hotel-detail、favorites
-│   ├── services/     # 请求封装、API
-│   ├── store/        # Zustand状态管理
-│   ├── styles/       # 全局样式变量
-│   ├── types/        # 类型定义
-│   └── utils/        # 工具函数
-├── types/            # 全局类型声明
-├── project.config.json  # 微信小程序项目配置
+│   ├── app.tsx           # 应用入口（TanStack QueryClient 初始化）
+│   ├── app.config.ts     # 路由与全局配置
+│   ├── components/       # 12 个自定义组件
+│   │   ├── Button/       # 通用按钮（加载态 + 触摸反馈）
+│   │   ├── Calendar/     # 日期选择器
+│   │   ├── CityPicker/   # 城市选择弹窗
+│   │   ├── RoomPicker/   # 房型选择器
+│   │   ├── HotelCard/    # 酒店卡片（图片 + 评分 + 价格）
+│   │   ├── PriceTrend/   # 价格趋势折线图（纯 View 绘制）
+│   │   ├── Popup/        # 弹出层
+│   │   ├── Skeleton/     # 骨架屏
+│   │   ├── Loading/      # 加载指示器
+│   │   ├── ErrorBoundary/ # 全局错误兜底
+│   │   ├── SafeArea/     # 安全区域适配
+│   │   └── ui/           # 基础 UI 元素
+│   ├── hooks/            # 自定义 Hooks
+│   │   ├── useHotels.ts          # 酒店列表 / 详情 / 无限滚动
+│   │   ├── usePriceUpdates.ts    # SSE 实时价格订阅
+│   │   ├── useLocation.ts        # GPS 定位 + 逆地理编码
+│   │   ├── useSearch.ts          # 搜索参数管理
+│   │   ├── useWeappFetch.ts      # 小程序网络请求兼容层
+│   │   └── useIsWeapp.ts         # 平台检测
+│   ├── store/            # Zustand 状态管理
+│   │   ├── useHotelStore.ts      # 收藏 / 最近浏览（persist）
+│   │   ├── useSearchStore.ts     # 搜索历史 / 筛选条件（persist）
+│   │   └── storage.ts            # Taro Storage 适配器
+│   ├── pages/            # 页面
+│   │   ├── index/                # 酒店查询首页
+│   │   ├── hotel-list/           # 酒店列表（虚拟滚动 + 筛选）
+│   │   ├── hotel-detail/         # 酒店详情（轮播 + 房型 + 价格趋势）
+│   │   └── favorites/            # 收藏夹
+│   ├── services/         # API 封装（Axios / Taro.request 双通道）
+│   ├── constants/        # 常量（50 城市列表等）
+│   ├── styles/           # 全局样式变量 + RN 适配工具
+│   ├── types/            # TypeScript 类型定义
+│   └── utils/            # 工具函数（图片哈希 / 格式化）
+├── vitest.config.mts     # Vitest 测试配置
+├── vercel.json           # Vercel 部署配置
+├── project.config.json   # 微信小程序项目配置
 └── package.json
 ```
 
-## 开发
+---
+
+## 🚀 快速开始
+
+### 环境要求
+
+- **Node.js** ≥ 18　·　**npm** ≥ 9
+- 后端：需先启动 [hotel-management/backend](https://github.com/lwayne7/hotel-management)
 
 ### 1. 安装依赖
 
 ```bash
-# 克隆后进入项目根目录
 npm install
-# RN 端若遇依赖冲突可加：npm install --legacy-peer-deps
+# RN 端若遇依赖冲突：npm install --legacy-peer-deps
 ```
 
 ### 2. 启动后端
 
-确保酒店管理后端已启动（与同组织或本地的 hotel-management 后端共用）：
-
 ```bash
-cd hotel-management/backend
-npm run start:dev
+cd ../hotel-management/backend
+npm run start:dev          # http://localhost:3000
 ```
 
 ### 3. 运行 H5
 
 ```bash
-npm run dev:h5
+npm run dev:h5             # http://localhost:10086
 ```
 
-浏览器访问 http://localhost:10086。H5 开发时 `/api` 会代理到 `http://localhost:3000`。
+H5 开发时 `/api` 自动代理到 `http://localhost:3000`。
 
 ### 4. 运行微信小程序
 
@@ -64,90 +123,83 @@ npm run dev:h5
 npm run dev:weapp
 ```
 
-用微信开发者工具打开项目根目录下的 `dist` 目录（编译产物）。
+用微信开发者工具打开 `dist` 目录。真机调试需设置局域网 IP：
 
-**真机预览/调试**：开发环境下 weapp 默认会尝试使用「电脑局域网 IP」作为 `API_BASE`（保证手机可访问）。如果自动识别的 IP 不对，手动设置：
 ```bash
-# 例：把后端改为你的电脑局域网 IP
 TARO_APP_API_BASE=http://192.168.1.100:3000 npm run dev:weapp
 ```
 
-**小程序请求域名**：在微信公众平台将后端接口域名加入 request 合法域名（如 `https://your-api.com`）；本地调试时在微信开发者工具中勾选「不校验合法域名、web-view...」即可请求本地或任意后端。
-
-### 5. 运行 APP（React Native）
-
-采用 **分离模式**：JS 在本仓，iOS/Android 通过 Taro Playground 或 [Taro Native Shell](https://github.com/NervJS/taro-native-shell)（分支 0.70.0，对应 RN 0.70.x）运行。
-
-**方式一：Taro Playground（推荐先做）**
-
-1. 安装 [Taro Playground](https://github.com/wuba/taro-playground) 到手机。
-2. 在项目根目录执行：
-   ```bash
-   npm run dev:rn
-   ```
-   启动 Metro（默认端口 8081）。
-3. 可选带二维码：`npm run dev:rn -- --qr`，用 Playground 扫码或输入 `电脑IP:8081` 加载 dev bundle。
-
-**方式二：对接 Taro Native Shell**
-
-1. Fork [taro-native-shell](https://github.com/NervJS/taro-native-shell)，切换到 **0.70.0** 分支。
-2. 将壳工程放在与 hotel-mobile-taro 同级目录，在 `config/index.js` 的 `rn.output` 中配置输出路径指向壳工程的 ios/android 目录。
-3. 执行 `npm run build:rn -- --platform ios` 或 `--platform android` 生成 bundle，再在壳工程中执行 `yarn ios` / `yarn android` 或使用 Xcode/Android Studio 运行。
-
-**RN 端请求**：RN 无法使用相对路径 `/api`，必须使用完整 baseURL。开发环境默认会尝试使用「电脑局域网 IP」作为 `TARO_APP_API_BASE`（真机可访问，识别失败会回退到 `http://localhost:3000`）；如需固定后端地址，请设置 `TARO_APP_API_BASE`。生产可在构建时通过 `TARO_APP_API_BASE` 或 `config/prod.js` 的 `defineConstants` 配置。
-
-**首次运行 RN**：若 `npm run dev:rn` 报错缺少 react-native 等依赖，可执行 `yarn upgradePeerdeps` 或按 [Taro RN 文档](https://docs.taro.zone/docs/3.x/react-native) 安装 `@tarojs/taro-rn`、`@tarojs/components-rn`、`@tarojs/router-rn` 的 peer 依赖。
-
-## 环境变量（可选）
-
-- **H5**：开发时默认通过 devServer 代理访问 `/api`，无需配置。生产部署时可设置 `TARO_APP_API_BASE` 为后端地址（如 `https://your-api.com`）。
-- **微信小程序**：在微信公众平台配置 request 合法域名，或本地调试时关闭域名校验。若需区分环境，可在 `config/dev.js` 或 `config/prod.js` 的 `defineConstants` 中设置 `TARO_APP_API_BASE`。
-- **APP（RN）**：开发时默认会尝试使用「电脑局域网 IP」作为 `TARO_APP_API_BASE`（真机可访问）。如需固定后端地址，请设置 `TARO_APP_API_BASE`。生产构建时通过 `defineConstants` 或环境变量设置后端地址。
-
-补充：
-- `TARO_APP_API_PORT`：仅用于开发环境的默认端口（默认 `3000`）。
-
-## 构建
+### 5. 运行 React Native
 
 ```bash
-# H5 生产包
-npm run build:h5
-
-# 微信小程序生产包
-npm run build:weapp
-
-# APP（RN）bundle，可指定平台
-npm run build:rn -- --platform ios
-npm run build:rn -- --platform android
+npm run dev:rn             # 启动 Metro (端口 8081)
 ```
 
-## 页面与功能
+推荐使用 [Taro Playground](https://github.com/wuba/taro-playground) 扫码加载；也可对接 [Taro Native Shell](https://github.com/NervJS/taro-native-shell)（分支 0.70.0）。
 
-| 页面       | 路径                    | 说明                         |
-|------------|-------------------------|------------------------------|
-| 酒店查询页 | `/pages/index/index`    | Banner、城市/关键字/入住离店、日历、星级、快捷标签、查询跳列表 |
-| 酒店列表页 | `/pages/hotel-list/index` | 筛选头、搜索、GPS定位、列表、上滑加载更多 |
-| 酒店详情页 | `/pages/hotel-detail/index` | 大图轮播（手动滑动+图片预览）、基础信息、日历+间夜、房型列表 |
-| 收藏夹 | `/pages/favorites/index` | 收藏的酒店列表，支持离线持久化 |
+---
 
-## 数据支持
+## 📄 页面与功能
 
-本项目后端支持 **10000 家酒店**，覆盖：
-- **50 个城市**：北京、上海、广州、深圳、杭州、成都、三亚、厦门等
-- **5 个筛选标签**：亲子、豪华、免费停车场、含早餐、健身房（各 20%）
-- **5 个星级**：1-5 星均匀分布（各 20%）
-- **150+ 张高质量酒店图片**：确保每家酒店图片唯一
+| 页面 | 路径 | 核心功能 |
+|------|------|----------|
+| 🔍 酒店查询页 | `/pages/index/index` | Banner · 城市选择 · 日历 · 星级/价格筛选 · 快捷标签 · 搜索历史 |
+| 📋 酒店列表页 | `/pages/hotel-list/index` | 虚拟滚动 · 无限加载 · 多维筛选 · GPS 定位 · 骨架屏 |
+| 🏨 酒店详情页 | `/pages/hotel-detail/index` | 图片轮播 · 放大预览 · 房型价格排序 · 价格趋势图 · 收藏 |
+| ❤️ 收藏夹 | `/pages/favorites/index` | 离线持久化 · 收藏列表 |
 
-## 功能特性
+---
 
-### UI/UX
-- ✨ **触摸反馈**：快捷标签、城市选择、搜索按钮添加点击反馈样式
-- 📍 **GPS 定位**：酒店列表页支持一键定位当前城市
-- 🖼️ **图片预览**：酒店详情页轮播图支持手动滑动、索引显示、点击放大预览
-- 💾 **数据持久化**：收藏夹和最近浏览数据自动保存
+## 🧪 测试
 
-### 技术架构
-- **TanStack Query**：服务端状态管理，支持无限滚动、缓存、自动重试
-- **Zustand**：客户端状态管理，使用 persist 中间件持久化
-- **自定义 UI 组件**：Button / Popup / Loading / Skeleton / HotelCard / CityPicker / RoomPicker
-- **自定义 Hooks**：useHotels / useSearch / useLocation / useWeappFetch（小程序兼容层）
+```bash
+npm test                   # Vitest 单元测试
+npm run test:coverage      # 覆盖率报告
+npm run typecheck          # TypeScript 类型检查
+```
+
+---
+
+## 📦 构建与部署
+
+```bash
+npm run build:h5           # H5 生产包
+npm run build:weapp        # 微信小程序生产包
+npm run build:rn -- --platform ios      # RN iOS bundle
+npm run build:rn -- --platform android  # RN Android bundle
+```
+
+H5 版已配置 `vercel.json`，推送后自动部署。
+
+---
+
+## 🌐 环境变量
+
+| 变量 | 说明 | 默认值 |
+|------|------|--------|
+| `TARO_APP_API_BASE` | 后端地址 | H5 代理 / 局域网 IP |
+| `TARO_APP_API_PORT` | 开发端口 | `3000` |
+
+---
+
+## 📊 数据支持
+
+- **10 000 家酒店** · **50 个城市** · **5 个星级** · **150+ 张高质量图片**
+- 5 个筛选标签：亲子 / 豪华 / 免费停车场 / 含早餐 / 健身房（各 ~20%）
+
+---
+
+## 🔗 相关项目
+
+| 项目 | 说明 | 仓库 |
+|------|------|------|
+| **hotel-management** | 管理系统（NestJS 后端 + React PC 前端） | [GitHub](https://github.com/lwayne7/hotel-management) |
+| **hotel-mobile** | 用户端 — 纯 H5 轻量版（Vite + Ant Design） | [GitHub](https://github.com/lwayne7/hotel-mobile) |
+
+---
+
+## 📄 许可证
+
+本项目仅供学习使用。
+
+⭐ 如果这个项目对你有帮助，请给一个 Star！
