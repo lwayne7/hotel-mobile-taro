@@ -12,6 +12,7 @@ import { SafeArea } from '../../components/SafeArea';
 import { PriceTrend } from '../../components/PriceTrend';
 import dayjs, { Dayjs } from 'dayjs';
 import type { Hotel, RoomType } from '../../types/hotel';
+import type { PriceUpdateEvent } from '../../hooks/usePriceUpdates';
 import './index.scss';
 
 const ROOM_FILTER_TAGS = ['含早餐', '立即确认', '大床房', '双床房', '免费取消', '筛选'];
@@ -120,9 +121,11 @@ export default function HotelDetail() {
     refetch: queryRefetch,
   } = useHotelDetail(id, { enabled: !isWeapp });
 
-  const handleSsePriceUpdate = useCallback(() => {
+  const handleSsePriceUpdate = useCallback((event: PriceUpdateEvent) => {
+    if (!event || event.changeKind === 'keepalive') return;
+    if (event.hotelId && id && event.hotelId !== id) return;
     queryRefetch();
-  }, [queryRefetch]);
+  }, [id, queryRefetch]);
 
   usePriceUpdates({
     enabled: !isWeapp && !!id,
@@ -293,6 +296,36 @@ export default function HotelDetail() {
       ? getDisplayTags(hotel, 4)
       : ['免费WiFi', '停车场', '新中式风', '24h前台'];
 
+  const handleShare = useCallback(() => {
+    const shareSummary = `${hotel.nameCn} ¥${minPrice}起`;
+    const checkInDate = localCheckIn.format('YYYY-MM-DD');
+    const checkOutDate = localCheckOut.format('YYYY-MM-DD');
+    const sharePath = `/pages/hotel-detail/index?id=${hotel.id}&checkIn=${checkInDate}&checkOut=${checkOutDate}`;
+    const shareText = `${shareSummary}\n${hotel.address}\n入住:${checkInDate} 离店:${checkOutDate}`;
+
+    if (process.env.TARO_ENV === 'weapp') {
+      Taro.showShareMenu({ withShareTicket: true }).catch(() => {
+        // 部分场景不支持主动调起，忽略错误
+      });
+      Taro.setClipboardData({ data: `${shareText}\n${sharePath}` })
+        .then(() => {
+          Taro.showToast({ title: '已复制分享文案，请使用右上角分享', icon: 'none' });
+        })
+        .catch(() => {
+          Taro.showToast({ title: '请使用右上角分享该酒店', icon: 'none' });
+        });
+      return;
+    }
+
+    Taro.setClipboardData({ data: shareText })
+      .then(() => {
+        Taro.showToast({ title: '酒店信息已复制，可直接分享', icon: 'none' });
+      })
+      .catch(() => {
+        Taro.showToast({ title: '当前环境不支持系统分享', icon: 'none' });
+      });
+  }, [hotel, localCheckIn, localCheckOut, minPrice]);
+
   return (
     <View className="ctrip-detail">
       {/* Header */}
@@ -311,7 +344,7 @@ export default function HotelDetail() {
           </Text>
           <Text
             className="ctrip-detail-action"
-            onClick={() => Taro.showToast({ title: '分享功能敬请期待', icon: 'none' })}
+            onClick={handleShare}
           >
             ⋮
           </Text>
