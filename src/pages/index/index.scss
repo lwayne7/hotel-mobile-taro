@@ -140,10 +140,10 @@
   position: relative;
   z-index: 2;
   background: #fff;
-  border-radius: 20px;
-  border: 1px solid rgba(255, 255, 255, 0.8);
-  box-shadow: 0 14px 28px rgba(20, 62, 126, 0.14);
-  padding: 0 16px 12px;
+  border-radius: 22px;
+  border: 1px solid rgba(255, 255, 255, 0.9);
+  box-shadow: 0 16px 36px rgba(20, 62, 126, 0.16);
+  padding: 0 16px 14px;
   overflow: hidden;
 }
 
@@ -499,17 +499,18 @@
   padding: 16px;
   margin: 0 12px 12px;
   background: #fff;
-  border-radius: 16px;
-  border: 1px solid #e8eefb;
-  box-shadow: 0 10px 22px rgba(14, 41, 87, 0.08);
+  border-radius: 18px;
+  border: 1px solid #e4edfb;
+  box-shadow: 0 12px 28px rgba(14, 41, 87, 0.09);
 }
 
 .ctrip-section-title {
   font-size: 17px;
   font-weight: 700;
   margin-bottom: 16px;
-  display: block;
-  color: #333;
+  display: flex;
+  align-items: center;
+  color: #1f2a44;
 }
 
 .ctrip-city-chips {
@@ -903,9 +904,10 @@
 .recently-viewed {
   margin: 12px;
   background: #fff;
-  border-radius: 16px;
+  border-radius: 18px;
   padding: 16px;
-  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.04);
+  box-shadow: 0 8px 20px rgba(14, 41, 87, 0.07);
+  border: 1px solid #e6edf9;
 }
 
 .recently-viewed-header {
@@ -917,7 +919,7 @@
 .recently-viewed-title {
   font-size: 17px;
   font-weight: 700;
-  color: #333;
+  color: #1f2a44;
 }
 
 .recently-viewed-count {
@@ -1091,14 +1093,21 @@
 
 /* ===== Smart Recommend ===== */
 .smart-recommend-section {
-  margin: 16px;
+  margin: 0 12px 12px;
+  background: #fff;
+  border-radius: 18px;
+  padding: 16px;
+  border: 1px solid #e4edfb;
+  box-shadow: 0 12px 28px rgba(14, 41, 87, 0.09);
 }
 
 .smart-recommend-title {
-  font-size: 15px;
-  font-weight: 600;
-  color: #333;
+  font-size: 17px;
+  font-weight: 700;
+  color: #1f2a44;
   margin-bottom: 12px;
+  display: flex;
+  align-items: center;
 }
 
 .smart-recommend-reason {

@@ -349,10 +349,11 @@
   margin-top: 20px;
   display: flex;
   align-items: center;
-  background: linear-gradient(160deg, #f8fbff 0%, #eef4ff 100%);
-  border-radius: 12px;
-  padding: 12px;
-  border: 1px solid #e5edfb;
+  background: linear-gradient(160deg, #f4f9ff 0%, #eaf3ff 100%);
+  border-radius: 14px;
+  padding: 14px;
+  border: 1px solid #d8eaff;
+  box-shadow: 0 4px 12px rgba(22, 119, 255, 0.08);
 }
 
 .ctrip-detail-score-block {
@@ -557,21 +558,26 @@
 }
 
 .ctrip-detail-room {
-  background: linear-gradient(160deg, #fff 0%, #f8fbff 100%);
-  border-radius: 12px;
-  padding: 12px;
+  background: linear-gradient(160deg, #fff 0%, #f7fbff 100%);
+  border-radius: 14px;
+  padding: 14px;
   display: flex;
   margin-bottom: 12px;
-  border: 1px solid #e8eef9;
-  box-shadow: 0 10px 22px rgba(14, 41, 87, 0.08);
+  border: 1px solid #e4eefb;
+  box-shadow: 0 8px 20px rgba(14, 41, 87, 0.07);
+  transition: box-shadow 0.2s ease;
+
+  &:active {
+    box-shadow: 0 2px 8px rgba(14, 41, 87, 0.06);
+  }
 }
 
 .ctrip-detail-room-thumb {
   width: min(100px, 28vw);
   height: min(100px, 28vw);
-  border-radius: 8px;
+  border-radius: 10px;
   overflow: hidden;
-  background: #eee;
+  background: linear-gradient(135deg, #f0f4fb 0%, #e6eaf2 100%);
   margin-right: 12px;
   flex-shrink: 0;
 }

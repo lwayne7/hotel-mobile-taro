@@ -11,13 +11,13 @@
 
 /* Header */
 .ctrip-list-header {
-  background: rgba(255, 255, 255, 0.94);
-  padding: 10px 12px;
+  background: rgba(255, 255, 255, 0.96);
+  padding: 10px 14px;
   display: flex;
   align-items: center;
-  border-bottom: 1px solid #e8eef9;
-  backdrop-filter: blur(7px);
-  box-shadow: 0 4px 12px rgba(12, 37, 77, 0.06);
+  border-bottom: 1px solid #e6edf8;
+  backdrop-filter: blur(10px);
+  box-shadow: 0 4px 14px rgba(12, 37, 77, 0.07);
   overflow: hidden;
 }
 
@@ -284,20 +284,28 @@
   display: flex;
   flex-direction: row;
   background: #fff;
-  border-radius: 10px;
+  border-radius: 14px;
   overflow: hidden;
-  margin-bottom: 10px;
-  padding: 10px;
+  margin-bottom: 12px;
+  padding: 12px;
+  border: 1px solid #eaf0fa;
+  box-shadow: 0 6px 18px rgba(14, 41, 87, 0.07);
+  transition: box-shadow 0.2s ease, transform 0.2s ease;
+
+  &:active {
+    transform: scale(0.99);
+    box-shadow: 0 2px 8px rgba(14, 41, 87, 0.06);
+  }
 }
 
 .ctrip-list-card-cover {
   width: min(110px, 30vw);
   height: min(150px, 41vw);
-  border-radius: 6px;
+  border-radius: 10px;
   overflow: hidden;
   position: relative;
-  margin-right: 10px;
-  background: #eee;
+  margin-right: 12px;
+  background: linear-gradient(135deg, #f0f4fb 0%, #e6eaf2 100%);
   flex-shrink: 0;
 }
 
@@ -309,7 +317,7 @@
 .ctrip-list-card-placeholder {
   width: 100%;
   height: 100%;
-  background: #eee;
+  background: linear-gradient(135deg, #f0f4fb 0%, #e6eaf2 100%);
 }
 
 .ctrip-video-icon {
