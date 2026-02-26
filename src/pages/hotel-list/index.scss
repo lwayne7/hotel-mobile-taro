@@ -44,6 +44,7 @@
   border-style: solid;
   border-color: #e1e9f7;
   box-shadow: 0 4px 10px rgba(12, 37, 77, 0.06);
+  overflow: hidden;
 }
 
 .search-box-row {
@@ -53,6 +54,18 @@
   font-size: 12px;
   flex-wrap: nowrap;
   min-width: 0;
+  overflow: hidden;
+}
+
+.search-rooms {
+  color: $ctrip-text-secondary;
+  font-size: 11px;
+  flex-shrink: 1;
+  min-width: 0;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  margin-left: 6px;
 }
 
 .search-city {
