@@ -1,4 +1,4 @@
-import { View, Text } from '@tarojs/components';
+import { View, Text, ScrollView } from '@tarojs/components';
 import { Popup } from '../ui';
 import { POPULAR_CITIES, ALL_CITIES } from '../../constants/cities';
 import './index.scss';
@@ -46,29 +46,31 @@ export function CityPicker({
                     <Text className="city-picker-close" onClick={onClose}>×</Text>
                 </View>
 
-                <View className="city-picker-list">
-                    <Text className="city-picker-section-label">热门</Text>
-                    {POPULAR_CITIES.map((city) => (
-                        <Text
-                            key={city}
-                            className={`city-picker-item ${currentCity === city ? 'active' : ''}`}
-                            onClick={() => handleCityClick(city)}
-                        >
-                            {city}
-                        </Text>
-                    ))}
+                <ScrollView scrollY className="city-picker-list">
+                    <View className="city-picker-list-inner">
+                        <Text className="city-picker-section-label">热门</Text>
+                        {POPULAR_CITIES.map((city) => (
+                            <Text
+                                key={city}
+                                className={`city-picker-item ${currentCity === city ? 'active' : ''}`}
+                                onClick={() => handleCityClick(city)}
+                            >
+                                {city}
+                            </Text>
+                        ))}
 
-                    <Text className="city-picker-section-label">全部</Text>
-                    {ALL_CITIES.filter((c) => !POPULAR_CITIES.includes(c)).map((city) => (
-                        <Text
-                            key={city}
-                            className={`city-picker-item ${currentCity === city ? 'active' : ''}`}
-                            onClick={() => handleCityClick(city)}
-                        >
-                            {city}
-                        </Text>
-                    ))}
-                </View>
+                        <Text className="city-picker-section-label">全部</Text>
+                        {ALL_CITIES.filter((c) => !POPULAR_CITIES.includes(c)).map((city) => (
+                            <Text
+                                key={city}
+                                className={`city-picker-item ${currentCity === city ? 'active' : ''}`}
+                                onClick={() => handleCityClick(city)}
+                            >
+                                {city}
+                            </Text>
+                        ))}
+                    </View>
+                </ScrollView>
             </View>
         </Popup>
     );
