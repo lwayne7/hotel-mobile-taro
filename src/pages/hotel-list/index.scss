@@ -239,8 +239,7 @@
 }
 
 .filter-row-quick {
-  padding: 4px 12px;
-  overflow: visible;
+  padding: 6px 12px;
 }
 
 .filter-row-quick-inner {
@@ -261,7 +260,8 @@
   color: $ctrip-text-secondary;
   margin-right: 8px;
   margin-bottom: 0;
-  border: 1px solid #e8e8e8;
+  border: none;
+  box-shadow: inset 0 0 0 1px #e8e8e8;
   flex-shrink: 0;
   white-space: nowrap;
 }
@@ -269,7 +269,7 @@
 .ctrip-quick-filter-tag.active {
   background: $ctrip-blue-light;
   color: $ctrip-blue;
-  border-color: $ctrip-blue;
+  box-shadow: inset 0 0 0 1px $ctrip-blue;
   font-weight: 500;
 }
 
