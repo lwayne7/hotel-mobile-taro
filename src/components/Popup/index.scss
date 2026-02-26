@@ -124,12 +124,16 @@
   align-items: center;
   justify-content: center;
   font-size: 18px;
-  color: #999;
+  color: #8d99ad;
   cursor: pointer;
   z-index: 1;
+  background: rgba(0, 0, 0, 0.05);
+  border-radius: 50%;
+  transition: all 0.2s;
 
   &:active {
-    opacity: 0.7;
+    background: rgba(0, 0, 0, 0.1);
+    transform: scale(0.92);
   }
 
   &--top-right {
