@@ -1,4 +1,4 @@
-import { View, Text, ScrollView } from '@tarojs/components';
+import { View, Text } from '@tarojs/components';
 import './GeneralFilter.scss'; // 复用现有筛选样式基础（如需要可拆出独立样式文件）
 
 const FILTER_TABS = [
@@ -55,7 +55,7 @@ export function FilterTabs({
         })}
       </View>
       <View className="filter-row-quick">
-        <ScrollView scrollX className="filter-row-quick-inner" showScrollbar={false}>
+        <View className="filter-row-quick-inner">
           <View className="filter-quick-wrap">
             {quickTags.map((tag) => (
               <Text
@@ -67,7 +67,7 @@ export function FilterTabs({
               </Text>
             ))}
           </View>
-        </ScrollView>
+        </View>
       </View>
     </View>
   );

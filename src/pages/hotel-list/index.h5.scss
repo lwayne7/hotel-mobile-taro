@@ -52,6 +52,44 @@
   background: rgba(0, 134, 246, 0.1);
 }
 
+/* H5 端筛选区域紧凑化 - 修复 ScrollView 内部留白 */
+.filter-row-main {
+  padding: 4px 12px;
+}
+
+.filter-row-quick {
+  padding: 0 12px;
+  line-height: 1;
+
+  /* 直接作用于 Taro H5 ScrollView 内部元素 */
+  taro-scroll-view-core {
+    padding: 0;
+    margin: 0;
+  }
+
+  taro-view-core {
+    padding: 4px 0;
+    margin: 0;
+  }
+}
+
+.filter-row-quick-inner {
+  padding: 0;
+  margin: 0;
+  line-height: 1;
+}
+
+.filter-quick-wrap {
+  padding: 4px 0;
+  margin: 0;
+}
+
+.ctrip-quick-filter-tag {
+  padding: 5px 12px;
+  margin-top: 0;
+  margin-bottom: 0;
+}
+
 /* H5 端地图按钮优化 */
 .ctrip-list-map {
   cursor: pointer;

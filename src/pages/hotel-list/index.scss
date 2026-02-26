@@ -190,9 +190,8 @@
   display: flex;
   flex-direction: row;
   justify-content: space-around;
-  padding: 10px 12px;
-  border-bottom-width: 1px;
-  border-bottom-color: #edf2fc;
+  padding: 6px 12px;
+  border-bottom: 1px solid #edf2fc;
   overflow-x: auto;
   -webkit-overflow-scrolling: touch;
 
@@ -246,28 +245,34 @@
 }
 
 .filter-row-quick {
-  padding: 2px 12px;
+  padding: 0 12px;
 }
 
 .filter-row-quick-inner {
-  white-space: nowrap;
+  display: flex;
+  overflow-x: auto;
+  -webkit-overflow-scrolling: touch;
+
+  &::-webkit-scrollbar {
+    display: none;
+  }
 }
 
 .filter-quick-wrap {
-  display: inline-flex;
+  display: flex;
   flex-direction: row;
   align-items: center;
-  padding: 0 12px 4px 0;
+  padding: 4px 0;
+  gap: 8px;
 }
 
 .ctrip-quick-filter-tag {
   background: #fff;
-  padding: 7px 14px;
+  padding: 5px 14px;
   border-radius: 16px;
   font-size: 12px;
   line-height: 1.2;
   color: $ctrip-text-secondary;
-  margin-right: 8px;
   margin-bottom: 0;
   border: 1px solid #e8e8e8;
   flex-shrink: 0;
