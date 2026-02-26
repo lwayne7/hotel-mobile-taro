@@ -38,14 +38,13 @@ export function FilterTabs({
           const tabCount =
             tab.key === 'distance' ? locationFilterCount
               : tab.key === 'price' ? priceFilterCount
-              : tab.key === 'filter' ? generalFilterCount
-              : 0;
+                : tab.key === 'filter' ? generalFilterCount
+                  : 0;
           return (
             <View
               key={tab.key}
-              className={`ctrip-filter-item ${
-                sortBy === tab.key || activeFilter === tab.key ? 'active' : ''
-              }`}
+              className={`ctrip-filter-item ${sortBy === tab.key || activeFilter === tab.key ? 'active' : ''
+                }`}
               onClick={() => onTabClick(tab.key)}
             >
               <Text>{tab.label}</Text>
@@ -57,15 +56,17 @@ export function FilterTabs({
       </View>
       <View className="filter-row-quick">
         <ScrollView scrollX className="filter-row-quick-inner" showScrollbar={false}>
-          {quickTags.map((tag) => (
-            <Text
-              key={tag}
-              className={`ctrip-quick-filter-tag ${localKeyword === tag ? 'active' : ''}`}
-              onClick={() => onQuickTagClick(tag)}
-            >
-              {tag}
-            </Text>
-          ))}
+          <View className="filter-quick-wrap">
+            {quickTags.map((tag) => (
+              <Text
+                key={tag}
+                className={`ctrip-quick-filter-tag ${localKeyword === tag ? 'active' : ''}`}
+                onClick={() => onQuickTagClick(tag)}
+              >
+                {tag}
+              </Text>
+            ))}
+          </View>
         </ScrollView>
       </View>
     </View>
