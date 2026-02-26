@@ -1,5 +1,5 @@
 /**
- * 位置筛选弹窗
+ * 位置筛选弹窗（优化版）
  */
 import { View, Text, ScrollView } from '@tarojs/components';
 import {
@@ -21,6 +21,11 @@ interface LocationFilterProps {
   onClear: () => void;
 }
 
+const CATEGORY_ICONS: Record<string, string> = {
+  hot: '🔥',
+  district: '📍',
+};
+
 export default function LocationFilter({
   city,
   selectedCategory,
@@ -33,54 +38,72 @@ export default function LocationFilter({
   const hotLocations = HOT_LOCATIONS[city] || DEFAULT_HOT_LOCATIONS;
   const districtLocations = DISTRICT_LOCATIONS[city] || DEFAULT_DISTRICT_LOCATIONS;
 
+  const hasFilter = !!selectedLocation;
+
+  const renderLocationList = (locations: { name: string; percent: number }[]) => (
+    <View className="location-list">
+      {locations.map((loc, index) => {
+        const isActive = selectedLocation === loc.name;
+        return (
+          <View
+            key={loc.name}
+            className={`location-card ${isActive ? 'active' : ''}`}
+            onClick={() => onLocationChange(isActive ? '' : loc.name)}
+          >
+            <View className="location-card-left">
+              <Text className="location-rank">{index + 1}</Text>
+              <View className="location-card-info">
+                <Text className="location-card-name">{loc.name}</Text>
+                <View className="location-card-bar-wrap">
+                  <View className="location-card-bar" style={{ width: `${Math.min(loc.percent * 2.5, 100)}%` }} />
+                </View>
+              </View>
+            </View>
+            <View className="location-card-right">
+              <Text className="location-card-percent">{loc.percent}%</Text>
+              {isActive && (
+                <View className="location-check">
+                  <Text className="location-check-mark">✓</Text>
+                </View>
+              )}
+            </View>
+          </View>
+        );
+      })}
+    </View>
+  );
+
   const renderRightContent = () => {
     if (selectedCategory === 'hot') {
       return (
-        <View className="location-list">
+        <View className="location-content">
           <View className="location-map-entry">
-            <Text className="map-text">地图选酒店</Text>
-            <Text className="map-go">GO{'>'}</Text>
-          </View>
-          {hotLocations.map((loc) => (
-            <View
-              key={loc.name}
-              className={`location-item ${selectedLocation === loc.name ? 'active' : ''}`}
-              onClick={() => onLocationChange(selectedLocation === loc.name ? '' : loc.name)}
-            >
-              <View className="location-info">
-                <Text className="location-name">{loc.name}</Text>
-                <Text className="location-percent">{loc.percent}% 用户选择</Text>
-              </View>
+            <View className="map-entry-left">
+              <Text className="map-entry-icon">🗺️</Text>
+              <Text className="map-entry-text">地图选酒店</Text>
             </View>
-          ))}
+            <View className="map-entry-btn">
+              <Text className="map-entry-go">GO ›</Text>
+            </View>
+          </View>
+          {renderLocationList(hotLocations)}
         </View>
       );
     }
 
     if (selectedCategory === 'district') {
       return (
-        <View className="location-list">
-          {districtLocations.map((loc) => (
-            <View
-              key={loc.name}
-              className={`location-item ${selectedLocation === loc.name ? 'active' : ''}`}
-              onClick={() => onLocationChange(selectedLocation === loc.name ? '' : loc.name)}
-            >
-              <View className="location-info">
-                <Text className="location-name">{loc.name}</Text>
-                <Text className="location-percent">{loc.percent}% 用户选择</Text>
-              </View>
-            </View>
-          ))}
+        <View className="location-content">
+          {renderLocationList(districtLocations)}
         </View>
       );
     }
 
-    // 其他分类暂时显示占位
     return (
-      <View className="location-list">
-        <View className="empty-hint">
-          <Text>暂无数据</Text>
+      <View className="location-content">
+        <View className="empty-state">
+          <Text className="empty-icon">📭</Text>
+          <Text className="empty-text">暂无数据</Text>
         </View>
       </View>
     );
@@ -90,17 +113,19 @@ export default function LocationFilter({
     <View className="location-filter">
       <View className="filter-body">
         {/* 左侧分类 */}
-        <ScrollView scrollY className="category-list">
+        <View className="category-sidebar">
           {LOCATION_CATEGORIES.map((cat) => (
             <View
               key={cat.key}
-              className={`category-item ${selectedCategory === cat.key ? 'active' : ''}`}
+              className={`category-tab ${selectedCategory === cat.key ? 'active' : ''}`}
               onClick={() => onCategoryChange(cat.key)}
             >
-              <Text>{cat.label}</Text>
+              <Text className="category-icon">{CATEGORY_ICONS[cat.key] || '📋'}</Text>
+              <Text className="category-label">{cat.label}</Text>
+              {selectedCategory === cat.key && <View className="category-indicator" />}
             </View>
           ))}
-        </ScrollView>
+        </View>
 
         {/* 右侧内容 */}
         <ScrollView scrollY className="content-area">
@@ -111,10 +136,10 @@ export default function LocationFilter({
       {/* 底部按钮 */}
       <View className="filter-footer">
         <View className="footer-btn clear-btn" onClick={onClear}>
-          <Text>清空</Text>
+          <Text className="clear-btn-text">清空</Text>
         </View>
-        <View className="footer-btn confirm-btn" onClick={onConfirm}>
-          <Text>完成</Text>
+        <View className={`footer-btn confirm-btn ${hasFilter ? 'has-filter' : ''}`} onClick={onConfirm}>
+          <Text className="confirm-btn-text">完成</Text>
         </View>
       </View>
     </View>
