@@ -17,8 +17,9 @@ const sharedDevApiBase = explicitBase || RAILWAY_API_BASE;
 const config = {
     projectName: 'hotel-mobile-taro',
     date: '2026-2-1',
-    designWidth: 750,
+    designWidth: 375,
     deviceRatio: {
+        375: 2,
         640: 2.34 / 2,
         750: 1,
         828: 1.81 / 2,

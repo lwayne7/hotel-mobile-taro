@@ -64,13 +64,13 @@ $spacing-md: 16px;
 $spacing-lg: 24px;
 $spacing-xl: 32px;
 
-// ============ 字号变量 ============
-$font-xs: 20px; // 10px * 2 (设计稿 750)
-$font-sm: 24px; // 12px * 2
-$font-md: 28px; // 14px * 2
-$font-lg: 32px; // 16px * 2
-$font-xl: 36px; // 18px * 2
-$font-xxl: 40px; // 20px * 2
+// ============ 字号变量（设计稿 375）============
+$font-xs: 10px;
+$font-sm: 12px;
+$font-md: 14px;
+$font-lg: 16px;
+$font-xl: 18px;
+$font-xxl: 20px;
 
 // ============ 圆角变量 ============
 $radius-sm: 8px;
