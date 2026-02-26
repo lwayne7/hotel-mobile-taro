@@ -7,13 +7,8 @@
   background: linear-gradient(180deg, #f5f7fa 0%, #eef1f5 100%);
 }
 
-/* H5 端底部栏居中 */
+/* H5 端底部栏优化 */
 .ctrip-detail-bottom {
-  left: 50%;
-  right: auto;
-  transform: translateX(-50%);
-  width: 100%;
-  max-width: min(480px, 100vw);
   border-radius: 20px 20px 0 0;
   box-shadow: 0 -4px 24px rgba(0, 0, 0, 0.1);
 }

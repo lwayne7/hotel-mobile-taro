@@ -23,6 +23,18 @@
 .ctrip-back-btn {
   padding: 4px;
   margin-right: 8px;
+  width: 32px;
+  height: 32px;
+  border-radius: 16px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: rgba(22, 119, 255, 0.08);
+
+  &:active {
+    background: rgba(22, 119, 255, 0.16);
+    transform: scale(0.95);
+  }
 }
 
 .back-arrow {
@@ -295,238 +307,6 @@
   padding: 12px;
 }
 
-/* Hotel Card */
-.ctrip-list-card {
-  display: flex;
-  flex-direction: row;
-  background: #fff;
-  border-radius: 14px;
-  overflow: hidden;
-  margin-bottom: 12px;
-  padding: 12px;
-  border: 1px solid #eaf0fa;
-  box-shadow: 0 6px 18px rgba(14, 41, 87, 0.07);
-  transition: box-shadow 0.2s ease, transform 0.2s ease;
-
-  &:active {
-    transform: scale(0.99);
-    box-shadow: 0 2px 8px rgba(14, 41, 87, 0.06);
-  }
-}
-
-.ctrip-list-card-cover {
-  width: min(110px, 30vw);
-  height: min(150px, 41vw);
-  border-radius: 10px;
-  overflow: hidden;
-  position: relative;
-  margin-right: 12px;
-  background: linear-gradient(135deg, #f0f4fb 0%, #e6eaf2 100%);
-  flex-shrink: 0;
-}
-
-.ctrip-list-card-img {
-  width: 100%;
-  height: 100%;
-}
-
-.ctrip-list-card-placeholder {
-  width: 100%;
-  height: 100%;
-  background: linear-gradient(135deg, #f0f4fb 0%, #e6eaf2 100%);
-}
-
-.ctrip-video-icon {
-  position: absolute;
-  top: 6px;
-  right: 6px;
-  width: 20px;
-  height: 20px;
-  background: rgba(0, 0, 0, 0.4);
-  border-radius: 50%;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-}
-
-.video-triangle {
-  color: #fff;
-  font-size: 8px;
-}
-
-.ctrip-list-card-body {
-  flex: 1;
-  display: flex;
-  flex-direction: column;
-  justify-content: space-between;
-}
-
-.ctrip-list-card-name-row {
-  display: flex;
-  flex-direction: row;
-  align-items: flex-start;
-  justify-content: space-between;
-}
-
-.ctrip-list-card-name {
-  font-size: 15px;
-  font-weight: 600;
-  color: $ctrip-text;
-  margin-bottom: 4px;
-  flex: 1;
-  min-width: 0;
-  overflow: hidden;
-  text-overflow: ellipsis;
-  display: -webkit-box;
-  -webkit-line-clamp: 2;
-  line-clamp: 2;
-  -webkit-box-orient: vertical;
-}
-
-.ctrip-card-star {
-  font-size: 8px;
-}
-
-.ctrip-card-stars {
-  font-size: 10px;
-  color: #ffa000;
-  margin-left: 4px;
-}
-
-.ctrip-list-card-score-row {
-  display: flex;
-  flex-direction: row;
-  align-items: center;
-  margin-bottom: 4px;
-}
-
-.ctrip-score-box {
-  background: #0066f5;
-  border-radius: 6px;
-  padding: 2px 6px;
-  display: flex;
-  flex-direction: row;
-  align-items: center;
-  margin-right: 6px;
-}
-
-.score-num {
-  font-weight: 700;
-  font-size: 13px;
-  color: #fff;
-}
-
-.score-label {
-  font-size: 10px;
-  color: #fff;
-  margin-left: 2px;
-}
-
-.ctrip-score-text {
-  font-size: 11px;
-  color: $ctrip-blue;
-  font-weight: 500;
-  flex: 1;
-}
-
-.ctrip-list-card-nearby {
-  font-size: 11px;
-  color: $ctrip-text;
-  margin-bottom: 4px;
-  font-weight: 500;
-}
-
-.ctrip-list-card-tags {
-  display: flex;
-  flex-direction: row;
-  flex-wrap: wrap;
-  margin-bottom: 8px;
-}
-
-.ctrip-tag-boss {
-  background: #333;
-  color: #ffd700;
-  font-size: 10px;
-  padding: 1px 4px;
-  border-radius: 2px;
-  font-weight: 700;
-  margin-right: 4px;
-  margin-bottom: 4px;
-}
-
-.ctrip-list-tag {
-  color: $ctrip-text-secondary;
-  font-size: 10px;
-  border-width: 1px;
-  border-style: solid;
-  border-color: #f0f0f0;
-  padding: 0 4px;
-  border-radius: 2px;
-  margin-right: 4px;
-  margin-bottom: 4px;
-}
-
-.ctrip-list-card-price-row {
-  display: flex;
-  flex-direction: row;
-  justify-content: flex-end;
-  align-items: flex-end;
-}
-
-.ctrip-price-block {
-  display: flex;
-  flex-direction: column;
-  align-items: flex-end;
-}
-
-.price-top {
-  display: flex;
-  flex-direction: row;
-  align-items: baseline;
-}
-
-.currency {
-  font-size: 12px;
-  font-weight: 600;
-  color: $ctrip-price;
-}
-
-.price-val {
-  font-size: 20px;
-  font-weight: 700;
-  color: $ctrip-price;
-}
-
-.price-up {
-  font-size: 11px;
-  color: $ctrip-text-placeholder;
-  margin-left: 2px;
-}
-
-.price-bottom {
-  display: flex;
-  flex-direction: row;
-  align-items: center;
-  margin-top: 2px;
-}
-
-.price-diamond {
-  font-size: 10px;
-  color: $ctrip-text;
-  border-width: 1px;
-  border-style: solid;
-  border-color: #ddd;
-  padding: 0 2px;
-  border-radius: 2px;
-  margin-right: 4px;
-}
-
-.price-del {
-  font-size: 11px;
-  color: $ctrip-text-placeholder;
-  text-decoration: line-through;
-}
-
 .ctrip-list-loading,
 .ctrip-empty {
   text-align: center;
@@ -595,6 +375,105 @@
   text-align: center;
   color: $ctrip-text-placeholder;
   font-size: 12px;
+}
+
+/* ===== Hotel Card Skeleton ===== */
+@keyframes shimmer {
+  0% {
+    background-position: 200% 0;
+  }
+
+  100% {
+    background-position: -200% 0;
+  }
+}
+
+.hotel-card-skeleton {
+  display: flex;
+  flex-direction: row;
+  background: #fff;
+  border-radius: 14px;
+  margin-bottom: 12px;
+  padding: 12px;
+  border: 1px solid #eaf0fa;
+}
+
+.hotel-card-skeleton-image {
+  width: 120px;
+  height: 160px;
+  border-radius: 10px;
+  background: linear-gradient(90deg, #f0f0f0 25%, #e8e8e8 50%, #f0f0f0 75%);
+  background-size: 200% 100%;
+  animation: shimmer 1.5s infinite;
+  flex-shrink: 0;
+}
+
+.hotel-card-skeleton-body {
+  flex: 1;
+  margin-left: 12px;
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+}
+
+.hotel-card-skeleton-line {
+  border-radius: 4px;
+  background: linear-gradient(90deg, #f0f0f0 25%, #e8e8e8 50%, #f0f0f0 75%);
+  background-size: 200% 100%;
+  animation: shimmer 1.5s infinite;
+}
+
+.skeleton-line-title {
+  height: 16px;
+  width: 70%;
+}
+
+.skeleton-line-subtitle {
+  height: 12px;
+  width: 90%;
+  margin-top: 8px;
+}
+
+.hotel-card-skeleton-tags {
+  display: flex;
+  flex-direction: row;
+  gap: 6px;
+  margin-top: 8px;
+}
+
+.hotel-card-skeleton-tag {
+  height: 20px;
+  width: 50px;
+  border-radius: 4px;
+  background: linear-gradient(90deg, #f0f5ff 25%, #e8eefa 50%, #f0f5ff 75%);
+  background-size: 200% 100%;
+  animation: shimmer 1.5s infinite;
+}
+
+.hotel-card-skeleton-footer {
+  display: flex;
+  flex-direction: row;
+  justify-content: space-between;
+  align-items: center;
+  margin-top: 12px;
+}
+
+.hotel-card-skeleton-score {
+  height: 20px;
+  width: 40px;
+  border-radius: 4px;
+  background: linear-gradient(90deg, #e6f4ff 25%, #d8eafe 50%, #e6f4ff 75%);
+  background-size: 200% 100%;
+  animation: shimmer 1.5s infinite;
+}
+
+.hotel-card-skeleton-price {
+  height: 22px;
+  width: 60px;
+  border-radius: 4px;
+  background: linear-gradient(90deg, #fff5f0 25%, #ffe8de 50%, #fff5f0 75%);
+  background-size: 200% 100%;
+  animation: shimmer 1.5s infinite;
 }
 
 // Header clickable elements - 方案A: 虚线下划线 + 箭头提示

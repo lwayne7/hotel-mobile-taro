@@ -199,20 +199,22 @@ export function SearchCard({ onSearch, onQuickTagSearch }: SearchCardProps) {
                         </View>
                     </View>
 
-                    {/* Tip */}
-                    <View className="search-tip-row">
-                        <Text className="tip-badge">🌙</Text>
-                        <Text className="tip-text">当前已过0点，如需今天凌晨6点前入住，请选择"今天凌晨"</Text>
-                    </View>
+                    {/* Tip - 仅凌晨0-6点显示 */}
+                    {new Date().getHours() < 6 && (
+                        <View className="search-tip-row">
+                            <Text className="tip-badge">🌙</Text>
+                            <Text className="tip-text">当前已过0点，如需今天凌晨6点前入住，请选择"今天凌晨"</Text>
+                        </View>
+                    )}
 
                     {/* Price/Star */}
                     <View className="search-row price-row" onClick={() => setShowFilterModal(true)}>
                         <Text className="price-val">价格/星级</Text>
                     </View>
 
-                    {/* Quick Tags - 独立一行 */}
+                    {/* Quick Tags */}
                     <View className="quick-tags-row">
-                        {QUICK_TAGS.slice(0, 3).map((t) => (
+                        {QUICK_TAGS.map((t) => (
                             <View
                                 key={t}
                                 className="quick-tag-chip"

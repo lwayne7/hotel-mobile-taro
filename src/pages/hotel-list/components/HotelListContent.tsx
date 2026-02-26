@@ -8,18 +8,18 @@ import './GeneralFilter.scss';
 /** Hotel card skeleton that mimics the actual card shape */
 function HotelCardSkeleton() {
   return (
-    <View style={{ display: 'flex', flexDirection: 'row', background: '#fff', borderRadius: '12px', marginBottom: '12px', padding: '12px' }}>
-      <View style={{ width: '120px', height: '120px', borderRadius: '10px', background: 'linear-gradient(90deg, #f0f0f0 25%, #e8e8e8 50%, #f0f0f0 75%)', backgroundSize: '200% 100%', animation: 'shimmer 1.5s infinite' }} />
-      <View style={{ flex: 1, marginLeft: '12px', display: 'flex', flexDirection: 'column', justifyContent: 'space-between' }}>
-        <View style={{ height: '16px', width: '70%', borderRadius: '4px', background: '#f0f0f0' }} />
-        <View style={{ height: '12px', width: '90%', borderRadius: '4px', background: '#f5f5f5', marginTop: '8px' }} />
-        <View style={{ display: 'flex', flexDirection: 'row', gap: '6px', marginTop: '8px' }}>
-          <View style={{ height: '20px', width: '50px', borderRadius: '4px', background: '#f0f5ff' }} />
-          <View style={{ height: '20px', width: '50px', borderRadius: '4px', background: '#f0f5ff' }} />
+    <View className="hotel-card-skeleton">
+      <View className="hotel-card-skeleton-image" />
+      <View className="hotel-card-skeleton-body">
+        <View className="hotel-card-skeleton-line skeleton-line-title" />
+        <View className="hotel-card-skeleton-line skeleton-line-subtitle" />
+        <View className="hotel-card-skeleton-tags">
+          <View className="hotel-card-skeleton-tag" />
+          <View className="hotel-card-skeleton-tag" />
         </View>
-        <View style={{ display: 'flex', flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center', marginTop: '12px' }}>
-          <View style={{ height: '20px', width: '40px', borderRadius: '4px', background: '#e6f4ff' }} />
-          <View style={{ height: '22px', width: '60px', borderRadius: '4px', background: '#fff5f0' }} />
+        <View className="hotel-card-skeleton-footer">
+          <View className="hotel-card-skeleton-score" />
+          <View className="hotel-card-skeleton-price" />
         </View>
       </View>
     </View>

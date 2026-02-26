@@ -104,6 +104,7 @@ export const HotelCard = React.memo(function HotelCard({
                 <Text className="hotel-card-original-price">¥{originalPrice}</Text>
               )}
               <Text className="hotel-card-current-price">¥{minPrice}</Text>
+              <Text className="hotel-card-price-unit">起</Text>
             </View>
           </View>
         </View>

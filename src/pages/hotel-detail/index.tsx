@@ -325,12 +325,12 @@ export default function HotelDetail() {
             <Text className="back-arrow">‹</Text>
           </View>
         </View>
-        <View style={{ padding: '48px 24px', textAlign: 'center' }}>
-          <Text style={{ color: '#999', marginBottom: '16px', display: 'block' }}>
+        <View className="ctrip-detail-error-content">
+          <Text className="ctrip-detail-error-message">
             {error?.message || '酒店不存在或未发布'}
           </Text>
           <Button type="primary" onClick={() => refetch()}>重试</Button>
-          <View style={{ height: '12px' }} />
+          <View className="ctrip-detail-error-gap" />
           <Button onClick={goBack}>返回列表</Button>
         </View>
       </View>
@@ -406,8 +406,8 @@ export default function HotelDetail() {
               </Swiper>
               {/* 自定义指示器 + 滑动提示 */}
               <View className="ctrip-detail-gallery-indicator">
-                <Text className="indicator-text">{currentImageIndex + 1}/{images.length}</Text>
                 {images.length > 1 && <Text className="swipe-hint">← 滑动查看 →</Text>}
+                <Text className="indicator-text">{currentImageIndex + 1}/{images.length}</Text>
               </View>
               <View className="ctrip-detail-gallery-tags">
                 <Text className="ctrip-detail-gallery-tag">实景</Text>
@@ -535,7 +535,7 @@ export default function HotelDetail() {
         {/* Room List */}
         <View id="detail-rooms" className="ctrip-detail-rooms">
           {roomTypes.length === 0 ? (
-            <View style={{ padding: '24px', textAlign: 'center', color: '#999' }}>
+            <View className="ctrip-detail-rooms-empty">
               <Text>暂无房型</Text>
             </View>
           ) : (
