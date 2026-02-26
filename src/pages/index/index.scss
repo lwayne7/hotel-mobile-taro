@@ -398,8 +398,8 @@
 
 /* Tip */
 .search-tip-row {
-  background: linear-gradient(135deg, rgba(22,119,255,0.12), rgba(46,211,217,0.10));
-  border: 1px solid rgba(22,119,255,0.18);
+  background: linear-gradient(135deg, rgba(22, 119, 255, 0.12), rgba(46, 211, 217, 0.10));
+  border: 1px solid rgba(22, 119, 255, 0.18);
   border-radius: 6px;
   padding: 6px 10px;
   display: flex;
@@ -1114,4 +1114,11 @@
   font-size: 11px;
   color: #999;
   margin-bottom: 8px;
+}
+
+/* Calendar Popup - 日历弹窗内容区域，确保底部行完整可见 */
+.calendar-popup-content {
+  padding: 16px;
+  padding-bottom: calc(20px + env(safe-area-inset-bottom, 0px));
+  background: #fff;
 }
