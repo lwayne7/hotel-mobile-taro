@@ -52,19 +52,15 @@
   flex-direction: row;
   align-items: center;
   font-size: 12px;
-  flex-wrap: nowrap;
+  flex-wrap: wrap;
+  gap: 2px 0;
   min-width: 0;
-  overflow: hidden;
 }
 
 .search-rooms {
   color: $ctrip-text-secondary;
   font-size: 11px;
-  flex-shrink: 1;
-  min-width: 0;
   white-space: nowrap;
-  overflow: hidden;
-  text-overflow: ellipsis;
   margin-left: 6px;
 }
 
