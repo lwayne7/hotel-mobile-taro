@@ -81,6 +81,14 @@ const config = {
         publicPath: '/',
         staticDirectory: 'static',
         postcss: {
+            pxtransform: {
+                enable: true,
+                config: {
+                    baseFontSize: 20,
+                    maxRootSize: 40,
+                    minRootSize: 12,
+                },
+            },
             autoprefixer: {
                 enable: true,
                 config: {},
