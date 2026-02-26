@@ -51,6 +51,7 @@
   display: flex;
   flex-direction: row;
   align-items: center;
+  justify-content: space-between;
   font-size: 12px;
   flex-wrap: wrap;
   gap: 2px 0;
@@ -181,7 +182,7 @@
 /* Filters */
 .ctrip-list-filters {
   background: rgba(255, 255, 255, 0.95);
-  padding-bottom: 10px;
+  padding-bottom: 4px;
   border-bottom: 1px solid #e8eef9;
 }
 
@@ -245,7 +246,7 @@
 }
 
 .filter-row-quick {
-  padding: 6px 12px;
+  padding: 2px 12px;
 }
 
 .filter-row-quick-inner {
@@ -256,7 +257,7 @@
   display: inline-flex;
   flex-direction: row;
   align-items: center;
-  padding: 4px 12px 4px 0;
+  padding: 0 12px 4px 0;
 }
 
 .ctrip-quick-filter-tag {
