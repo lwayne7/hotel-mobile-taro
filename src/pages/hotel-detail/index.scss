@@ -47,6 +47,7 @@
   justify-content: center;
   border: 1px solid rgba(255, 255, 255, 0.76);
   box-shadow: 0 6px 14px rgba(0, 0, 0, 0.14);
+  overflow: hidden;
 
   &:active {
     background: rgba(255, 255, 255, 0.95);
@@ -55,9 +56,16 @@
 }
 
 .back-arrow {
-  font-size: 24px;
+  font-size: 22px;
   color: $ctrip-text;
-  line-height: 24px;
+  line-height: 32px;
+  text-align: center;
+  width: 32px;
+  height: 32px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin-left: -1px;
 }
 
 .ctrip-detail-header-actions {
