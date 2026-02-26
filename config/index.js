@@ -84,9 +84,7 @@ const config = {
             pxtransform: {
                 enable: true,
                 config: {
-                    baseFontSize: 20,
-                    maxRootSize: 40,
-                    minRootSize: 12,
+                    designWidth: 750,
                 },
             },
             autoprefixer: {
