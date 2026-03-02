@@ -179,7 +179,6 @@ export function HotelListContent({
     (e: ScrollEventDetail) => {
       const newScrollTop: number = e.detail?.scrollTop ?? 0;
       scrollTopRef.current = newScrollTop;
-
       if (!shouldVirtualize) {
         return;
       }
@@ -209,7 +208,9 @@ export function HotelListContent({
   return (
     <ScrollView
       scrollY
+      enableFlex
       className="ctrip-list-scroll"
+      style={{ height: '100%' }}
       onScrollToLower={onScrollToLower}
       onScroll={handleScroll}
       lowerThreshold={100}
