@@ -36,8 +36,12 @@ const MIN_VIEWPORT_HEIGHT = 320;
 const ITEM_GAP = 12;
 /** Extra items rendered above/below the visible area */
 const OVERSCAN = 8;
-/** Only activate virtual scrolling when list exceeds this count */
-const VIRTUALIZE_THRESHOLD = 30;
+/**
+ * Only activate virtual scrolling when list count
+ * reaches this threshold. Set lower than PAGE_SIZE(30)
+ * so that a single page with 30 条数据也会启用虚拟滚动。
+ */
+const VIRTUALIZE_THRESHOLD = 20;
 /** Interval to batch scroll range updates */
 const SCROLL_BATCH_MS = 16;
 
@@ -111,7 +115,8 @@ export function HotelListContent({
     DEFAULT_VIEWPORT_HEIGHT,
   ));
 
-  const shouldVirtualize = hotels.length > VIRTUALIZE_THRESHOLD;
+  // 当列表长度达到阈值（含）时即启用虚拟滚动，避免 pageSize 刚好等于阈值时永远不生效
+  const shouldVirtualize = hotels.length >= VIRTUALIZE_THRESHOLD;
 
   const updateRenderRange = useCallback(
     (nextScrollTop: number) => {
