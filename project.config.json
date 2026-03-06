@@ -2,7 +2,7 @@
   "miniprogramRoot": "dist/",
   "projectname": "hotel-mobile-taro",
   "description": "易宿酒店预订 - 多端",
-  "appid": "wxf38df5945e410358",
+  "appid": "",
   "setting": {
     "urlCheck": false,
     "es6": true,
