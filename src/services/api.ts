@@ -2,7 +2,6 @@ import { request } from './request';
 import type { Hotel, HotelListResponse } from '../types/hotel';
 import type { Order, PageResponse } from '../types/order';
 import { toQueryString } from '../utils/queryString';
-import { z } from 'zod';
 
 /** 列表请求参数（与后端 public/hotels 查询参数一致） */
 export interface HotelListParams {
@@ -31,7 +30,7 @@ function previewResponse(data: unknown): string {
   }
 }
 
-// ============ Zod 运行时校验 ============
+// ============ 轻量运行时校验 ============
 
 function normalizeNumberLike(value: unknown): number | undefined {
   if (value === null || value === undefined) return undefined;
@@ -103,67 +102,172 @@ function normalizeResponseData(data: any): any {
   return normalized;
 }
 
-// 简化 schema，避免使用 z.preprocess（小程序环境兼容性问题）
-// 使用 .nullish() 同时支持 null 和 undefined
-const roomTypeSchema = z
-  .object({
-    id: z.number().nullish(),
-    name: z.string().nullish(),
-    price: z.number().nullish(),
-    originalPrice: z.number().nullish(),
-    discountType: z.string().nullish(),
-    discountValue: z.number().nullish(),
-    discountDescription: z.string().nullish(),
-    bedType: z.string().nullish(),
-    roomSize: z.number().nullish(),
-    maxGuests: z.number().nullish(),
-    floors: z.string().nullish(),
-    imageUrl: z.string().nullish(),
-    amenities: z.array(z.string()).nullish(),
-  })
-  .passthrough();
+interface ValidationIssue {
+  path: string;
+  message: string;
+}
 
-const hotelImageSchema = z
-  .object({
-    id: z.number().nullish(),
-    imageUrl: z.string().nullish(),
-    description: z.string().nullish(),
-  })
-  .passthrough();
+interface ValidationErrorShape {
+  issues: ValidationIssue[];
+}
 
-// 运行时校验要求最核心字段（id/nameCn/address/starRating），保证 UI 必需字段存在；
-// 其他字段保持透传（passthrough），避免因为后端返回 null/额外字段导致误报。
-// 注意：不使用 .default() 避免小程序环境兼容性问题，默认值在 normalizeResponseData 中处理
-const hotelSchema = z
-  .object({
-    id: z.number(),
-    nameCn: z.string(),
-    address: z.string(),
-    starRating: z.number(),
-    roomTypes: z.array(roomTypeSchema).optional(),
-    images: z.array(hotelImageSchema).optional(),
-  })
-  .passthrough();
+const DETAILED_VALIDATION_ENABLED =
+  process.env.NODE_ENV !== 'production' && process.env.TARO_ENV !== 'weapp';
 
-const hotelListResponseSchema = z
-  .object({
-    data: z.array(hotelSchema),
-    page: z.number(),
-    pageSize: z.number(),
-    total: z.number(),
-    totalPages: z.number(),
-  })
-  .passthrough();
+function isPlainObject(value: unknown): value is Record<string, unknown> {
+  return !!value && typeof value === 'object' && !Array.isArray(value);
+}
 
-function formatZodIssues(error: z.ZodError): string {
-  return error.issues
+function pushIssue(issues: ValidationIssue[], path: string, message: string) {
+  issues.push({ path, message });
+}
+
+function validateNullishNumber(
+  issues: ValidationIssue[],
+  value: unknown,
+  path: string,
+) {
+  if (value == null) return;
+  if (typeof value !== 'number' || !Number.isFinite(value)) {
+    pushIssue(issues, path, '应为数字');
+  }
+}
+
+function validateNullishString(
+  issues: ValidationIssue[],
+  value: unknown,
+  path: string,
+) {
+  if (value == null) return;
+  if (typeof value !== 'string') {
+    pushIssue(issues, path, '应为字符串');
+  }
+}
+
+function validateRoomType(value: unknown, path: string): ValidationIssue[] {
+  const issues: ValidationIssue[] = [];
+  if (!isPlainObject(value)) {
+    pushIssue(issues, path, '应为对象');
+    return issues;
+  }
+
+  validateNullishNumber(issues, value.id, `${path}.id`);
+  validateNullishString(issues, value.name, `${path}.name`);
+  validateNullishNumber(issues, value.price, `${path}.price`);
+  validateNullishNumber(issues, value.originalPrice, `${path}.originalPrice`);
+  validateNullishString(issues, value.discountType, `${path}.discountType`);
+  validateNullishNumber(issues, value.discountValue, `${path}.discountValue`);
+  validateNullishString(issues, value.discountDescription, `${path}.discountDescription`);
+  validateNullishString(issues, value.bedType, `${path}.bedType`);
+  validateNullishNumber(issues, value.roomSize, `${path}.roomSize`);
+  validateNullishNumber(issues, value.maxGuests, `${path}.maxGuests`);
+  validateNullishString(issues, value.floors, `${path}.floors`);
+  validateNullishString(issues, value.imageUrl, `${path}.imageUrl`);
+
+  if (value.amenities != null) {
+    if (!Array.isArray(value.amenities) || value.amenities.some((item) => typeof item !== 'string')) {
+      pushIssue(issues, `${path}.amenities`, '应为字符串数组');
+    }
+  }
+
+  return issues;
+}
+
+function validateHotelImage(value: unknown, path: string): ValidationIssue[] {
+  const issues: ValidationIssue[] = [];
+  if (!isPlainObject(value)) {
+    pushIssue(issues, path, '应为对象');
+    return issues;
+  }
+
+  validateNullishNumber(issues, value.id, `${path}.id`);
+  validateNullishString(issues, value.imageUrl, `${path}.imageUrl`);
+  validateNullishString(issues, value.description, `${path}.description`);
+
+  return issues;
+}
+
+function validateHotelDetailed(value: unknown, path = 'hotel'): ValidationIssue[] {
+  const issues: ValidationIssue[] = [];
+  if (!isPlainObject(value)) {
+    pushIssue(issues, path, '应为对象');
+    return issues;
+  }
+
+  if (typeof value.id !== 'number' || !Number.isFinite(value.id)) {
+    pushIssue(issues, `${path}.id`, '应为数字');
+  }
+  if (typeof value.nameCn !== 'string') {
+    pushIssue(issues, `${path}.nameCn`, '应为字符串');
+  }
+  if (typeof value.address !== 'string') {
+    pushIssue(issues, `${path}.address`, '应为字符串');
+  }
+  if (typeof value.starRating !== 'number' || !Number.isFinite(value.starRating)) {
+    pushIssue(issues, `${path}.starRating`, '应为数字');
+  }
+
+  if (value.roomTypes != null) {
+    if (!Array.isArray(value.roomTypes)) {
+      pushIssue(issues, `${path}.roomTypes`, '应为数组');
+    } else {
+      value.roomTypes.forEach((roomType, index) => {
+        issues.push(...validateRoomType(roomType, `${path}.roomTypes[${index}]`));
+      });
+    }
+  }
+
+  if (value.images != null) {
+    if (!Array.isArray(value.images)) {
+      pushIssue(issues, `${path}.images`, '应为数组');
+    } else {
+      value.images.forEach((image, index) => {
+        issues.push(...validateHotelImage(image, `${path}.images[${index}]`));
+      });
+    }
+  }
+
+  return issues;
+}
+
+function validateHotelListDetailed(value: unknown): ValidationIssue[] {
+  const issues: ValidationIssue[] = [];
+  if (!isPlainObject(value)) {
+    pushIssue(issues, '(root)', '应为对象');
+    return issues;
+  }
+
+  if (!Array.isArray(value.data)) {
+    pushIssue(issues, 'data', '应为数组');
+  } else {
+    value.data.forEach((hotel, index) => {
+      issues.push(...validateHotelDetailed(hotel, `data[${index}]`));
+    });
+  }
+
+  ['page', 'pageSize', 'total', 'totalPages'].forEach((key) => {
+    const candidate = value[key];
+    if (typeof candidate !== 'number' || !Number.isFinite(candidate)) {
+      pushIssue(issues, key, '应为数字');
+    }
+  });
+
+  return issues;
+}
+
+function formatValidationIssues(issues: ValidationIssue[]): string {
+  return issues
     .slice(0, 6)
-    .map((issue) => `${issue.path.join('.') || '(root)'}: ${issue.message}`)
+    .map((issue) => `${issue.path || '(root)'}: ${issue.message}`)
     .join('; ');
 }
 
-/** 小程序环境下列表响应的最小校验并补全分页字段 */
-function weappValidateList(normalized: unknown): HotelListResponse {
+function isValidationErrorShape(error: unknown): error is ValidationErrorShape {
+  return isPlainObject(error) && Array.isArray(error.issues);
+}
+
+/** 生产环境下的最小校验并补全分页字段，避免在运行时引入过重依赖。 */
+function minimalValidateList(normalized: unknown): HotelListResponse {
   if (!normalized || typeof normalized !== 'object') throw new Error('响应数据格式错误：不是对象');
   const o = normalized as Record<string, unknown>;
   if (!Array.isArray(o.data)) throw new Error('响应数据格式错误：data 不是数组');
@@ -176,8 +280,8 @@ function weappValidateList(normalized: unknown): HotelListResponse {
   };
 }
 
-/** 小程序环境下酒店详情的最大校验 */
-function weappValidateHotel(normalized: unknown): Hotel {
+/** 生产环境下酒店详情的最小校验。 */
+function minimalValidateHotel(normalized: unknown): Hotel {
   if (!normalized || typeof normalized !== 'object') throw new Error('响应数据格式错误：不是对象');
   const o = normalized as Record<string, unknown>;
   if (typeof o.id !== 'number') throw new Error('响应数据格式错误：id 不是数字');
@@ -185,29 +289,34 @@ function weappValidateHotel(normalized: unknown): Hotel {
   return normalized as Hotel;
 }
 
-/** 统一解析：先 normalize，再按环境走 weapp 校验或 Zod（schema 输出类型与 T 兼容即可） */
+/** 统一解析：生产态走最小校验，开发态走更细的结构校验。 */
 function parseResponse<T>(
   res: unknown,
-  weappValidate: (n: unknown) => T,
-  zodSchema: z.ZodType<unknown>,
+  minimalValidate: (n: unknown) => T,
+  detailedValidate: (n: unknown) => ValidationIssue[],
   errorPrefix: string,
   logLabel?: string
 ): T {
   const normalized = normalizeResponseData(res);
   try {
-    if (process.env.TARO_ENV === 'weapp') {
-      return weappValidate(normalized);
+    if (!DETAILED_VALIDATION_ENABLED) {
+      return minimalValidate(normalized);
     }
-    const parsed = zodSchema.safeParse(normalized);
-    if (parsed.success) return parsed.data as T;
-    throw parsed.error;
+
+    const issues = detailedValidate(normalized);
+    if (issues.length === 0) {
+      return normalized as T;
+    }
+    throw { issues } satisfies ValidationErrorShape;
   } catch (err) {
-    const issueText = err instanceof z.ZodError ? `；校验错误：${formatZodIssues(err)}` : '';
+    const issueText = isValidationErrorShape(err)
+      ? `；校验错误：${formatValidationIssues(err.issues)}`
+      : '';
     if (process.env.NODE_ENV !== 'production' && logLabel) {
       console.error(`[${logLabel}] 校验失败:`, {
         error: err,
         response: res,
-        zodIssues: err instanceof z.ZodError ? err.issues : undefined,
+        validationIssues: isValidationErrorShape(err) ? err.issues : undefined,
       });
     }
     throw new Error(`${errorPrefix}${previewResponse(res)}${issueText}`);
@@ -217,15 +326,20 @@ function parseResponse<T>(
 function parseHotelListResponse(res: unknown): HotelListResponse {
   return parseResponse<HotelListResponse>(
     res,
-    weappValidateList,
-    hotelListResponseSchema,
+    minimalValidateList,
+    validateHotelListDetailed,
     '酒店列表接口返回异常，请检查小程序 API_BASE 配置/是否命中正确后端。响应：',
     'parseHotelListResponse'
   );
 }
 
 function parseHotel(res: unknown): Hotel {
-  return parseResponse<Hotel>(res, weappValidateHotel, hotelSchema, '酒店详情接口返回异常，响应：');
+  return parseResponse<Hotel>(
+    res,
+    minimalValidateHotel,
+    validateHotelDetailed,
+    '酒店详情接口返回异常，响应：'
+  );
 }
 
 function buildListQuery(params?: HotelListParams): Record<string, string | number | undefined> {
@@ -251,10 +365,10 @@ function buildListQuery(params?: HotelListParams): Record<string, string | numbe
 export const publicHotelApi = {
   getList: (params?: HotelListParams): Promise<HotelListResponse> => {
     const qs = toQueryString(buildListQuery(params));
-    return request<unknown>({ url: `/api/public/hotels${qs ? `?${qs}` : ''}`, method: 'GET' }).then(parseHotelListResponse);
+    return request<unknown>({ url: `/api/v1/public/hotels${qs ? `?${qs}` : ''}`, method: 'GET' }).then(parseHotelListResponse);
   },
   getById: (id: number): Promise<Hotel> =>
-    request<unknown>({ url: `/api/public/hotels/${id}`, method: 'GET' }).then(parseHotel),
+    request<unknown>({ url: `/api/v1/public/hotels/${id}`, method: 'GET' }).then(parseHotel),
 };
 
 // ============ Auth / Orders / Payments（最小闭环演示） ============
@@ -271,9 +385,9 @@ export interface LoginResponse {
 
 export const authApi = {
   login: (data: LoginParams): Promise<LoginResponse> =>
-    request<LoginResponse>({ url: '/api/auth/login', method: 'POST', data, skipAuth: true }),
+    request<LoginResponse>({ url: '/api/v1/auth/login', method: 'POST', data, skipAuth: true }),
   profile: (): Promise<{ id: number; username: string; role: string } | null> =>
-    request<any>({ url: '/api/auth/profile', method: 'GET' }).catch(() => null),
+    request<any>({ url: '/api/v1/auth/profile', method: 'GET' }).catch(() => null),
 };
 
 export interface CreateOrderParams {
@@ -287,15 +401,15 @@ export interface CreateOrderParams {
 
 export const orderApi = {
   create: (data: CreateOrderParams): Promise<Order> =>
-    request<Order>({ url: '/api/orders', method: 'POST', data }),
+    request<Order>({ url: '/api/v1/orders', method: 'POST', data }),
   mine: (params?: { page?: number; pageSize?: number }): Promise<PageResponse<Order>> => {
     const qs = toQueryString({ page: params?.page, pageSize: params?.pageSize });
-    return request<PageResponse<Order>>({ url: `/api/orders/mine${qs ? `?${qs}` : ''}`, method: 'GET' });
+    return request<PageResponse<Order>>({ url: `/api/v1/orders/mine${qs ? `?${qs}` : ''}`, method: 'GET' });
   },
   cancel: (id: number): Promise<Order> =>
-    request<Order>({ url: `/api/orders/${id}/cancel`, method: 'POST' }),
+    request<Order>({ url: `/api/v1/orders/${id}/cancel`, method: 'POST' }),
   remove: (id: number): Promise<void> =>
-    request<void>({ url: `/api/orders/${id}`, method: 'DELETE' }),
+    request<void>({ url: `/api/v1/orders/${id}`, method: 'DELETE' }),
 };
 
 export interface PaymentCallbackParams {
@@ -307,5 +421,5 @@ export interface PaymentCallbackParams {
 
 export const paymentApi = {
   callback: (data: PaymentCallbackParams) =>
-    request<any>({ url: '/api/payments/callback', method: 'POST', data, skipAuth: true }),
+    request<any>({ url: '/api/v1/payments/callback', method: 'POST', data, skipAuth: true }),
 };

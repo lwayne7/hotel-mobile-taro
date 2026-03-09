@@ -36,7 +36,7 @@ describe('request', () => {
         data: jsonString,
       } as any);
 
-      const result = await request({ url: '/api/public/hotels?page=1' });
+      const result = await request({ url: '/api/v1/public/hotels?page=1' });
 
       expect(result).toEqual(JSON.parse(jsonString));
     });
@@ -47,7 +47,7 @@ describe('request', () => {
         data: '<html>not json</html>',
       } as any);
 
-      await expect(request({ url: '/api/public/hotels' })).rejects.toThrow('接口返回非 JSON');
+      await expect(request({ url: '/api/v1/public/hotels' })).rejects.toThrow('接口返回非 JSON');
     });
 
     it('should make a POST request with data', async () => {

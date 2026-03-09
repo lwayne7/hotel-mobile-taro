@@ -59,7 +59,7 @@ describe('publicHotelApi', () => {
       expect(mockRequest).toHaveBeenCalledWith(
         expect.objectContaining({
           method: 'GET',
-          url: '/api/public/hotels',
+          url: '/api/v1/public/hotels',
         })
       );
     });
@@ -109,7 +109,7 @@ describe('publicHotelApi', () => {
 
       expect(result).toEqual(mockHotel);
       expect(mockRequest).toHaveBeenCalledWith(
-        expect.objectContaining({ url: '/api/public/hotels/1', method: 'GET' })
+        expect.objectContaining({ url: '/api/v1/public/hotels/1', method: 'GET' })
       );
     });
   });

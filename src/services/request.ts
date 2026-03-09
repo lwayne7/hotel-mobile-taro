@@ -243,7 +243,7 @@ export async function request<T = any>(options: RequestOptions): Promise<T> {
 
   const shouldDebugLog =
     process.env.TARO_ENV === 'weapp' &&
-    /\/api\/public\/hotels/.test(processedOptions.url) &&
+    /\/api\/v1\/public\/hotels/.test(processedOptions.url) &&
     (process.env.NODE_ENV !== 'production' || isWeappDevtools());
 
   /** 解析响应体：字符串则尝试 JSON，并识别 200 体内的错误结构 */

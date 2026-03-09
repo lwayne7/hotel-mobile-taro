@@ -18,7 +18,7 @@
 | 📍 **GPS 城市定位** | Taro.getLocation → 逆地理编码推断城市，一键定位当前位置 |
 | 💾 **离线持久化** | Zustand + persist 中间件，收藏夹与浏览历史跨端持久存储 |
 | 🧪 **68 条 Vitest 单测** | useHotels / usePriceUpdates / useSearchStore / useHotelStore / request / api 等核心逻辑全覆盖 |
-| 📊 **Web Vitals 埋点** | H5 端自动采集 FCP / LCP / CLS 性能指标 |
+| 📊 **Web Vitals 采集上报** | H5 端自动采集 FCP / LCP / CLS / FID / TTFB，队列批量上报至后端（sendBeacon / Taro.request），小程序端自适配 |
 | ✅ **GitHub Actions CI** | 自动 TypeCheck + Unit Test + Build H5，保证每次提交质量 |
 | 🎨 **12 个自研组件** | Button / Calendar / CityPicker / RoomPicker / Popup / Skeleton / Loading / HotelCard / PriceTrend / ErrorBoundary / SafeArea / ui |
 | 🔍 **智能搜索** | 搜索历史持久化 + 热门标签 + 多维筛选（城市/星级/价格/设施/品牌） |
@@ -37,6 +37,7 @@
 - **预订闭环前端链路**：真实打通「搜索 → 列表 → 详情 → 下单 → 支付回调 → 查看/删除订单」全流程，与后台订单/库存模型对齐。
 - **列表性能**：基于 TanStack Query 的无限滚动与骨架屏，支撑万级酒店列表的流畅滚动。
 - **实时价格**：H5 端使用 SSE（EventSource）自动重连，小程序/RN 用轮询兜底，保证多端价格感知的一致性。
+- **运行时校验取舍**：生产环境保留最小校验，开发环境启用详细结构校验，兼顾包体与排障效率。
 
 ---
 
@@ -97,7 +98,7 @@ hotel-mobile-taro/
 │   ├── constants/        # 常量（50 城市列表等）
 │   ├── styles/           # 全局样式变量 + RN 适配工具
 │   ├── types/            # TypeScript 类型定义
-│   └── utils/            # 工具函数（图片哈希 / 格式化）
+│   └── utils/            # 工具函数（图片哈希 / 格式化 / Web Vitals 上报）
 ├── vitest.config.mts     # Vitest 测试配置
 ├── vercel.json           # Vercel 部署配置
 ├── project.config.json   # 微信小程序项目配置
@@ -133,7 +134,7 @@ npm run start:dev          # http://localhost:3000
 npm run dev:h5             # http://localhost:10086
 ```
 
-H5 开发时 `/api` 自动代理到 `http://localhost:3000`。
+H5 开发时 `/api` 自动代理到 `http://localhost:3000`（后端 API 前缀为 `/api/v1`）。
 
 ### 4. 运行微信小程序
 
@@ -188,6 +189,10 @@ npm run build:rn -- --platform android  # RN Android bundle
 ```
 
 H5 版已配置 `vercel.json`，推送后自动部署。
+
+### 性能记录
+
+- H5 包体优化记录见 [`PERF_BENCHMARK.md`](./PERF_BENCHMARK.md)
 
 ---
 

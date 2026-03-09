@@ -2,6 +2,7 @@ import './app.scss';
 import Taro from '@tarojs/taro';
 import { QueryClient, QueryClientProvider, onlineManager } from '@tanstack/react-query';
 import { ErrorBoundary } from './components/ErrorBoundary';
+import { initWebVitals } from './utils/metrics';
 
 // 小程序/RN 下让 React Query 正确感知在线，避免 paused 导致不发请求
 if (process.env.TARO_ENV === 'weapp' || process.env.TARO_ENV === 'rn') {
@@ -68,20 +69,10 @@ function App(props: React.PropsWithChildren) {
   );
 }
 
-// H5 端采集 Web Vitals 性能指标（FCP / LCP / CLS）
-// 仅在 H5 + 非测试环境下加载，不影响小程序/RN 包体积
+// H5 端采集 Web Vitals 性能指标（FCP / LCP / CLS / FID / TTFB）
+// 使用 metrics 工具模块，支持批量上报到后端
 if (process.env.TARO_ENV === 'h5' && process.env.NODE_ENV !== 'test') {
-  import('web-vitals').then(({ onFCP, onLCP, onCLS }) => {
-    const report = (metric: { name: string; value: number }) => {
-      // eslint-disable-next-line no-console
-      console.log(`[WebVitals] ${metric.name}: ${metric.value.toFixed(2)}`);
-    };
-    onFCP(report);
-    onLCP(report);
-    onCLS(report);
-  }).catch(() => {
-    // web-vitals 不可用时静默降级
-  });
+  initWebVitals();
 }
 
 export default App;

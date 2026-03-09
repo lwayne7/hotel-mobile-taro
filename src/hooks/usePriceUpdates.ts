@@ -27,9 +27,9 @@ interface UsePriceUpdatesOptions {
 function buildSseUrl(): string {
   const base = getApiBaseCacheKey();
   if (!base || base === 'relative' || base === 'unknown') {
-    return '/api/public/hotels/price-updates';
+    return '/api/v1/public/hotels/price-updates';
   }
-  return `${base.replace(/\/$/, '')}/api/public/hotels/price-updates`;
+  return `${base.replace(/\/$/, '')}/api/v1/public/hotels/price-updates`;
 }
 
 function toSafeNumber(value: unknown, fallback: number): number {
