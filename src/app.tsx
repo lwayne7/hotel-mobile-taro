@@ -68,4 +68,20 @@ function App(props: React.PropsWithChildren) {
   );
 }
 
+// H5 端采集 Web Vitals 性能指标（FCP / LCP / CLS）
+// 仅在 H5 + 非测试环境下加载，不影响小程序/RN 包体积
+if (process.env.TARO_ENV === 'h5' && process.env.NODE_ENV !== 'test') {
+  import('web-vitals').then(({ onFCP, onLCP, onCLS }) => {
+    const report = (metric: { name: string; value: number }) => {
+      // eslint-disable-next-line no-console
+      console.log(`[WebVitals] ${metric.name}: ${metric.value.toFixed(2)}`);
+    };
+    onFCP(report);
+    onLCP(report);
+    onCLS(report);
+  }).catch(() => {
+    // web-vitals 不可用时静默降级
+  });
+}
+
 export default App;

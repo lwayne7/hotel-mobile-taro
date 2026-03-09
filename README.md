@@ -17,7 +17,9 @@
 | 📡 **SSE 实时价格** | H5 端 EventSource 自动重连 + keepalive 节流；小程序/RN 轮询兜底 |
 | 📍 **GPS 城市定位** | Taro.getLocation → 逆地理编码推断城市，一键定位当前位置 |
 | 💾 **离线持久化** | Zustand + persist 中间件，收藏夹与浏览历史跨端持久存储 |
-| 🧪 **Vitest 单测** | useHotels / useSearchStore / useHotelStore 等核心逻辑全覆盖 |
+| 🧪 **68 条 Vitest 单测** | useHotels / usePriceUpdates / useSearchStore / useHotelStore / request / api 等核心逻辑全覆盖 |
+| 📊 **Web Vitals 埋点** | H5 端自动采集 FCP / LCP / CLS 性能指标 |
+| ✅ **GitHub Actions CI** | 自动 TypeCheck + Unit Test + Build H5，保证每次提交质量 |
 | 🎨 **12 个自研组件** | Button / Calendar / CityPicker / RoomPicker / Popup / Skeleton / Loading / HotelCard / PriceTrend / ErrorBoundary / SafeArea / ui |
 | 🔍 **智能搜索** | 搜索历史持久化 + 热门标签 + 多维筛选（城市/星级/价格/设施/品牌） |
 | ⚡ **Vercel 部署** | H5 版已配置 vercel.json，一键部署到生产环境 |
@@ -48,7 +50,7 @@
 | 状态管理 | **Zustand 5**（客户端，persist 中间件）+ **TanStack Query 5**（服务端） |
 | 数据校验 | **Zod 4** |
 | 日期处理 | **Day.js** |
-| 测试 | **Vitest 2** + **Testing Library** + **jsdom** |
+| 测试 | **Vitest 2** + **Testing Library** + **jsdom**，68 条单测 |
 | 构建 | Webpack 5（Taro runner）/ Babel / SWC |
 | 部署 | Vercel（H5）/ 微信开发者工具（小程序） |
 
@@ -169,7 +171,7 @@ npm run dev:rn             # 启动 Metro (端口 8081)
 ## 🧪 测试
 
 ```bash
-npm test                   # Vitest 单元测试
+npm test                   # Vitest 单元测试（68 tests / 8 files）
 npm run test:coverage      # 覆盖率报告
 npm run typecheck          # TypeScript 类型检查
 ```
