@@ -35,7 +35,7 @@ describe('publicHotelApi', () => {
       expect(mockRequest).toHaveBeenCalledWith(
         expect.objectContaining({
           method: 'GET',
-          url: expect.stringMatching(/^\/api\/public\/hotels\?/),
+          url: expect.stringMatching(/^\/api\/v1\/public\/hotels\?/),
         })
       );
       const callUrl = mockRequest.mock.calls[0][0].url;
@@ -84,7 +84,7 @@ describe('publicHotelApi', () => {
       expect(mockRequest).toHaveBeenCalledWith(
         expect.objectContaining({
           method: 'GET',
-          url: expect.stringMatching(/^\/api\/public\/hotels\?/),
+          url: expect.stringMatching(/^\/api\/v1\/public\/hotels\?/),
         })
       );
       const callUrl = mockRequest.mock.calls[0][0].url;
