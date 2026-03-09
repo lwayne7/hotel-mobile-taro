@@ -1,22 +1,20 @@
 // 开发环境配置：
-// - 默认使用线上 Railway 后端，无需启动本地后端
-// - 设置 TARO_APP_API_BASE=http://localhost:3000 可切换为本地后端
-// - 小程序 / RN：直接使用完整 baseURL
-// - H5：未显式设置时通过 devServer proxy 代理
+// - 推荐本地 or 局域网 NestJS 后端，用于联调与调试
+// - TARO_APP_API_BASE 优先（如 http://192.168.x.x:3000），否则自动选择局域网 IP，再否则 localhost:3000
+// - H5：未显式设置 TARO_APP_API_BASE 时通过 devServer proxy 代理
 
 const taroEnv = process.env.TARO_ENV || 'weapp';
 const { getLanIp } = require('./getLanIp');
 
 const DEFAULT_DEV_API_PORT = process.env.TARO_APP_API_PORT || '3000';
-const RAILWAY_API_BASE = 'https://hotel-management-production-wayne.up.railway.app';
 
-// 所有平台共享的"候选后端地址"
-// 默认使用线上 Railway 后端，设置 TARO_APP_API_BASE=http://localhost:3000 可切换为本地后端
 const explicitBase = (process.env.TARO_APP_API_BASE || '').trim();
 const lanIp = getLanIp();
 const lanBase = lanIp ? `http://${lanIp}:${DEFAULT_DEV_API_PORT}` : '';
 
-const sharedDevApiBase = explicitBase || RAILWAY_API_BASE;
+// 所有平台共享的"候选后端地址"
+// 优先显式 TARO_APP_API_BASE，其次局域网 IP，最后回退 localhost:3000
+const sharedDevApiBase = explicitBase || lanBase || `http://localhost:${DEFAULT_DEV_API_PORT}`;
 
 // H5：
 // - 未显式 TARO_APP_API_BASE 时：保持空字符串，走 devServer proxy，避免 CORS 问题；

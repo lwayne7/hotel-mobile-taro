@@ -4,6 +4,8 @@ export default defineAppConfig({
     'pages/hotel-list/index',
     'pages/hotel-detail/index',
     'pages/favorites/index',
+    'pages/orders/index',
+    'pages/login/index',
   ],
   window: {
     backgroundTextStyle: 'light',

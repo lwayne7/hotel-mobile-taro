@@ -5,7 +5,7 @@
   "rewrites": [
     {
       "source": "/api/:path*",
-      "destination": "https://hotel-management-production-wayne.up.railway.app/api/:path*"
+      "destination": "https://hotel-management-lwayne.vercel.app/api/:path*"
     },
     {
       "source": "/(.*)",

@@ -4,6 +4,7 @@ import { View, Text, Swiper, SwiperItem, Image, ScrollView } from '@tarojs/compo
 import Taro, { useDidShow, useRouter } from '@tarojs/taro';
 import { useHotelDetail, useIsWeapp, usePriceUpdates } from '../../hooks';
 import { publicHotelApi } from '../../services/api';
+import { orderApi } from '../../services/api';
 import { useHotelStore } from '../../store/useHotelStore';
 import { Button, Skeleton, Popup } from '../../components/ui';
 import Calendar from '../../components/Calendar';
@@ -203,6 +204,8 @@ export default function HotelDetail() {
   const [scrollToId, setScrollToId] = useState('');
   const [showDatePicker, setShowDatePicker] = useState<'checkIn' | 'checkOut' | null>(null);
   const [currentImageIndex, setCurrentImageIndex] = useState(0);
+  const [bookingRoom, setBookingRoom] = useState<RoomType | null>(null);
+  const [bookingLoading, setBookingLoading] = useState(false);
 
   // 日期 - 使用本地状态以支持调整
   const [localCheckIn, setLocalCheckIn] = useState(
@@ -298,6 +301,47 @@ export default function HotelDetail() {
         Taro.showToast({ title: '当前环境不支持系统分享', icon: 'none' });
       });
   }, [hotel, localCheckIn, localCheckOut]);
+
+  const goLoginForBooking = useCallback(() => {
+    if (!id) return;
+    const checkInDate = localCheckIn.format('YYYY-MM-DD');
+    const checkOutDate = localCheckOut.format('YYYY-MM-DD');
+    const redirect = `/pages/hotel-detail/index?id=${id}&checkIn=${checkInDate}&checkOut=${checkOutDate}`;
+    Taro.navigateTo({ url: `/pages/login/index?redirect=${encodeURIComponent(redirect)}` });
+  }, [id, localCheckIn, localCheckOut]);
+
+  const handleCreateOrder = useCallback(async () => {
+    if (!hotel || !bookingRoom?.id) return;
+    setBookingLoading(true);
+    try {
+      const checkInDate = localCheckIn.format('YYYY-MM-DD');
+      const checkOutDate = localCheckOut.format('YYYY-MM-DD');
+      const order = await orderApi.create({
+        hotelId: hotel.id,
+        roomTypeId: bookingRoom.id,
+        checkInDate,
+        checkOutDate,
+        rooms: 1,
+        guests: 2,
+      });
+      setBookingRoom(null);
+      Taro.showToast({ title: '下单成功（待支付）', icon: 'none' });
+      setTimeout(() => {
+        Taro.navigateTo({ url: '/pages/orders/index' });
+      }, 300);
+      return order;
+    } catch (e: any) {
+      const msg = e?.message || '下单失败';
+      // 未登录：引导登录
+      if (String(msg).includes('401') || String(msg).includes('未授权') || String(msg).includes('用户不存在')) {
+        goLoginForBooking();
+        return;
+      }
+      Taro.showToast({ title: msg, icon: 'none' });
+    } finally {
+      setBookingLoading(false);
+    }
+  }, [bookingRoom?.id, goLoginForBooking, hotel, localCheckIn, localCheckOut, bookingRoom]);
 
   // 加载中
   if (isLoading) {
@@ -560,7 +604,7 @@ export default function HotelDetail() {
                       <Text className="amount">{room.price}</Text>
                       <Text className="suffix">/晚</Text>
                     </View>
-                    <Text className="view-room-btn" onClick={scrollToRooms}>预订</Text>
+                  <Text className="view-room-btn" onClick={() => setBookingRoom(room)}>预订</Text>
                   </View>
                 </View>
               </View>
@@ -599,6 +643,36 @@ export default function HotelDetail() {
             onChange={onCalendarSelect}
             title={showDatePicker === 'checkIn' ? '选择入住日期' : '选择离店日期'}
           />
+        </View>
+      </Popup>
+
+      {/* Booking Popup */}
+      <Popup
+        visible={!!bookingRoom}
+        position="bottom"
+        onClose={() => setBookingRoom(null)}
+      >
+        <View style={{ padding: '16px' }}>
+          <Text style={{ fontSize: '16px', fontWeight: 700, display: 'block', marginBottom: '10px' }}>确认预订</Text>
+          <Text style={{ fontSize: '12px', color: '#475569', display: 'block' }}>
+            {hotel.nameCn} · {bookingRoom?.name}
+          </Text>
+          <View style={{ height: '8px' }} />
+          <Text style={{ fontSize: '12px', color: '#475569', display: 'block' }}>
+            入住 {localCheckIn.format('YYYY-MM-DD')} · 离店 {localCheckOut.format('YYYY-MM-DD')}（{nights}晚）
+          </Text>
+          <View style={{ height: '8px' }} />
+          <Text style={{ fontSize: '12px', color: '#0f172a', display: 'block' }}>
+            价格：¥{bookingRoom?.price}/晚（演示默认 1 间 2 人）
+          </Text>
+          <View style={{ height: '14px' }} />
+          <Button type="primary" block loading={bookingLoading} onClick={handleCreateOrder}>
+            下单（待支付）
+          </Button>
+          <View style={{ height: '10px' }} />
+          <Button type="default" plain block onClick={goLoginForBooking}>
+            切换账号/去登录
+          </Button>
         </View>
       </Popup>
     </View>

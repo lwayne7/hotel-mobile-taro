@@ -22,6 +22,13 @@
 
 ---
 
+## 📐 架构与设计（面试友好）
+
+- **跨端一致性与数据流**：[`ARCHITECTURE.md`](./ARCHITECTURE.md)
+- **实时价格方案（SSE + 轮询）**：[`REALTIME_PRICE.md`](./REALTIME_PRICE.md)
+
+---
+
 ## 🛠️ 技术栈
 
 | 层级 | 技术 |

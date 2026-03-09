@@ -5,14 +5,15 @@ const taroEnv = process.env.TARO_ENV || 'weapp';
 const outputRoot =
     taroEnv === 'h5' ? 'dist-h5' : taroEnv === 'rn' ? 'dist-rn' : 'dist';
 
-// 后端地址：默认使用线上 Railway 后端，无需启动本地后端
-// 设置 TARO_APP_API_BASE=http://localhost:3000 可切换为本地后端
+// 后端地址：
+// - 开发环境：优先 TARO_APP_API_BASE，其次局域网 IP，最后回退到 http://localhost:3000
+// - 线上（vercel）：由 vercel.json 中的 rewrites 代理到后端
 const DEFAULT_DEV_API_PORT = process.env.TARO_APP_API_PORT || '3000';
-const RAILWAY_API_BASE = 'https://hotel-management-production-wayne.up.railway.app';
 const explicitBase = (process.env.TARO_APP_API_BASE || '').trim();
 const lanIp = getLanIp();
 const lanBase = lanIp ? `http://${lanIp}:${DEFAULT_DEV_API_PORT}` : '';
-const sharedDevApiBase = explicitBase || RAILWAY_API_BASE;
+// 默认开发后端：本机或局域网 NestJS，而不是远程 Railway（避免远程环境 404/域名问题影响本地联调）
+const sharedDevApiBase = explicitBase || lanBase || `http://localhost:${DEFAULT_DEV_API_PORT}`;
 
 const config = {
     projectName: 'hotel-mobile-taro',

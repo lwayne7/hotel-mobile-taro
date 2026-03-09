@@ -127,6 +127,13 @@ export default function Index() {
               <Text className="fav-icon">💝</Text>
               <Text className="fav-text">收藏</Text>
             </View>
+            <View
+              className="ctrip-header-fav"
+              onClick={() => Taro.navigateTo({ url: '/pages/orders/index' })}
+            >
+              <Text className="fav-icon">🧾</Text>
+              <Text className="fav-text">订单</Text>
+            </View>
           </View>
 
           {/* 酒店广告Banner - 点击跳转当前城市酒店 */}

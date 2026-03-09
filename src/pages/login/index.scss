@@ -1,0 +1,89 @@
+@use '../../styles/tokens' as *;
+
+.login-page {
+  min-height: 100vh;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 32px 16px;
+  background:
+    radial-gradient(circle at 12% 0%, rgba(22, 119, 255, 0.24), transparent 34%),
+    radial-gradient(circle at 88% 0%, rgba(46, 211, 217, 0.18), transparent 30%),
+    linear-gradient(180deg, #dcebff 0%, #f2f6ff 28%, #f2f6ff 100%);
+  box-sizing: border-box;
+}
+
+.login-card {
+  width: 100%;
+  max-width: 440px;
+  background: #fff;
+  border-radius: $radius-lg;
+  padding: 22px 22px 20px;
+  box-shadow: $shadow-lg;
+  border: 1px solid rgba(226, 232, 240, 0.85);
+}
+
+.login-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 4px;
+}
+
+.login-title {
+  font-size: $font-xl;
+  font-weight: 700;
+  color: $ctrip-text;
+}
+
+.login-badge {
+  font-size: $font-xs;
+  padding: 3px 8px;
+  border-radius: 999px;
+  background: $ctrip-blue-light;
+  color: $ctrip-blue;
+}
+
+.login-subtitle {
+  font-size: $font-sm;
+  color: $ctrip-text-secondary;
+  margin-bottom: 18px;
+  line-height: 1.5;
+}
+
+.login-field {
+  margin-bottom: 14px;
+}
+
+.login-label {
+  font-size: $font-xs;
+  color: #64748b;
+  margin-bottom: 6px;
+  display: block;
+}
+
+.login-input {
+  min-height: 42px;
+  border-radius: 999px;
+  border: 1px solid #e2e8f0;
+  padding: 10px 16px; // 上下留相同内边距，视觉垂直居中
+  line-height: 1.4;
+  background: #fff;
+  font-size: $font-md;
+  color: $ctrip-text;
+  box-sizing: border-box;
+}
+
+.login-hint {
+  margin-top: 6px;
+  font-size: $font-xs;
+  color: $ctrip-text-placeholder;
+}
+
+.login-footer {
+  margin-top: 18px;
+  font-size: $font-xs;
+  color: $ctrip-text-placeholder;
+  text-align: center;
+}
+

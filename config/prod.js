@@ -3,7 +3,8 @@ module.exports = {
     NODE_ENV: '"production"',
   },
   defineConstants: {
-    'process.env.TARO_APP_API_BASE': JSON.stringify('https://hotel-management-production-wayne.up.railway.app'),
+    // 线上环境：使用统一的后端域名（与管理端保持一致）
+    'process.env.TARO_APP_API_BASE': JSON.stringify('https://hotel-management-lwayne.vercel.app'),
   },
   mini: {},
   rn: {},

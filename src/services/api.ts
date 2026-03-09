@@ -1,5 +1,6 @@
 import { request } from './request';
 import type { Hotel, HotelListResponse } from '../types/hotel';
+import type { Order, PageResponse } from '../types/order';
 import { toQueryString } from '../utils/queryString';
 import { z } from 'zod';
 
@@ -254,4 +255,57 @@ export const publicHotelApi = {
   },
   getById: (id: number): Promise<Hotel> =>
     request<unknown>({ url: `/api/public/hotels/${id}`, method: 'GET' }).then(parseHotel),
+};
+
+// ============ Auth / Orders / Payments（最小闭环演示） ============
+
+export interface LoginParams {
+  username: string;
+  password: string;
+}
+
+export interface LoginResponse {
+  access_token: string;
+  user: { id: number; username: string; role: string };
+}
+
+export const authApi = {
+  login: (data: LoginParams): Promise<LoginResponse> =>
+    request<LoginResponse>({ url: '/api/auth/login', method: 'POST', data, skipAuth: true }),
+  profile: (): Promise<{ id: number; username: string; role: string } | null> =>
+    request<any>({ url: '/api/auth/profile', method: 'GET' }).catch(() => null),
+};
+
+export interface CreateOrderParams {
+  hotelId: number;
+  roomTypeId: number;
+  checkInDate: string;
+  checkOutDate: string;
+  rooms: number;
+  guests: number;
+}
+
+export const orderApi = {
+  create: (data: CreateOrderParams): Promise<Order> =>
+    request<Order>({ url: '/api/orders', method: 'POST', data }),
+  mine: (params?: { page?: number; pageSize?: number }): Promise<PageResponse<Order>> => {
+    const qs = toQueryString({ page: params?.page, pageSize: params?.pageSize });
+    return request<PageResponse<Order>>({ url: `/api/orders/mine${qs ? `?${qs}` : ''}`, method: 'GET' });
+  },
+  cancel: (id: number): Promise<Order> =>
+    request<Order>({ url: `/api/orders/${id}/cancel`, method: 'POST' }),
+  remove: (id: number): Promise<void> =>
+    request<void>({ url: `/api/orders/${id}`, method: 'DELETE' }),
+};
+
+export interface PaymentCallbackParams {
+  eventId: string;
+  orderId: number;
+  paymentNo?: string;
+  paidAt?: string;
+}
+
+export const paymentApi = {
+  callback: (data: PaymentCallbackParams) =>
+    request<any>({ url: '/api/payments/callback', method: 'POST', data, skipAuth: true }),
 };
