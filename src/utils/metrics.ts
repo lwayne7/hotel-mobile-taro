@@ -59,13 +59,13 @@ function flushMetrics(): void {
 
 /**
  * 初始化 Web Vitals 采集（仅 H5 环境）。
- * 采集 FCP、LCP、CLS、FID、TTFB 五项核心指标。
+ * 采集 FCP、LCP、CLS、INP、TTFB 五项核心指标。
  */
 export async function initWebVitals(): Promise<void> {
   if (typeof window === 'undefined') return;
 
   try {
-    const { onFCP, onLCP, onCLS, onFID, onTTFB } = await import('web-vitals');
+    const { onFCP, onLCP, onCLS, onINP, onTTFB } = await import('web-vitals');
 
     const handle = (name: string) => (entry: { value: number; rating: string }) => {
       reportMetric({
@@ -79,7 +79,7 @@ export async function initWebVitals(): Promise<void> {
     onFCP(handle('FCP'));
     onLCP(handle('LCP'));
     onCLS(handle('CLS'));
-    onFID(handle('FID'));
+    onINP(handle('INP'));
     onTTFB(handle('TTFB'));
   } catch {
     // web-vitals 不可用（非 H5 环境），静默忽略
