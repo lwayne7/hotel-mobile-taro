@@ -32,12 +32,14 @@ export const HotelCard = React.memo(function HotelCard({
   style,
 }: HotelCardProps) {
   const [imageError, setImageError] = useState(false);
+  const [imageLoaded, setImageLoaded] = useState(false);
   const handleClick = () => {
     if (onClick) {
       onClick(hotel);
     }
   };
   const onImageError = useCallback(() => setImageError(true), []);
+  const onImageLoad = useCallback(() => setImageLoaded(true), []);
 
   const minPrice = getMinPrice(hotel);
   const originalPrice = getOriginalPrice(hotel);
@@ -53,20 +55,26 @@ export const HotelCard = React.memo(function HotelCard({
   };
 
   return (
-      <View className={`hotel-card ${className}`} style={cardStyle} onClick={handleClick}>
+    <View className={`hotel-card ${className}`} style={cardStyle} onClick={handleClick}>
       <View className="hotel-card-image-wrap">
         {showPlaceholder ? (
           <View className="hotel-card-image-placeholder">
             <Text className="hotel-card-image-placeholder-text">暂无图片</Text>
           </View>
         ) : (
-          <Image
-            src={image}
-            mode="aspectFill"
-            lazyLoad
-            className="hotel-card-image"
-            onError={onImageError}
-          />
+          <>
+            {!imageLoaded && (
+              <View className="hotel-card-image-placeholder" />
+            )}
+            <Image
+              src={image}
+              mode="aspectFill"
+              lazyLoad
+              className={`hotel-card-image ${imageLoaded ? 'hotel-card-image--loaded' : ''}`}
+              onError={onImageError}
+              onLoad={onImageLoad}
+            />
+          </>
         )}
         {discountLabel && (
           <View className="hotel-card-discount-badge">

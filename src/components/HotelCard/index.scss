@@ -33,16 +33,29 @@
   width: 120px;
   height: 160px;
   border-radius: 10px;
+  opacity: 0;
+  transition: opacity 0.35s ease-in;
+
+  &--loaded {
+    opacity: 1;
+  }
 }
 
 .hotel-card-image-placeholder {
   width: 120px;
   height: 160px;
-  background-color: #f0f0f0;
+  background: linear-gradient(135deg, #f0f0f0 25%, #e8e8e8 50%, #f0f0f0 75%);
+  background-size: 200% 100%;
+  animation: skeleton-shimmer 1.5s ease infinite;
   display: flex;
   align-items: center;
   justify-content: center;
   border-radius: 10px;
+}
+
+@keyframes skeleton-shimmer {
+  0% { background-position: 200% 0; }
+  100% { background-position: -200% 0; }
 }
 
 /* 折扣角标 */

@@ -27,7 +27,6 @@ export default defineConfig({
   resolve: {
     alias: {
       '@': path.resolve(__dirname, 'src'),
-      '@tarojs/components': '@tarojs/components/dist-h5/react',
       '@tarojs/taro': '@tarojs/taro-h5',
     },
   },

@@ -1,10 +1,11 @@
-/** 我的订单（演示：下单/取消/模拟支付回调幂等） */
-import { useCallback, useEffect, useMemo, useState } from 'react';
+/** 我的订单（TanStack Query 统一状态管理 + 下单/取消/模拟支付回调幂等） */
+import { useCallback, useMemo } from 'react';
 import { View, Text, ScrollView } from '@tarojs/components';
 import Taro, { useDidShow } from '@tarojs/taro';
+import { useQueryClient } from '@tanstack/react-query';
 import { Button, Skeleton } from '../../components/ui';
-import { orderApi, paymentApi } from '../../services/api';
-import type { Order, OrderStatus } from '../../types/order';
+import { useMyOrders, useCancelOrder, useDeleteOrder, useSimulatePayment, orderKeys } from '../../hooks/useOrders';
+import type { OrderStatus } from '../../types/order';
 
 function formatMoney(cents: number): string {
   const n = Math.round(Number(cents) || 0) / 100;
@@ -27,68 +28,30 @@ function statusText(s: OrderStatus): string {
 }
 
 export default function OrdersPage() {
-  const [loading, setLoading] = useState(false);
-  const [orders, setOrders] = useState<Order[]>([]);
-  const [error, setError] = useState<string>('');
+  const queryClient = useQueryClient();
+  const { data, isLoading, error, refetch } = useMyOrders();
+  const cancelMutation = useCancelOrder();
+  const deleteMutation = useDeleteOrder();
+  const payMutation = useSimulatePayment();
 
-  const fetchOrders = useCallback(async () => {
-    setLoading(true);
-    setError('');
-    try {
-      const res = await orderApi.mine({ page: 1, pageSize: 20 });
-      setOrders(res.data || []);
-    } catch (e: any) {
-      setOrders([]);
-      setError(e?.message || '加载失败（可能未登录）');
-    } finally {
-      setLoading(false);
-    }
-  }, []);
+  const orders = data?.data || [];
 
+  // 页面重新可见时刷新
   useDidShow(() => {
-    fetchOrders();
+    void queryClient.invalidateQueries({ queryKey: orderKeys.all() });
   });
 
-  useEffect(() => {
-    fetchOrders();
-  }, [fetchOrders]);
+  const onCancel = useCallback((id: number) => {
+    cancelMutation.mutate(id);
+  }, [cancelMutation]);
 
-  const onCancel = useCallback(async (id: number) => {
-    try {
-      await orderApi.cancel(id);
-      Taro.showToast({ title: '已取消', icon: 'none' });
-      fetchOrders();
-    } catch (e: any) {
-      Taro.showToast({ title: e?.message || '取消失败', icon: 'none' });
-    }
-  }, [fetchOrders]);
+  const onPay = useCallback((orderId: number) => {
+    payMutation.mutate(orderId);
+  }, [payMutation]);
 
-  const onPay = useCallback(async (orderId: number) => {
-    const now = new Date();
-    const eventId = `evt_${now.getTime()}_${Math.random().toString(16).slice(2, 8)}`;
-    try {
-      await paymentApi.callback({
-        eventId,
-        orderId,
-        paymentNo: `pay_${Math.random().toString(16).slice(2, 10)}`,
-        paidAt: now.toISOString(),
-      });
-      Taro.showToast({ title: '模拟支付回调成功', icon: 'none' });
-      fetchOrders();
-    } catch (e: any) {
-      Taro.showToast({ title: e?.message || '支付回调失败', icon: 'none' });
-    }
-  }, [fetchOrders]);
-
-  const onDelete = useCallback(async (orderId: number) => {
-    try {
-      await orderApi.remove(orderId);
-      Taro.showToast({ title: '已删除', icon: 'none' });
-      fetchOrders();
-    } catch (e: any) {
-      Taro.showToast({ title: e?.message || '删除失败', icon: 'none' });
-    }
-  }, [fetchOrders]);
+  const onDelete = useCallback((orderId: number) => {
+    deleteMutation.mutate(orderId);
+  }, [deleteMutation]);
 
   const goLogin = useCallback(() => {
     Taro.navigateTo({
@@ -97,7 +60,7 @@ export default function OrdersPage() {
   }, []);
 
   const content = useMemo(() => {
-    if (loading) {
+    if (isLoading) {
       return (
         <View style={{ padding: '16px' }}>
           <Skeleton loading rows={3} title />
@@ -110,7 +73,7 @@ export default function OrdersPage() {
     if (error) {
       return (
         <View style={{ padding: '24px', textAlign: 'center' }}>
-          <Text style={{ color: '#64748b', fontSize: '13px' }}>{error}</Text>
+          <Text style={{ color: '#64748b', fontSize: '13px' }}>{error?.message || '加载失败（可能未登录）'}</Text>
           <View style={{ height: '12px' }} />
           <Button type="primary" onClick={goLogin}>去登录（customer）</Button>
         </View>
@@ -156,13 +119,13 @@ export default function OrdersPage() {
 
             {o.status === 'pending_payment' && (
               <View style={{ display: 'flex', gap: '10px', marginTop: '12px' }}>
-                <Button type="primary" onClick={() => onPay(o.id)}>模拟支付</Button>
-                <Button type="default" plain onClick={() => onCancel(o.id)}>取消订单</Button>
+                <Button type="primary" loading={payMutation.isPending} onClick={() => onPay(o.id)}>模拟支付</Button>
+                <Button type="default" plain loading={cancelMutation.isPending} onClick={() => onCancel(o.id)}>取消订单</Button>
               </View>
             )}
             {o.status !== 'pending_payment' && (
               <View style={{ display: 'flex', justifyContent: 'flex-end', marginTop: '10px' }}>
-                <Button type="default" plain size="small" onClick={() => onDelete(o.id)}>
+                <Button type="default" plain size="small" loading={deleteMutation.isPending} onClick={() => onDelete(o.id)}>
                   删除订单
                 </Button>
               </View>
@@ -171,7 +134,7 @@ export default function OrdersPage() {
         ))}
       </View>
     );
-  }, [error, goLogin, loading, onCancel, onPay, orders]);
+  }, [error, goLogin, isLoading, onCancel, onPay, onDelete, orders, cancelMutation.isPending, payMutation.isPending, deleteMutation.isPending]);
 
   return (
     <View style={{ height: '100vh', display: 'flex', flexDirection: 'column', background: '#f6f9ff' }}>
@@ -187,7 +150,7 @@ export default function OrdersPage() {
         }}
       >
         <Text>我的订单</Text>
-        <Text style={{ fontSize: '12px' }} onClick={fetchOrders}>刷新</Text>
+        <Text style={{ fontSize: '12px' }} onClick={() => refetch()}>刷新</Text>
       </View>
       <ScrollView scrollY style={{ flex: 1 }}>
         {content}
@@ -195,4 +158,3 @@ export default function OrdersPage() {
     </View>
   );
 }
-

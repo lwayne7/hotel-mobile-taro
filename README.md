@@ -12,14 +12,15 @@
 | 📱 **一码三端** | Taro 4 编译到 H5、微信小程序、React Native，UI 与核心逻辑一致 |
 | 🧾 **完整预订闭环** | 从「搜索 → 详情 → 下单 → 支付回调 → 查看/删除订单」打通用户端链路，对接后台订单状态机与防超卖库存模型 |
 | 👤 **角色边界清晰** | customer 仅在移动端登录与操作；管理端收紧为 merchant/admin 使用，避免普通用户误用后台入口 |
-| 🚀 **虚拟滚动** | 万级酒店列表高性能渲染，TanStack Query 无限滚动 + 60s 自动刷新 |
+| 🚀 **无限滚动** | 万级酒店列表高性能渲染，TanStack Query 无限滚动 + 60s 自动刷新 + 骨架屏占位 |
 | 📈 **价格趋势图** | 纯 View 绘制的折线图组件（PriceTrend），展示近 7 日价格走势 |
 | 📡 **SSE 实时价格** | H5 端 EventSource 自动重连 + keepalive 节流；小程序/RN 轮询兜底 |
 | 📍 **GPS 城市定位** | Taro.getLocation → 逆地理编码推断城市，一键定位当前位置 |
 | 💾 **离线持久化** | Zustand + persist 中间件，收藏夹与浏览历史跨端持久存储 |
-| 🧪 **68 条 Vitest 单测** | useHotels / usePriceUpdates / useSearchStore / useHotelStore / request / api 等核心逻辑全覆盖 |
+| 🧪 **80+ 条 Vitest 单测** | hooks / services / stores / utils / 组件（HotelCard、Skeleton）全覆盖，CI 自动生成覆盖率报告 |
 | 📊 **Web Vitals 采集上报** | H5 端自动采集 FCP / LCP / CLS / FID / TTFB，队列批量上报至后端（sendBeacon / Taro.request），小程序端自适配 |
-| ✅ **GitHub Actions CI** | 自动 TypeCheck + Unit Test + Build H5，保证每次提交质量 |
+| ✅ **GitHub Actions CI** | 自动 TypeCheck + Unit Test + Coverage 上报 + Build H5，保证每次提交质量 |
+| 🖼️ **渐进式图片加载** | 图片加载中显示骨架屏 shimmer 动画，加载完成 fade-in 过渡，优化 LCP 体验 |
 | 🎨 **12 个自研组件** | Button / Calendar / CityPicker / RoomPicker / Popup / Skeleton / Loading / HotelCard / PriceTrend / ErrorBoundary / SafeArea / ui |
 | 🔍 **智能搜索** | 搜索历史持久化 + 热门标签 + 多维筛选（城市/星级/价格/设施/品牌） |
 | ⚡ **Vercel 部署** | H5 版已配置 vercel.json，一键部署到生产环境 |
@@ -91,7 +92,7 @@ hotel-mobile-taro/
 │   │   └── storage.ts            # Taro Storage 适配器
 │   ├── pages/            # 页面
 │   │   ├── index/                # 酒店查询首页
-│   │   ├── hotel-list/           # 酒店列表（虚拟滚动 + 筛选）
+│   │   ├── hotel-list/           # 酒店列表（无限滚动 + 筛选）
 │   │   ├── hotel-detail/         # 酒店详情（轮播 + 房型 + 价格趋势）
 │   │   └── favorites/            # 收藏夹
 │   ├── services/         # API 封装（Axios / Taro.request 双通道）
@@ -163,7 +164,7 @@ npm run dev:rn             # 启动 Metro (端口 8081)
 | 页面 | 路径 | 核心功能 |
 |------|------|----------|
 | 🔍 酒店查询页 | `/pages/index/index` | Banner · 城市选择 · 日历 · 星级/价格筛选 · 快捷标签 · 搜索历史 |
-| 📋 酒店列表页 | `/pages/hotel-list/index` | 虚拟滚动 · 无限加载 · 多维筛选 · GPS 定位 · 骨架屏 |
+| 📋 酒店列表页 | `/pages/hotel-list/index` | 无限滚动 · 无限加载 · 多维筛选 · GPS 定位 · 骨架屏 |
 | 🏨 酒店详情页 | `/pages/hotel-detail/index` | 图片轮播 · 放大预览 · 房型价格排序 · 价格趋势图 · 收藏 |
 | ❤️ 收藏夹 | `/pages/favorites/index` | 离线持久化 · 收藏列表 |
 
