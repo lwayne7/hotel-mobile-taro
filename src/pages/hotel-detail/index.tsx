@@ -1,125 +1,22 @@
 /** 酒店详情页：轮播、房型、日期、收藏 */
 import { useState, useCallback, useEffect, useRef } from 'react';
-import { View, Text, Swiper, SwiperItem, Image, ScrollView } from '@tarojs/components';
+import { View, Text, Swiper, SwiperItem, ScrollView } from '@tarojs/components';
 import Taro, { useDidShow, useRouter } from '@tarojs/taro';
 import { useHotelDetail, useIsWeapp, usePriceUpdates } from '../../hooks';
-import { publicHotelApi } from '../../services/api';
-import { orderApi } from '../../services/api';
+import { publicHotelApi, orderApi } from '../../services/api';
 import { useHotelStore } from '../../store/useHotelStore';
 import { Button, Skeleton, Popup } from '../../components/ui';
 import Calendar from '../../components/Calendar';
 import { getMinPrice, getDisplayTags, getSimulatedScore, getHotelGalleryImages, getHotelDisplayImage } from '../../utils/hotel';
 import { SafeArea } from '../../components/SafeArea';
 import { PriceTrend } from '../../components/PriceTrend';
+import { RoomImage } from './components/RoomImage';
+import { GalleryImage } from './components/GalleryImage';
+import { ROOM_FILTER_TAGS, FEATURE_ICON_MAP, matchRoomByFilter } from './components/utils';
 import dayjs, { Dayjs } from 'dayjs';
 import type { Hotel, RoomType } from '../../types/hotel';
 import type { PriceUpdateEvent } from '../../hooks/usePriceUpdates';
 import './index.scss';
-
-const ROOM_FILTER_TAGS = ['含早餐', '立即确认', '大床房', '双床房', '免费取消', '筛选'];
-
-/** 设施名称 → 语义图标映射 */
-const FEATURE_ICON_MAP: Record<string, string> = {
-  '免费WiFi': '📶', 'WiFi': '📶', '无线网络': '📶',
-  '停车场': '🅿️', '免费停车': '🅿️',
-  '游泳池': '🏊', '泳池': '🏊', '室内泳池': '🏊', '室外泳池': '🏊',
-  '健身房': '💪', '健身中心': '💪',
-  '餐厅': '🍽️', '中餐厅': '🍽️', '西餐厅': '🍽️', '自助餐': '🍽️',
-  '酒吧': '🍸', '大堂吧': '🍸',
-  'SPA': '💆', '水疗': '💆',
-  '会议室': '📋', '商务中心': '📋',
-  '儿童乐园': '🎠', '亲子': '🎠',
-  '24小时前台': '🛎️', '24h前台': '🛎️', '前台': '🛎️',
-  '行李寄存': '🧳',
-  '洗衣服务': '👔', '洗衣房': '👔',
-  '新中式风': '🏮', '中式': '🏮',
-  '花园': '🌿', '露台': '🌿',
-  '接机服务': '✈️', '机场接送': '✈️',
-};
-
-function matchRoomByFilter(room: RoomType, filter: string | null): boolean {
-  if (!filter) return true;
-  const bedType = (room.bedType ?? '').toLowerCase();
-  const amenities = (room.amenities ?? []).map((a) => String(a).toLowerCase());
-  const roomName = (room.name ?? '').toLowerCase();
-  switch (filter) {
-    case '含早餐':
-      return amenities.some((a) => a.includes('早餐') || a.includes('含早'));
-    case '立即确认':
-      return amenities.some((a) => a.includes('立即确认') || a.includes('闪订'));
-    case '大床房':
-      return bedType.includes('大床') || roomName.includes('大床');
-    case '双床房':
-      return bedType.includes('双床') || bedType.includes('标准') || roomName.includes('双床') || roomName.includes('标准');
-    case '免费取消':
-      return amenities.some((a) => a.includes('免费取消') || a.includes('可取消'));
-    default:
-      return true;
-  }
-}
-
-/** 房型图片：主图失败用 fallback，都失败显示占位 */
-function RoomImage({ src, fallbackSrc }: { src?: string; fallbackSrc?: string }) {
-  const [primaryFailed, setPrimaryFailed] = useState(false);
-  const [fallbackFailed, setFallbackFailed] = useState(false);
-
-  const currentSrc = !src && fallbackSrc ? fallbackSrc : (primaryFailed ? fallbackSrc : src);
-  const showPlaceholder = !currentSrc || (primaryFailed && (fallbackFailed || !fallbackSrc));
-
-  const onError = useCallback(() => {
-    if (!src && fallbackSrc) setFallbackFailed(true);
-    else if (!primaryFailed) setPrimaryFailed(true);
-    else setFallbackFailed(true);
-  }, [primaryFailed, src, fallbackSrc]);
-
-  if (showPlaceholder) {
-    return (
-      <View className="room-thumb-placeholder">
-        <Text>🛏️</Text>
-      </View>
-    );
-  }
-
-  return (
-    <Image
-      src={currentSrc!}
-      mode="aspectFill"
-      className="ctrip-detail-room-thumb-img"
-      onError={onError}
-    />
-  );
-}
-
-/** Gallery 图片组件 - 无图/加载失败显示占位 */
-function GalleryImage({
-  src,
-  onClick
-}: {
-  src?: string;
-  onClick?: () => void;
-}) {
-  const [failed, setFailed] = useState(false);
-  const normalizedSrc = src?.trim?.();
-  const showPlaceholder = !normalizedSrc || failed;
-
-  if (showPlaceholder) {
-    return (
-      <View className="ctrip-detail-slide-placeholder">
-        <Text className="ctrip-detail-slide-placeholder-text">暂无图片</Text>
-      </View>
-    );
-  }
-
-  return (
-    <Image
-      src={normalizedSrc!}
-      mode="aspectFill"
-      className="ctrip-detail-slide-img"
-      onError={() => setFailed(true)}
-      onClick={onClick}
-    />
-  );
-}
 
 export default function HotelDetail() {
   const router = useRouter();

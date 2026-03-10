@@ -171,7 +171,7 @@ export function useLocation(options: UseLocationOptions = {}) {
         requestLocation();
       }
     }
-  }, [gpsLoading, onCityDetected, onError]);
+  }, [gpsLoading, onCityDetected, onUnsupported, onError]);
 
   return {
     gpsLoading,

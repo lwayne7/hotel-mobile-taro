@@ -87,7 +87,7 @@ function parsePriceUpdateEvent(raw: unknown): PriceUpdateEvent {
   };
 }
 
-/** 价格更新 SSE（仅 H5），连接失败自动重连。 */
+/** 价格更新 SSE（仅 H5），连接失败指数退避重连。 */
 export function usePriceUpdates(options: UsePriceUpdatesOptions) {
   const {
     enabled = true,
@@ -95,15 +95,22 @@ export function usePriceUpdates(options: UsePriceUpdatesOptions) {
     onPriceUpdate,
   } = options;
   const lastKeepaliveTriggerRef = useRef(0);
+  // 用 ref 稳定回调引用，避免 onPriceUpdate 变化导致 SSE 重连
+  const onPriceUpdateRef = useRef(onPriceUpdate);
+  useEffect(() => {
+    onPriceUpdateRef.current = onPriceUpdate;
+  }, [onPriceUpdate]);
 
   useEffect(() => {
-    if (!enabled || !onPriceUpdate) return;
+    if (!enabled || !onPriceUpdateRef.current) return;
     if (!platform.isH5) return;
     if (typeof EventSource === 'undefined') return;
 
     let closed = false;
     let source: EventSource | null = null;
     let reconnectTimer: ReturnType<typeof setTimeout> | null = null;
+    let reconnectAttempt = 0;
+    const MAX_RECONNECT_DELAY = 30_000;
     const sseUrl = buildSseUrl();
 
     const triggerUpdate = (event: PriceUpdateEvent) => {
@@ -112,7 +119,7 @@ export function usePriceUpdates(options: UsePriceUpdatesOptions) {
         if (now - lastKeepaliveTriggerRef.current < throttleMs) return;
         lastKeepaliveTriggerRef.current = now;
       }
-      onPriceUpdate(event);
+      onPriceUpdateRef.current?.(event);
     };
 
     const clearReconnect = () => {
@@ -127,13 +134,18 @@ export function usePriceUpdates(options: UsePriceUpdatesOptions) {
 
       source = new EventSource(sseUrl);
       source.onmessage = (event) => {
+        reconnectAttempt = 0; // 收到消息说明连接正常，重置退避计数
         triggerUpdate(parsePriceUpdateEvent(event.data));
       };
       source.onerror = () => {
         source?.close();
         source = null;
         if (closed) return;
-        reconnectTimer = setTimeout(connect, 5000);
+        // 指数退避 + 随机抖动
+        reconnectAttempt++;
+        const baseDelay = Math.min(1000 * Math.pow(2, reconnectAttempt), MAX_RECONNECT_DELAY);
+        const jitter = Math.random() * 1000;
+        reconnectTimer = setTimeout(connect, baseDelay + jitter);
       };
     };
 
@@ -145,5 +157,5 @@ export function usePriceUpdates(options: UsePriceUpdatesOptions) {
       source?.close();
       source = null;
     };
-  }, [enabled, onPriceUpdate, throttleMs]);
+  }, [enabled, throttleMs]);
 }

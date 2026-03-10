@@ -28,8 +28,10 @@ export function SmartRecommend() {
         const avgStar = Math.round(
             recentlyViewed.reduce((sum, h) => sum + (h.starRating || 3), 0) / recentlyViewed.length,
         );
-        const prices = recentlyViewed
-            .flatMap((h) => (h.roomTypes || []).map((r) => Number(r.price)).filter((p) => p > 0));
+        const prices = recentlyViewed.reduce<number[]>((acc, h) => {
+            const roomPrices = (h.roomTypes || []).map((r) => Number(r.price)).filter((p) => p > 0);
+            return acc.concat(roomPrices);
+        }, []);
         const avgPrice = prices.length ? Math.round(prices.reduce((a, b) => a + b, 0) / prices.length) : 300;
 
         setReason(`基于您偏好的${avgStar}星级、¥${avgPrice}左右的酒店`);
