@@ -1,6 +1,6 @@
 # 🏨 易宿酒店预订 — Taro 多端用户版
 
-> 一套代码，三端运行：**H5** · **微信小程序** · **React Native APP**  
+> 一套核心业务逻辑，复用到 **H5** · **微信小程序** · **React Native APP**  
 > Taro 4 + React 18 + TypeScript · Zustand + TanStack Query · NutUI React
 
 ---
@@ -9,16 +9,16 @@
 
 | 亮点 | 说明 |
 |------|------|
-| 📱 **一码三端** | Taro 4 编译到 H5、微信小程序、React Native，UI 与核心逻辑一致 |
-| 🧾 **完整预订闭环** | 从「搜索 → 详情 → 下单 → 支付回调 → 查看/删除订单」打通用户端链路，对接后台订单状态机与防超卖库存模型 |
+| 📱 **核心逻辑三端复用** | Taro 4 将核心业务逻辑复用到 H5、微信小程序、React Native，平台差异收敛在 Hook / 适配层 |
+| 🧾 **完整预订闭环** | 从「搜索 → 详情 → 下单 → 模拟支付回调 → 查看/删除订单」打通用户端链路，对接后台订单状态机与防超卖库存模型 |
 | 👤 **角色边界清晰** | customer 仅在移动端登录与操作；管理端收紧为 merchant/admin 使用，避免普通用户误用后台入口 |
 | 🚀 **无限滚动** | 万级酒店列表高性能渲染，TanStack Query 无限滚动 + 60s 自动刷新 + 骨架屏占位 |
 | 📈 **价格趋势图** | 纯 View 绘制的折线图组件（PriceTrend），展示近 7 日价格走势 |
 | 📡 **SSE 实时价格** | H5 端 EventSource 自动重连 + keepalive 节流；小程序/RN 轮询兜底 |
 | 📍 **GPS 城市定位** | Taro.getLocation → 逆地理编码推断城市，一键定位当前位置 |
 | 💾 **离线持久化** | Zustand + persist 中间件，收藏夹与浏览历史跨端持久存储 |
-| 🧪 **80+ 条 Vitest 单测** | hooks / services / stores / utils / 组件（HotelCard、Skeleton）全覆盖，CI 自动生成覆盖率报告 |
-| 📊 **Web Vitals 采集上报** | H5 端自动采集 FCP / LCP / CLS / FID / TTFB，队列批量上报至后端（sendBeacon / Taro.request），小程序端自适配 |
+| 🧪 **87 条 Vitest 单测** | hooks / services / stores / utils / 组件（HotelCard、Skeleton）全覆盖，CI 自动生成覆盖率报告 |
+| 📊 **Web Vitals 采集上报** | H5 端自动采集 FCP / LCP / CLS / INP / TTFB，队列批量上报至后端（sendBeacon / Taro.request），小程序端自适配 |
 | ✅ **GitHub Actions CI** | 自动 TypeCheck + Unit Test + Coverage 上报 + Build H5，保证每次提交质量 |
 | 🖼️ **渐进式图片加载** | 图片加载中显示骨架屏 shimmer 动画，加载完成 fade-in 过渡，优化 LCP 体验 |
 | 🎨 **12 个自研组件** | Button / Calendar / CityPicker / RoomPicker / Popup / Skeleton / Loading / HotelCard / PriceTrend / ErrorBoundary / SafeArea / ui |
@@ -27,15 +27,15 @@
 
 ---
 
-## 📐 架构与设计（面试友好）
+## 📐 架构与设计
 
 - **跨端一致性与数据流**：[`ARCHITECTURE.md`](./ARCHITECTURE.md)
 - **实时价格方案（SSE + 轮询）**：[`REALTIME_PRICE.md`](./REALTIME_PRICE.md)
 
-### 面试快速浏览
+### 关键设计概览
 
-- **一码三端**：通过 Taro + 自定义 hooks 将 H5 / 小程序 / RN 的差异收敛在 `useIsWeapp / useWeappFetch` 等适配层中。
-- **预订闭环前端链路**：真实打通「搜索 → 列表 → 详情 → 下单 → 支付回调 → 查看/删除订单」全流程，与后台订单/库存模型对齐。
+- **核心逻辑复用**：通过 Taro + 自定义 hooks 将 H5 / 小程序 / RN 的差异收敛在 `useIsWeapp / useWeappFetch` 等适配层中。
+- **预订闭环前端链路**：打通「搜索 → 列表 → 详情 → 下单 → 模拟支付回调 → 查看/删除订单」全流程，与后台订单/库存模型对齐。
 - **列表性能**：基于 TanStack Query 的无限滚动与骨架屏，支撑万级酒店列表的流畅滚动。
 - **实时价格**：H5 端使用 SSE（EventSource）自动重连，小程序/RN 用轮询兜底，保证多端价格感知的一致性。
 - **运行时校验取舍**：生产环境保留最小校验，开发环境启用详细结构校验，兼顾包体与排障效率。
@@ -52,7 +52,7 @@
 | 状态管理 | **Zustand 5**（客户端，persist 中间件）+ **TanStack Query 5**（服务端） |
 | 数据校验 | **Zod 4** |
 | 日期处理 | **Day.js** |
-| 测试 | **Vitest 2** + **Testing Library** + **jsdom**，68 条单测 |
+| 测试 | **Vitest 2** + **Testing Library** + **jsdom**，87 条单测 |
 | 构建 | Webpack 5（Taro runner）/ Babel / SWC |
 | 部署 | Vercel（H5）/ 微信开发者工具（小程序） |
 
@@ -84,6 +84,7 @@ hotel-mobile-taro/
 │   │   ├── usePriceUpdates.ts    # SSE 实时价格订阅
 │   │   ├── useLocation.ts        # GPS 定位 + 逆地理编码
 │   │   ├── useSearch.ts          # 搜索参数管理
+│   │   ├── useOrders.ts          # 订单查询 / 取消 / 删除 / 模拟支付
 │   │   ├── useWeappFetch.ts      # 小程序网络请求兼容层
 │   │   └── useIsWeapp.ts         # 平台检测
 │   ├── store/            # Zustand 状态管理
@@ -94,7 +95,9 @@ hotel-mobile-taro/
 │   │   ├── index/                # 酒店查询首页
 │   │   ├── hotel-list/           # 酒店列表（无限滚动 + 筛选）
 │   │   ├── hotel-detail/         # 酒店详情（轮播 + 房型 + 价格趋势）
-│   │   └── favorites/            # 收藏夹
+│   │   ├── favorites/            # 收藏夹
+│   │   ├── orders/               # 我的订单（下单 / 模拟支付回调 / 删除订单）
+│   │   └── login/                # customer 登录页
 │   ├── services/         # API 封装（Axios / Taro.request 双通道）
 │   ├── constants/        # 常量（50 城市列表等）
 │   ├── styles/           # 全局样式变量 + RN 适配工具
@@ -157,6 +160,12 @@ npm run dev:rn             # 启动 Metro (端口 8081)
 
 推荐使用 [Taro Playground](https://github.com/wuba/taro-playground) 扫码加载；也可对接 [Taro Native Shell](https://github.com/NervJS/taro-native-shell)（分支 0.70.0）。
 
+### 6. 订单闭环演示账号
+
+| 角色 | 用户名 | 密码 | 用途 |
+|------|--------|------|------|
+| 用户 | `customer01` | `Cust123456` | 登录移动端，演示下单 / 模拟支付回调 / 查看订单 |
+
 ---
 
 ## 📄 页面与功能
@@ -167,13 +176,15 @@ npm run dev:rn             # 启动 Metro (端口 8081)
 | 📋 酒店列表页 | `/pages/hotel-list/index` | 无限滚动 · 无限加载 · 多维筛选 · GPS 定位 · 骨架屏 |
 | 🏨 酒店详情页 | `/pages/hotel-detail/index` | 图片轮播 · 放大预览 · 房型价格排序 · 价格趋势图 · 收藏 |
 | ❤️ 收藏夹 | `/pages/favorites/index` | 离线持久化 · 收藏列表 |
+| 🔐 登录页 | `/pages/login/index` | customer 登录 · 订单闭环演示入口 |
+| 🧾 我的订单 | `/pages/orders/index` | 查看订单 · 取消订单 · 模拟支付回调 · 删除订单 |
 
 ---
 
 ## 🧪 测试
 
 ```bash
-npm test                   # Vitest 单元测试（68 tests / 8 files）
+npm test                   # Vitest 单元测试（87 tests / 10 files）
 npm run test:coverage      # 覆盖率报告
 npm run typecheck          # TypeScript 类型检查
 ```
