@@ -26,6 +26,12 @@ export interface RequestInterceptor {
   onError?: (error: Error, options: RequestOptions) => Error | Promise<never>;
 }
 
+export type RequestError = Error & {
+  statusCode?: number;
+  data?: unknown;
+  originalError?: unknown;
+};
+
 // ============ 拦截器注册 ============
 const interceptors: RequestInterceptor[] = [];
 
