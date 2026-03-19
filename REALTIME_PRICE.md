@@ -16,7 +16,7 @@ flowchart TD
 实现位于 `src/hooks/usePriceUpdates.ts`：
 
 - **仅在 H5 启用**：`platform.isH5` + `typeof EventSource !== 'undefined'`
-- **自动重连**：`onerror` 关闭后 5s 重连
+- **自动重连**：`onerror` 后关闭旧连接，按指数退避 + 随机抖动重连（上限 30s）
 - **keepalive 节流**：对 `keepalive` 事件做 `throttleMs`（默认 5000ms），避免无意义频繁刷新
 - **事件解析**：对 `timestamp/hotelId/changeKind/version` 做安全归一化，脏数据回退到 `keepalive`
 
@@ -29,4 +29,3 @@ flowchart TD
 - 列表：沿用 `useInfiniteQuery` 的 `refetchInterval: 60s`
 - 详情：沿用 `useHotelDetail` 的 `refetchInterval: 30s`
 - 触发条件：页面可见时刷新，后台不刷（当前实现已设置 `refetchIntervalInBackground: false`）
-

@@ -5,25 +5,19 @@
 
 ---
 
-## ✨ 项目亮点
+## ✨ 更适合面试展开的亮点
 
-| 亮点 | 说明 |
-|------|------|
-| 📱 **核心逻辑三端复用** | Taro 4 将核心业务逻辑复用到 H5、微信小程序、React Native，平台差异收敛在 Hook / 适配层 |
-| 🧾 **完整预订闭环** | 从「搜索 → 详情 → 下单 → 模拟支付回调 → 查看/删除订单」打通用户端链路，对接后台订单状态机与防超卖库存模型 |
-| 👤 **角色边界清晰** | customer 仅在移动端登录与操作；管理端收紧为 merchant/admin 使用，避免普通用户误用后台入口 |
-| 🚀 **无限滚动** | 万级酒店列表高性能渲染，TanStack Query 无限滚动 + 60s 自动刷新 + 骨架屏占位 |
-| 📈 **价格趋势图** | 纯 View 绘制的折线图组件（PriceTrend），展示近 7 日价格走势 |
-| 📡 **SSE 实时价格** | H5 端 EventSource 自动重连 + keepalive 节流；小程序/RN 轮询兜底 |
-| 📍 **GPS 城市定位** | Taro.getLocation → 逆地理编码推断城市，一键定位当前位置 |
-| 💾 **离线持久化** | Zustand + persist 中间件，收藏夹与浏览历史跨端持久存储 |
-| 🧪 **87 条 Vitest 单测** | hooks / services / stores / utils / 组件（HotelCard、Skeleton）全覆盖，CI 自动生成覆盖率报告 |
-| 📊 **Web Vitals 采集上报** | H5 端自动采集 FCP / LCP / CLS / INP / TTFB，队列批量上报至后端（sendBeacon / Taro.request），小程序端自适配 |
-| ✅ **GitHub Actions CI** | 自动 TypeCheck + Unit Test + Coverage 上报 + Build H5，保证每次提交质量 |
-| 🖼️ **渐进式图片加载** | 图片加载中显示骨架屏 shimmer 动画，加载完成 fade-in 过渡，优化 LCP 体验 |
-| 🎨 **12 个自研组件** | Button / Calendar / CityPicker / RoomPicker / Popup / Skeleton / Loading / HotelCard / PriceTrend / ErrorBoundary / SafeArea / ui |
-| 🔍 **智能搜索** | 搜索历史持久化 + 热门标签 + 多维筛选（城市/星级/价格/设施/品牌） |
-| ⚡ **Vercel 部署** | H5 版已配置 vercel.json，一键部署到生产环境 |
+- **用户侧预订闭环**：打通「搜索 → 列表 → 详情 → 下单 → 模拟支付回调 → 查看 / 删除订单」，和后台订单状态机、库存一致性模型对齐，而不是只停留在页面展示。
+- **实时链路有明确取舍**：H5 端通过 `EventSource` 订阅 `price-updates`，断线后指数退避 + 抖动重连并在恢复后走 REST 对齐；小程序 / RN 因运行时差异采用轮询兜底。
+- **实时更新不是全量重刷**：收到 SSE 事件后优先按 `hotelId` 增量更新 `TanStack Query Cache`，仅在酒店上下线等场景触发全量 refetch，兼顾实时性与请求成本。
+- **跨端稳定性是显式设计出来的**：用 `useIsWeapp` 做运行时分支，小程序关键页面走显式首屏 / 分页拉取与静默轮询；在 weapp / RN 通过 `onlineManager` 修正 Query 在线感知，避免请求进入 paused。
+- **状态分层清晰**：`Zustand + persist` 管理搜索条件、收藏和最近浏览等客户端状态，`TanStack Query` 管理列表 / 详情等服务端状态，减少跨端分支蔓延到页面层。
+- **列表性能与质量有证据**：列表页同时支持虚拟滚动和无限加载，当前本地可复跑 `87` 条 Vitest；仓库内接入 GitHub Actions CI 和 Web Vitals 采集上报。
+
+## 🔍 补充能力
+
+- GPS 城市定位、搜索历史与热门标签、多维筛选、价格趋势图、收藏夹持久化。
+- H5 已配置 `vercel.json`，可直接部署演示版本。
 
 ---
 
@@ -34,10 +28,10 @@
 
 ### 关键设计概览
 
-- **核心逻辑复用**：通过 Taro + 自定义 hooks 将 H5 / 小程序 / RN 的差异收敛在 `useIsWeapp / useWeappFetch` 等适配层中。
+- **核心逻辑复用**：通过 Taro + 自定义 hooks 将 H5 / 小程序 / RN 的差异收敛在 `useIsWeapp`、weapp 首屏 / 分页兜底拉取与运行时适配层中。
 - **预订闭环前端链路**：打通「搜索 → 列表 → 详情 → 下单 → 模拟支付回调 → 查看/删除订单」全流程，与后台订单/库存模型对齐。
-- **列表性能**：基于 TanStack Query 的无限滚动与骨架屏，支撑万级酒店列表的流畅滚动。
-- **实时价格**：H5 端使用 SSE（EventSource）自动重连，小程序/RN 用轮询兜底，保证多端价格感知的一致性。
+- **列表性能**：列表页在数据量达到阈值后启用虚拟滚动，并配合无限加载、骨架屏和增量缓存更新减少渲染与请求压力。
+- **实时价格**：H5 端使用 SSE（EventSource）指数退避重连，小程序/RN 用轮询兜底，保证多端价格感知的一致性。
 - **运行时校验取舍**：生产环境保留最小校验，开发环境启用详细结构校验，兼顾包体与排障效率。
 
 ---
@@ -52,9 +46,21 @@
 | 状态管理 | **Zustand 5**（客户端，persist 中间件）+ **TanStack Query 5**（服务端） |
 | 数据校验 | **Zod 4** |
 | 日期处理 | **Day.js** |
+| 性能监控 | **web-vitals**（FCP / LCP / CLS / INP / TTFB） |
 | 测试 | **Vitest 2** + **Testing Library** + **jsdom**，87 条单测 |
 | 构建 | Webpack 5（Taro runner）/ Babel / SWC |
 | 部署 | Vercel（H5）/ 微信开发者工具（小程序） |
+
+---
+
+## ✅ 质量与验证
+
+| 维度 | 当前口径 |
+|------|----------|
+| 自动化测试 | `87` 条 Vitest 单测 |
+| CI | `.github/workflows/ci.yml` 自动执行 Typecheck + Test + Coverage + Build H5 |
+| 运行时验证 | H5 端 Web Vitals 批量上报到后端 `/api/v1/metrics/web-vitals` |
+| 构建验证 | `npm run typecheck` + `npm run build:h5` 可本地复跑 |
 
 ---
 
@@ -85,7 +91,7 @@ hotel-mobile-taro/
 │   │   ├── useLocation.ts        # GPS 定位 + 逆地理编码
 │   │   ├── useSearch.ts          # 搜索参数管理
 │   │   ├── useOrders.ts          # 订单查询 / 取消 / 删除 / 模拟支付
-│   │   ├── useWeappFetch.ts      # 小程序网络请求兼容层
+│   │   ├── useWeappFetch.ts      # 小程序请求兜底实验 Hook（当前主链路未直接依赖）
 │   │   └── useIsWeapp.ts         # 平台检测
 │   ├── store/            # Zustand 状态管理
 │   │   ├── useHotelStore.ts      # 收藏 / 最近浏览（persist）
@@ -116,7 +122,7 @@ hotel-mobile-taro/
 ### 环境要求
 
 - **Node.js** ≥ 18　·　**npm** ≥ 9
-- 后端：需先启动 [hotel-management/backend](https://github.com/lwayne7/hotel-management)
+- 后端：需先启动 [`../hotel-management/README.md`](../hotel-management/README.md) 中的后端服务
 
 ### 1. 安装依赖
 
@@ -129,6 +135,9 @@ npm install
 
 ```bash
 cd ../hotel-management/backend
+npm install
+# 创建 .env.local，最小配置只需提供 JWT_SECRET
+npm run seed
 npm run start:dev          # http://localhost:3000
 ```
 
@@ -173,7 +182,7 @@ npm run dev:rn             # 启动 Metro (端口 8081)
 | 页面 | 路径 | 核心功能 |
 |------|------|----------|
 | 🔍 酒店查询页 | `/pages/index/index` | Banner · 城市选择 · 日历 · 星级/价格筛选 · 快捷标签 · 搜索历史 |
-| 📋 酒店列表页 | `/pages/hotel-list/index` | 无限滚动 · 无限加载 · 多维筛选 · GPS 定位 · 骨架屏 |
+| 📋 酒店列表页 | `/pages/hotel-list/index` | 虚拟滚动 · 无限加载 · 多维筛选 · GPS 定位 · 骨架屏 |
 | 🏨 酒店详情页 | `/pages/hotel-detail/index` | 图片轮播 · 放大预览 · 房型价格排序 · 价格趋势图 · 收藏 |
 | ❤️ 收藏夹 | `/pages/favorites/index` | 离线持久化 · 收藏列表 |
 | 🔐 登录页 | `/pages/login/index` | customer 登录 · 订单闭环演示入口 |

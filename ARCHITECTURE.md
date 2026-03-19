@@ -15,7 +15,7 @@ flowchart TD
 ```
 
 - **页面层**：`src/pages/*`（index / hotel-list / hotel-detail / favorites）。
-- **hooks 层**：封装请求、分页、SSE 订阅与平台差异（`useHotels`、`usePriceUpdates`、`useWeappFetch`、`useIsWeapp`）。
+- **hooks 层**：封装请求、分页、SSE 订阅与平台差异（`useHotels`、`usePriceUpdates`、`useIsWeapp` 等）。
 - **状态层**：
   - **Zustand + persist**：收藏/浏览历史、搜索条件等“客户端状态”跨端持久化。
   - **TanStack Query**：酒店列表/详情等“服务端状态”缓存、分页与定时刷新。
@@ -28,13 +28,13 @@ flowchart TD
 
 ### weapp 环境下的“查询能力兜底”
 
-小程序运行时对部分能力/依赖的支持与 H5 不完全一致，因此提供：
+小程序运行时对网络状态感知与依赖兼容性和 H5 不完全一致，因此当前主链路采用：
 
-- `useWeappFetch(fetchFn)`：在 weapp 环境下用 `useEffect + useState` 实现“统一的加载态/错误态/refetch 接口”，作为 TanStack Query 的轻量替代。
+- `useIsWeapp` 做运行时分支开关，在关键页面走显式首屏/分页拉取与静默轮询兜底。
+- 在 weapp / RN 通过 `onlineManager` 主动同步在线状态，避免 TanStack Query 因误判离线进入 paused。
 
 ## 缓存与刷新策略（服务端状态）
 
 - 列表：`useInfiniteQuery` 无限滚动 + `refetchInterval: 60s`（前台刷新，后台不刷）。
 - 详情：`useQuery` + `refetchInterval: 30s`（避免详情价格长期不一致）。
 - QueryKey：包含 `getApiBaseCacheKey()`，确保切换 API Base 时缓存隔离。
-
