@@ -41,7 +41,7 @@ function flushMetrics(): void {
   const batch = metricsQueue.splice(0);
 
   // 使用 sendBeacon 或 fetch 上报（H5）/ Taro.request（小程序）
-  const url = `${process.env.TARO_APP_API || ''}/api/v1/metrics/web-vitals`;
+  const url = `${process.env.TARO_APP_API_BASE || ''}/api/v1/metrics/web-vitals`;
 
   if (typeof navigator !== 'undefined' && navigator.sendBeacon) {
     navigator.sendBeacon(url, JSON.stringify({ metrics: batch }));
